@@ -11,7 +11,7 @@ Authors@R:
     person(
     given = "Anne-Cecile", 
     family = "Lesage",
-    email = "your email", 
+    email = "aclesage@gmail.com", 
     role = "aut",
     comment = c(ORCID = "0000-0000-0000-0000")),
     person(
@@ -38,7 +38,7 @@ Authors@R:
     email = "pjkaras@UTMB.EDU", 
     role = "ctb")
     )
-Description: Calculate fragility index based on intracranial electrocorticographic (ECoG) recordings. The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
+Description: Calculate fragility heatmap based on intracranial electrocorticographic (ECoG) recordings. The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
