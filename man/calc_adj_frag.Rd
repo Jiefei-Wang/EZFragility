@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.r
 \name{calc_adj_frag}
 \alias{calc_adj_frag}
-\title{Calculate adjacency matrices and fragility from voltage readings}
+\title{Calculate adjacency matrices and fragility heatmap from iEEG recording}
 \usage{
 calc_adj_frag(readings, t_window, t_step, lambda = NULL)
 }
