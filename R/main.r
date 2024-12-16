@@ -1,4 +1,4 @@
-#' Calculate adjacency matrices and fragility from voltage readings
+#' Calculate adjacency matrices and fragility heatmap from iEEG recording
 #' 
 #' A very long long description to give the details of the function
 #' 
