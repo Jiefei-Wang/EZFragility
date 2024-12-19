@@ -3,28 +3,23 @@
 \docType{data}
 \name{ptEpoch}
 \alias{ptEpoch}
-\title{This is an example documentation for data}
+\title{Pt01 seizure 1}
 \format{
 A Matrix with 20001 rows (time points) and 84 columns (electrodes)
 }
 \source{
-\href{https://phenome.jax.org/projects/Moore1b}{QTL Archive}
+Fragility Multi-Center Retrospective Study
+(\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
 }
 \usage{
 data(ptEpoch)
 }
 \description{
-Data from a QTL experiment on gravitropism in
-Arabidopsis, with data on 162 recombinant inbred lines (Ler x
-Cvi). The outcome is the root tip angle (in degrees) at two-minute
-increments over eight hours.
+This data corresponds to the first seizure of patient PT01 from the Fragility Data Set.
+The data contains only the good channels.
+It has been notch filtered and common average referenced in RAVE
 }
 \examples{
 data(ptEpoch)
-WHAT ELSE CAN WE DO WITH THIS DATA?
-}
-\references{
-Moore et al. (2013) Genetics 195:1077-1086
-(\href{https://www.ncbi.nlm.nih.gov/pubmed/23979570}{PubMed})
 }
 \keyword{datasets}
