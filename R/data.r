@@ -45,3 +45,4 @@
 #' @examples
 #' data(ptEpochm1sp2s)
 "ptEpochm1sp2s"
+

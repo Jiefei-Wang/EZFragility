@@ -18,7 +18,7 @@ data(ptEpochm1sp2s)
 This data corresponds to the first seizure of patient PT01 from the Fragility Data Set.
 The data contains only the good channels.
 It has been notch filtered and common average referenced in RAVE
-It has been epoched -1:2s around the seizure onset
+It has been epoched -\link{1:2}s around the seizure onset
 The acquisition frequency is 1000 Hz
 EcoG recording gathered in collaboration with the National Institue of Helath
 }

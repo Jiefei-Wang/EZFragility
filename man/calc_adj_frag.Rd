@@ -3,11 +3,19 @@
 \name{calc_adj_frag}
 \alias{calc_adj_frag}
 \title{Calculate adjacency matrices and fragility heatmap from iEEG recording}
+\source{
+Recreation of the method described in
+Li A, Huynh C, Fitzgerald Z, Cajigas I, Brusko D, Jagid J, et al.
+Neural fragility as an EEG marker of the seizure onset zone.
+Nat Neurosci. 2021 Oct;24(10):1465–74
+(\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
+We have found solutions to fill up missing details in the paper method description
+}
 \usage{
 calc_adj_frag(ieegts, t_window, t_step, lambda = NULL)
 }
 \arguments{
-\item{ieegts}{Numeric. A matrix of iEEG time series,
+\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
 
 \item{t_window}{Integer. The number of time points to use in each window}
@@ -23,9 +31,15 @@ A list containing the normalized ieegts,
 adjacency matrices, fragility, and R^2 values
 }
 \description{
-For each time window, a discrete stable Linear time system
+1/ For each time window i, a discrete stable Linear time system
 (adjacency matrix) is computed named Ai
-Lambda=NULL ensures that the matrix is stable
+such that Ai x(t) = x(t+1)
+option Lambda=NULL ensures that the matrix is stable
+}
+\details{
+2/For each stable estimated Ai, the minimum norm perturbation Gammaik (k index of the electrodes)
+for column perturbation is computed
+Each column is normalized (max(Gamma(i)-Gammaik)/max(Gammai)
 }
 \examples{
 data <- matrix(rnorm(100), nrow = 10)
@@ -34,11 +48,10 @@ t_step <- 5
 lambda <- 0.1
 calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
 
-data("ptEpoch")
+data("ptEpochm1sp2s")
 t_window <- 250
 t_step <- 125
 lambda <- NULL
-ptEpochSmall<-ptEpoch[9900:12001,]
-resfragcalc_adj_frag(ieegts = ptEpochSmall, t_window = t_window, t_step = t_step, lambda = lambda)
+resfrag<-calc_adj_frag(ieegts = ptEpochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda)
 
 }

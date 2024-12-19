@@ -1,3 +1,8 @@
+#' Compute the normalized fragility row for adjacency matrix A
+#'
+#' @param A 
+#' @param nSearch 
+#'
 
 fragilityRowNormalized <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
@@ -68,6 +73,11 @@ fragilityRowNormalized <- function(A, nSearch = 100) {
   return(fragNorm2)
 }
 
+#' Title
+#'
+#' @param A 
+#' @param nSearch 
+#'
 fragilityRow <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper

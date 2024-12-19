@@ -1,9 +1,11 @@
 #' Ridge Regression for Electrode Readings
 #' 
-#' A long long description.
+#' Ridge regression to compute matrix A such as A xt = xtpt1
 #' 
-#' @param xt matrix. What does row and column mean?
-#' @param xtp1 matrix. the electrode readings in the next time point
+#' @param xt matrix. iEEG time series for a given window
+#' @param xtp1 matrix. the iEEG time serie at the next time point
+#' @param lambda
+#'
 #' 
 #' @examples
 #' ...
@@ -59,6 +61,17 @@ ridgeR2 <- function(xt, xtp1, A) {
 
 
 
+#' Title
+#'
+#' @param xt 
+#' @param xtp1 
+#' @param intercept 
+#' @param iw 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
   if(!identical(dim(xt),dim(xtp1)))
     stop("Unmatched dimension")

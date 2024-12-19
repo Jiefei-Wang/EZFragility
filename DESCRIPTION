@@ -1,5 +1,5 @@
 Package: EZFragility
-Title: One line description of what the package does
+Title: Compute neural fragility for ictal iEEG time series
 Version: 0.99.0
 Authors@R: 
     c(person(

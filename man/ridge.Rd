@@ -7,12 +7,14 @@
 ridge(xt, xtp1, lambda, intercept = FALSE, iw)
 }
 \arguments{
-\item{xt}{matrix. What does row and column mean?}
+\item{xt}{matrix. iEEG time series for a given window}
 
-\item{xtp1}{matrix. the electrode readings in the next time point}
+\item{xtp1}{matrix. the iEEG time serie at the next time point}
+
+\item{lambda}{}
 }
 \description{
-A long long description.
+Ridge regression to compute matrix A such as A xt = xtpt1
 }
 \examples{
 ...
