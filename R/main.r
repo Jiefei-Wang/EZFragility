@@ -1,15 +1,19 @@
 #' Calculate adjacency matrices and fragility heatmap from iEEG recording
 #' 
-#' A very long long description to give the details of the function
+#' For each time window, a discrete stable Linear time system 
+#' (adjacency matrix) is computed named Ai
+#' Lambda=NULL ensures that the matrix is stable
 #' 
-#' @param readings Numeric. A matrix of voltage readings, 
-#' with time points as rows and electrodes as columns
+#' 
+#' @param ieegts Numeric. A matrix of iEEG time series, 
+#' with time points as rows and electrodes names as columns
 #' @param t_window Integer. The number of time points to use in each window
 #' @param t_step Integer.The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression. 
 #' If NULL, the lambda will be chosen automatically
+#' ensuring that AI is table
 #' 
-#' @return A list containing the normalized readings, 
+#' @return A list containing the normalized ieegts, 
 #' adjacency matrices, fragility, and R^2 values
 #' 
 #' @examples
@@ -17,30 +21,37 @@
 #' t_window <- 10
 #' t_step <- 5
 #' lambda <- 0.1
-#' calc_adj_frag(readings = data, t_window = t_window, t_step = t_step, lambda = lambda)
+#' calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
 #' 
+#' @examples
+#' data("ptEpochm1sp2s")
+#' t_window <- 250
+#' t_step <- 125
+#' lambda <- NULL
+#' resfragcalc_adj_frag(ieegts = ptEpochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda)
+#'
 #' @export 
-calc_adj_frag <- function(readings, t_window, t_step, lambda = NULL) {
+calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
     stopifnot(isWholeNumber(t_step))
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
     ## The input matrix must have at least t_window rows
-    stopifnot(nrow(readings) >= t_window)
+    stopifnot(nrow(ieegts) >= t_window)
 
 
     ## Number of electrodes and time points
-    n_tps <- nrow(readings)
-    n_elec <- ncol(readings)
+    n_tps <- nrow(ieegts)
+    n_elec <- ncol(ieegts)
 
-    electrode_list <- colnames(readings)
+    electrode_list <- colnames(ieegts)
 
     # Number of steps
     n_steps <- floor((n_tps - t_window) / t_step) + 1
 
-    scaling <- 10^floor(log10(max(readings)))
-    readings <- readings / scaling
+    scaling <- 10^floor(log10(max(ieegts)))
+    ieegts <- ieegts / scaling
 
     ## create adjacency array (array of adj matrices for each time window)
     ## iw: The index of the window we are going to calculate fragility
@@ -48,9 +59,9 @@ calc_adj_frag <- function(readings, t_window, t_step, lambda = NULL) {
         ## Sample indices for the selected window
         si <- seq_len(t_window - 1) + (iw - 1) * t_step
         ## measurements at time point t
-        xt <- readings[si, ]
+        xt <- ieegts[si, ]
         ## measurements at time point t plus 1
-        xtp1 <- readings[si + 1, ]
+        xtp1 <- ieegts[si + 1, ]
 
         ## Coefficient matrix A (adjacency matrix)
         ## each column is coefficients from a linear regression
@@ -93,7 +104,7 @@ calc_adj_frag <- function(readings, t_window, t_step, lambda = NULL) {
     } else {
         lambdas <- rep(lambda, length(res))
     }
-    
+
 
     # calculate fragility
     f <- sapply(seq_len(n_steps), function(iw) {
@@ -111,7 +122,7 @@ calc_adj_frag <- function(readings, t_window, t_step, lambda = NULL) {
     f_rank <- f_rank / max(f_rank)
 
     return(list(
-        voltage = readings, 
+        voltage = ieegts,
         adj = A,
         frag = f,
         frag_ranked = f_rank,
