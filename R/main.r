@@ -37,11 +37,11 @@
 #' calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
 #' 
 #' @examples
-#' data("ptEpochm1sp2s")
+#' data("pt01Epochm3sp5s")
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
-#' resfrag<-calc_adj_frag(ieegts = ptEpochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda)
+#' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda)
 #'
 #' @export 
 calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {

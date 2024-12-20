@@ -2,21 +2,21 @@
 % Please edit documentation in R/rigde.r
 \name{ridge}
 \alias{ridge}
-\title{Ridge Regression for Electrode Readings}
+\title{Title}
 \usage{
 ridge(xt, xtp1, lambda, intercept = FALSE, iw)
 }
 \arguments{
-\item{xt}{matrix. iEEG time series for a given window}
+\item{xt}{}
 
-\item{xtp1}{matrix. the iEEG time serie at the next time point}
+\item{xtp1}{}
 
 \item{lambda}{}
+
+\item{intercept}{}
+
+\item{iw}{}
 }
 \description{
-Ridge regression to compute matrix A such as A xt = xtpt1
-}
-\examples{
-...
-
+Title
 }

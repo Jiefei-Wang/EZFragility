@@ -9,8 +9,8 @@ heatmap_frag(
   goodelec,
   sozelec,
   ieegts,
+  time_window,
   option = NULL,
-  plotelec,
   subject_code,
   j
 )
@@ -24,10 +24,27 @@ heatmap_frag(
 
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
+
+\item{time_window}{Fragility heatmap time window around seizure onset}
+
+\item{subject_code}{patient name}
+
+\item{j}{seizure number}
+}
+\value{
+a heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 }
 \description{
 plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
-heatmap_frag(frag=frag,goodelec=goodelec,sozelec=sozelec,ieegts=ptEpochm1sp2s,subject_code='pt01',j=1)
+library(ggplot2)
+library(viridis)
+data("fragm3sp5s")
+data("fragrankm3sp5s")
+data("goodelec")
+data("pt01Epochm3sp5s")
+data("sozelec")
+time_window=c(-3:5)
+heatmap_frag(frag=fragm3sp5s,goodelec=goodelec,sozelec=sozelec,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
 }

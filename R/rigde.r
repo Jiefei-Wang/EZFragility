@@ -1,15 +1,15 @@
-#' Ridge Regression for Electrode Readings
+#' fit a generalized linear model to compute adjacency matrix A 
 #' 
-#' Ridge regression to compute matrix A such as A xt = xtpt1
-#' 
-#' @param xt matrix. iEEG time series for a given window
-#' @param xtp1 matrix. the iEEG time serie at the next time point
-#' @param lambda
+#' A xt = xtp1
 #'
-#' 
-#' @examples
-#' ...
-#' 
+#' @param xt 
+#' @param xtp1 
+#' @param lambda 
+#' @param intercept 
+#' @param iw 
+#'
+#' @return adjacency matrix A
+#'
 ridge <- function(xt, xtp1, lambda, intercept = FALSE, iw) {
   if (!identical(dim(xt), dim(xtp1))) {
     stop("Unmatched dimension")
@@ -43,6 +43,13 @@ ridge <- function(xt, xtp1, lambda, intercept = FALSE, iw) {
   A
 }
 
+
+#' computes R2 
+#' 
+#' @param xt matrix. iEEG time series for a given window
+#' @param xtp1 matrix. the iEEG time serie at the next time point
+#' @param A adjacency matrix
+#' 
 ridgeR2 <- function(xt, xtp1, A) {
   nel <- ncol(xt)
   ypredMat <- predictRidge(xt, A)
@@ -61,17 +68,19 @@ ridgeR2 <- function(xt, xtp1, A) {
 
 
 
-#' Title
-#'
-#' @param xt 
-#' @param xtp1 
-#' @param intercept 
+#' Ridge Regression for Electrode Readings
+#' 
+#' Ridge regression to compute matrix adjancency matrix A such as A xt = xtpt1
+#' the lambda parmeter is found by dichotomy such that A is stable
+#' (all eigenvalues have a norm less than one)
+#' 
+#' @param xt matrix. iEEG time series for a given window
+#' @param xtp1 matrix. the iEEG time serie at the next time point
 #' @param iw 
 #'
-#' @return
+#' @return adjacency matrix Afin with lambda as attribute
 #' @export
 #'
-#' @examples
 ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
   if(!identical(dim(xt),dim(xtp1)))
     stop("Unmatched dimension")
@@ -159,3 +168,4 @@ ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
   attr(Afin, "lambdaopt") <- lambdaopt
   Afin
 }
+

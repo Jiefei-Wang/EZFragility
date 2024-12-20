@@ -2,19 +2,22 @@
 % Please edit documentation in R/rigde.r
 \name{ridgesearchlambdadichomotomy}
 \alias{ridgesearchlambdadichomotomy}
-\title{Title}
+\title{Ridge Regression for Electrode Readings}
 \usage{
 ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE, iw)
 }
 \arguments{
-\item{xt}{}
+\item{xt}{matrix. iEEG time series for a given window}
 
-\item{xtp1}{}
-
-\item{intercept}{}
+\item{xtp1}{matrix. the iEEG time serie at the next time point}
 
 \item{iw}{}
 }
+\value{
+adjacency matrix A with lambda as attribute
+}
 \description{
-Title
+Ridge regression to compute matrix adjancency matrix A such as A xt = xtpt1
+the lambda parmeter is found by dichotomy such that A is stable
+(all eigenvalues have a norm less than one)
 }
