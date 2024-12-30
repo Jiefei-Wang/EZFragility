@@ -1,0 +1,101 @@
+---
+title: "Introduction to EZFragility package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to EZFragility package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(EZFragility)
+```
+
+This is the introduction to how to use the EZFragility package.
+It calculates the neural fragility heatmap based on intracranial electrocorticographic (iEEG) recordings of ictal events.
+The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
+<a href="https://ieeexplore.ieee.org/document/7963378" style="color:blue; text-decoration:none;"> Fragility Method</a>
+
+## Load small ictal ieeg data for patient PT01
+
+This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -3:5s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 8001 rows (time points) and 84 columns (electrodes).
+
+
+```{r ictal data}
+data("pt01Epochm3sp5s")
+
+```
+
+
+Electrode data
+```{r electrode_data}
+data("ElectrodesDataPT01")
+head(ElectrodesDataPT01,n=10)
+
+```
+
+## Compute Fragility Map
+
+## Plot a heatmap of the Fragility results for patient PT01
+
+Plot fragility heatmaps with electrodes marked as soz colored in the bottom
+```{r plot fragility heatmap,out.width="100%"}
+data("fragm3sp5s")
+data("pt01Epochm3sp5s")
+data("ElectrodesDataPT01")
+time_window=c(-3:5)
+display=c(1:nrow(fragm3sp5s))
+heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
+```
+
+
+## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
+This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
+```{r}
+data("ElectrodesDataPT01",out.width="100%")
+data("fragm3sp5s")
+data("pt01Epochm3sp5s")
+elecsoz=which(ElectrodesDataPT01$insoz==TRUE)
+display=c(elecsoz,c(77:80))
+ElectrodesDataDisplay=ElectrodesDataPT01[display,]
+time_window=c(-3:5)
+fragdisplay=fragm3sp5s[display,]
+heatmap_frag(frag=fragdisplay,ElectrodesData=ElectrodesDataDisplay,time_window=c(-3,5),subject_code='pt01',j=1)
+
+```
+
+## Compute electrodes statistics of fragility map 
+
+Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+```{r compute_frag_stat, eval=FALSE}
+data("fragm3sp5s")
+data("pt01Epochm3sp5s")
+data("ElectrodesDataPT01")
+fs=1000
+time_window_ictal=c(-10,10)
+t_step=150
+fragstat=frag_quantile(ieegts=pt01Epochm3sp5s, frag=fragm3sp5s, t_step=t_step, ElectrodesData=ElectrodesDataPT01, fs=fs, time_window_ictal=time_window_ictal)
+```
+
+## Plot Fragility distribution
+Plot fragility distribution for two electrodes group marked as soz non marked as soz
+```{r visualize_frag_auantile,out.width="100%"}
+data("fragstat")
+time_window_ictal=c(-10,10)
+plot_frag_distribution( cmeansoz=fragstat[[2]],cmeansozc=fragstat[[3]],csdsoz=fragstat[[4]],csdsozc=fragstat[[5]],time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+```
+
+## Plot fragility quantile
+Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
+```{r visualize_frag_auantile,out.width="100%"}
+data("fragstat")
+time_window_ictal=c(-10,10)
+plot_frag_quantile( quantilematrixsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+```

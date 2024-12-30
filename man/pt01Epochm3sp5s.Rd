@@ -3,25 +3,16 @@
 \docType{data}
 \name{pt01Epochm3sp5s}
 \alias{pt01Epochm3sp5s}
-\title{Pt01 seizure 1}
+\title{Pt01 seizure 1 (-3:5s) around seizure onset}
 \format{
 A Matrix with 8001 rows (time points) and 84 columns (electrodes)
-
-fragility matrix result of example 2 for calc_adj_frag function help
-with and 84 columns (electrodes)
--\link{3:5}s around the seizure onset
 }
 \source{
-Fragility Multi-Center Retrospective Study
-(\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
-
 Fragility Multi-Center Retrospective Study
 (\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
 }
 \usage{
 data(pt01Epochm3sp5s)
-
-data(fraghm3sp5s)
 }
 \description{
 This data corresponds to the first seizure of patient PT01 from the Fragility Data Set.
@@ -32,7 +23,6 @@ The acquisition frequency is 1000 Hz
 EcoG recording gathered in collaboration with the National Institue of Helath
 }
 \examples{
-data(pt01Epochm3sp5s)
 data(pt01Epochm3sp5s)
 }
 \keyword{datasets}

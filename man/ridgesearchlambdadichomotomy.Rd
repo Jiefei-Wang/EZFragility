@@ -14,7 +14,7 @@ ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE, iw)
 \item{iw}{}
 }
 \value{
-adjacency matrix A with lambda as attribute
+adjacency matrix Afin with lambda as attribute
 }
 \description{
 Ridge regression to compute matrix adjancency matrix A such as A xt = xtpt1

@@ -145,56 +145,61 @@ fragilityRow <- function(A, nSearch = 100) {
 }
 
 
-frag_quantile <- function(repository, f, t_window, t_step, soz, sozc){
-  n_tps <- length(repository$voltage$dimnames$Time)
-  n_elec <- length(repository$voltage$dimnames$Electrode)
-  n_steps <- floor((n_tps - t_window) / t_step) + 1
-  epoch_time_window <- repository$time_windows[[1]]
-  fs <- round(repository$sample_rate,-1)
-  if(any(repository$electrode_table$Label == "NoLabel")) {
-    elec_names <- repository$electrode_table$Electrode[match(c(soz,sozc), repository$electrode_table$Electrode)]
-    elec_names <- as.character(elec_names)
-  } else {
-    elec_names <- repository$electrode_table$Label[match(c(soz,sozc), repository$electrode_table$Electrode)]
-  }
-
-  # create fragility map with soz electrodes separated from sozc electrodes
-  fmap <- f[as.character(c(soz,sozc)),]
-  stimes <- (seq_len(n_steps)-1)*t_step/fs+epoch_time_window[1]
-
-  # raw fragility map
-  fplot <- expand.grid(Time = stimes, Electrode = elec_names)
-  fplot$Value <- c(t(fmap))
-
+#' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+#'
+#' @param ieegs ictal signal
+#' @param frag fragility matrix
+#' @param t_step fragility step size
+#' @param ElectrodesData  Electrodes data
+#' @param fs Acquisition frequency
+#' @param time_window_ictal ictal time window
+#' 
+#'
+#' @return quantile matrix, mean and sdv from both electrodes groups
+#' @export
+#'
+#' @examples
+#' data("fragm3sp5s")
+#' data("pt01Epochm3sp5s")
+#' data("ElectrodesDataPT01")
+frag_quantile <- function(ieegts, frag, t_step, ElectrodesData, fs, time_window_ictal){
+  
+  n_tps <- nrow(ieegts)
+  n_elec <- ncol(ieegts)
+  n_steps <- ncol(frag)
+  
+  elecsoz=which(ElectrodesData$insoz==TRUE)
+  elecsozc=which(ElectrodesData$insoz==FALSE)
+  
+  stimes <- (seq_len(n_steps)-1)*t_step/fs+time_window_ictal[1]
+  colnames(frag)<-stimes
+  
   # create separate heatmaps for soz and sozc for quantile calcs
-  hmapsoz <- fmap[as.character(soz),]
-  hmapsozc <- fmap[as.character(sozc),]
-
-  #f90soz=quantile(hmapsoz, probs=c(0.9))
-  #f90sozc=quantile(hmapsozc,probs=c(0.9))
-  #interpretabilityratiosoz=f90soz/f90sozc
+  hmapsoz <- frag[elecsoz,]
+  hmapsozc <- frag[elecsozc,]
 
   quantilematrixsozsozc=matrix(0,20,length(stimes))
   cmeansoz=c(1:length(stimes))*0
   cmeansozc=c(1:length(stimes))*0
   csdsoz=c(1:length(stimes))*0
   csdsozc=c(1:length(stimes))*0
-
+  
+  
   for(i in 1:length(stimes)){
-
+    
     colsoz=hmapsoz[,i]
     colsozc=hmapsozc[,i]
-
+    
     meansoz=mean(colsoz)
     sdsoz=sd(colsoz)
     meansozc=mean(colsozc)
     sdsozc=sd(colsozc)
-
+    
     cmeansoz[i]=meansoz
     cmeansozc[i]=meansozc
     csdsoz[i]=sdsoz
     csdsozc[i]=sdsozc
-
+    
     f10colsoz<-quantile(colsoz,probs=c(0.1))
     f20colsoz<-quantile(colsoz,probs=c(0.2))
     f30colsoz<-quantile(colsoz,probs=c(0.3))
@@ -205,7 +210,7 @@ frag_quantile <- function(repository, f, t_window, t_step, soz, sozc){
     f80colsoz<-quantile(colsoz,probs=c(0.8))
     f90colsoz<-quantile(colsoz,probs=c(0.9))
     f100colsoz<-quantile(colsoz,probs=c(1.0))
-
+    
     f10colsozc<-quantile(colsozc,probs=c(0.1))
     f20colsozc<-quantile(colsozc,probs=c(0.2))
     f30colsozc<-quantile(colsozc,probs=c(0.3))
@@ -216,7 +221,7 @@ frag_quantile <- function(repository, f, t_window, t_step, soz, sozc){
     f80colsozc<-quantile(colsozc,probs=c(0.8))
     f90colsozc<-quantile(colsozc,probs=c(0.9))
     f100colsozc<-quantile(colsozc,probs=c(1.0))
-
+    
     quantilematrixsozsozc[1,i]=f10colsoz
     quantilematrixsozsozc[2,i]=f20colsoz
     quantilematrixsozsozc[3,i]=f30colsoz
@@ -237,94 +242,17 @@ frag_quantile <- function(repository, f, t_window, t_step, soz, sozc){
     quantilematrixsozsozc[18,i]=f80colsozc
     quantilematrixsozsozc[19,i]=f90colsozc
     quantilematrixsozsozc[20,i]=f100colsozc
-
+    
   }
-
-  quantilesname<-c("SOZ(10th)","SOZ(20th)","SOZ(30th)","SOZ(40th)","SOZ(50th)",
-                   "SOZ(60th)","SOZ(70th)","SOZ(80th)","SOZ(90th)","SOZ(100th)",
-                   "SOZc(10th)","SOZc(20th)","SOZc(30th)","SOZc(40th)","SOZc(50th)",
-                   "SOZc(60th)","SOZc(70th)","SOZc(80th)","SOZc(90th)","SOZc(100th)")
-  quantileplot<- expand.grid(Time = stimes, Stats=quantilesname)
-  quantileplot$Value <- c(t(quantilematrixsozsozc))
-
-  dimnames(quantilematrixsozsozc) <- list(
-    Quantile = quantilesname,
-    Time = stimes
-  )
-
+  
   return(list(
-    fplot = fplot,
-    q_matrix = quantilematrixsozsozc,
-    q_plot = quantileplot
-  ))
-}
-
-mean_f_calc <- function(repository, f, soz, sozc) {
-  mean_f_soz <- rep(0,dim(f)[2])
-  mean_f_sozc <- rep(0,dim(f)[2])
-  se_f_soz <- rep(0,dim(f)[2])
-  se_f_sozc <- rep(0,dim(f)[2])
-  for (i in seq_len(dim(f)[2])){
-    mean_f_soz[i] <- mean(f[as.character(soz),i])
-    se_f_soz[i] <- sd(f[as.character(soz),i])/sqrt(length(soz))
-    mean_f_sozc[i] <- mean(f[as.character(sozc),i])
-    se_f_sozc[i] <- sd(f[as.character(sozc),i]/sqrt(length(sozc)))
-  }
-  return(list(
-    mean_f_soz = mean_f_soz,
-    mean_f_sozc = mean_f_sozc,
-    se_f_soz = se_f_soz,
-    se_f_sozc = se_f_sozc
-  ))
-}
-
-threshold_buckets <- function(mat, thresholds) {
-
-  thresholds <- sort(thresholds)
-
-  if (max(mat) > 1) {
-    stop("Matrix values must be between 0 and 1!")
-  }
-
-  for (i in 1:nrow(mat)) {
-    for (j in 1:ncol(mat)) {
-      k <- 1
-      while(mat[i,j] >= thresholds[k]) {
-        k <- k + 1
-      }
-      mat[i,j] <- mean(thresholds[(k-1):k])
-    }
-  }
-
-  mat <- (mat - min(mat))/(max(mat) - min(mat)) # normalize to between 0 and 1
-
-  return(mat)
-}
-
-moving_average <- function(x, n) {
-  x_ma <- stats::filter(x, rep(1 / n, n), sides = 2)
-  x_ma[is.na(x_ma)] <- x[is.na(x_ma)] # replace NAs at beginning and end with original values
-  return(as.vector(x_ma))
-}
-
-threshold_fragility <- function(repository, adj_frag_info, t_step, threshold_start, threshold_end, threshold = 0.5) {
-  n_windows <- dim(adj_frag_info$adj)[3]
-
-  # convert from input t_start and t_end to timewindow indices
-  tw_start <- floor(which.min(abs(threshold_start-repository$voltage$dimnames$Time))/t_step)
-  tw_end <- floor(which.min(abs(threshold_end-repository$voltage$dimnames$Time))/t_step)
-  if (tw_end > n_windows) { tw_end <- n_windows }
-
-  # subset fragility matrix to specified timewindows
-  mat <- adj_frag_info$frag[,tw_start:tw_end]
-
-  avg_f <- rowMeans(mat)
-  elec <- which(avg_f > threshold)
-
-  return(list(
-    avg_f = avg_f,
-    elecnames = attr(elec, "names")
-  ))
+    q_matrix=quantilematrixsozsozc,
+    cmeansoz=cmeansoz,
+    cmeansozc=cmeansozc,
+    csdsoz=csdsoz,
+    csdsozc=csdsozc
+      ))
+ 
 }
 
 

@@ -3,7 +3,7 @@
 \docType{data}
 \name{ptEpoch}
 \alias{ptEpoch}
-\title{Pt01 seizure 1}
+\title{Pt01 seizure 1 (-10:10s) around seizure onset}
 \format{
 A Matrix with 20001 rows (time points) and 84 columns (electrodes)
 }
@@ -20,7 +20,7 @@ The data contains only the good channels.
 It has been notch filtered and common average referenced in RAVE
 It has been epoched -10:10s around the seizure onset
 The acquisition frequency is 1000 Hz
-EcoG recording gathered in collaboration with the National Institue of Helath
+EcoG recording gathered in collaboration with the National Institue of Health
 }
 \examples{
 data(ptEpoch)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/rigde.r
 \name{ridge}
 \alias{ridge}
-\title{Title}
+\title{fit a generalized linear model to compute adjacency matrix A}
 \usage{
 ridge(xt, xtp1, lambda, intercept = FALSE, iw)
 }
@@ -17,6 +17,9 @@ ridge(xt, xtp1, lambda, intercept = FALSE, iw)
 
 \item{iw}{}
 }
+\value{
+adjacency matrix A
+}
 \description{
-Title
+A xt = xtp1
 }

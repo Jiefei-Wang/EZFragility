@@ -2,49 +2,43 @@
 % Please edit documentation in R/visualization.R
 \name{heatmap_frag}
 \alias{heatmap_frag}
-\title{Visualization}
+\title{Visualization functions (raw signal, fragility matrix)}
 \usage{
 heatmap_frag(
   frag,
-  goodelec,
-  sozelec,
-  ieegts,
+  ElectrodesData,
   time_window,
   option = NULL,
   subject_code,
-  j
+  j,
+  display = display
 )
 }
 \arguments{
 \item{frag}{fragility matrix results}
 
-\item{goodelec}{}
-
-\item{sozelec}{}
-
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns}
+\item{ElectrodesData}{electrodes data}
 
 \item{time_window}{Fragility heatmap time window around seizure onset}
 
 \item{subject_code}{patient name}
 
 \item{j}{seizure number}
+
+\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+with time points as rows and electrodes names as columns}
 }
 \value{
-a heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
+Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 }
 \description{
 plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
-library(ggplot2)
-library(viridis)
 data("fragm3sp5s")
 data("fragrankm3sp5s")
-data("goodelec")
 data("pt01Epochm3sp5s")
-data("sozelec")
+data("ElectrodesDataPT01")
 time_window=c(-3:5)
-heatmap_frag(frag=fragm3sp5s,goodelec=goodelec,sozelec=sozelec,ieegts=pt01Epochm3sp5s,time_window=c(-3,5),subject_code='pt01',j=1)
+heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
 }

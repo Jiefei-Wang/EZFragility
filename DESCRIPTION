@@ -49,3 +49,7 @@ LazyData: true
 Imports: 
     ggplot2,
     viridis
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
