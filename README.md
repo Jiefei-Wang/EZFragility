@@ -6,7 +6,6 @@
 [![](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![](https://img.shields.io/github/languages/code-size/Jiefei-Wang/EZFragility.svg)](https://github.com/Jiefei-Wang/EZFragility)
 [![](https://img.shields.io/github/last-commit/Jiefei-Wang/EZFragility.svg)](https://github.com/Jiefei-Wang/EZFragility/commits/main)
-[![Dependencies](https://tinyverse.netlify.com/badge/EZFragility)](https://cran.r-project.org/package=EZFragility)
 [![R-CMD-check](https://github.com/Jiefei-Wang/Fragility/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Jiefei-Wang/Fragility/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/Jiefei-Wang/Fragility/graph/badge.svg)](https://app.codecov.io/gh/Jiefei-Wang/Fragility)
