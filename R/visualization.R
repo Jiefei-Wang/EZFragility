@@ -2,36 +2,34 @@
 #' 
 #' plot fragility heatmaps with electrodes marked as soz colored
 #'
-#' @param frag fragility matrix results
-#' @param ElectrodesData electrodes data
-#' @param ieegts Numeric. A matrix of iEEG time series x(t), 
-#' with time points as rows and electrodes names as columns
-#' @param time_window Fragility heatmap time window around seizure onset
-#' @param subject_code patient name
-#' @param j seizure number
+#' @param frag Numeric. Fragility matrix results
+#' @param elecsoz Integer. Vector soz electrodes (for good electrodes)
+#' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
+#' @param title String. Figure title
+#' @param display Integer. Electrodes to display
 #'
 #' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 #' @export
 #'
 #' @examples
 #' data("fragm3sp5s")
-#' data("fragrankm3sp5s")
-#' data("pt01Epochm3sp5s")
-#' data("ElectrodesDataPT01")
+#' data("elecsoz")
 #' time_window=c(-3:5)
-#' heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
-heatmap_frag<-function(frag,ElectrodesData,time_window,option=NULL,subject_code,j,display=display){
+#' display=c(elecsoz,77:80)
+#' heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
+heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="PT01 seizure 1",display=display){
   
-  titlepng=paste(subject_code,'Seizure',as.character(j),sep=" ")
-  Electrodesdisplay=ElectrodesData[display,]
-  elecsoz=which(Electrodesdisplay$insoz==TRUE)
-  elecsozc=which(Electrodesdisplay$insoz==FALSE)
-  elecsozsozc=c(elecsoz,elecsozc)
+  titlepng=title
   fragdisplay=frag[display,]
-  
-  elecnum <- Electrodesdisplay$nameselec[elecsozsozc]
   n_elec <- nrow(fragdisplay)
-  nw<- ncol(frag)
+  electot<-c(1:n_elec)
+  
+  elecsozd=which(display%in%elecsoz)
+  elecsozcd=which(!display%in%elecsoz)
+  elecsozsozc=c(elecsozd,elecsozcd)
+
+  elecnum <- rownames(fragdisplay)
+  nw<- ncol(fragdisplay)
   colorelec<-elecnum
   nsoz=length(elecsoz)
   colorelec[1:n_elec]="black"

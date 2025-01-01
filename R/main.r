@@ -1,15 +1,7 @@
-#' Calculate adjacency matrices and fragility heatmap from iEEG recording
+#' Calculate adjacency matrices and fragility matrix from iEEG recording
 #' 
-#' 
-#' 1/ For each time window i, a discrete stable Linear time system 
-#' (adjacency matrix) is computed named Ai
-#' such that Ai x(t) = x(t+1)
-#' option Lambda=NULL ensures that the matrix is stable
-#' 
-#' 2/For each stable estimated Ai, the minimum norm perturbation Gammaik (k index of the electrodes)
-#' for column perturbation is computed
-#' Each column is normalized (max(Gamma(i)-Gammaik)/max(Gammai)
-#' 
+#' The function calculates the neural fragility column 
+#' from an adjacency matrix in each time window
 #' 
 #' @source Recreation of the method described in 
 #' Li A, Huynh C, Fitzgerald Z, Cajigas I, Brusko D, Jagid J, et al. 
@@ -44,6 +36,18 @@
 #' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda)
 #'
 #' @export 
+#' 
+#' @details
+#' 1/ For each time window i, a discrete stable Linear time system 
+#' (adjacency matrix) is computed named Ai
+#' such that
+#' \eqn{A_i x(t) = x(t+1)}
+#' option Lambda=NULL ensures that the matrix is stable
+#' 
+#' 2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
+#' for column perturbation is computed.
+#' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
+#' 
 calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))

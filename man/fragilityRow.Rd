@@ -2,15 +2,10 @@
 % Please edit documentation in R/fragility.r
 \name{fragilityRow}
 \alias{fragilityRow}
-\title{Title}
+\title{Compute the fragility row for adjacency matrix A}
 \usage{
 fragilityRow(A, nSearch = 100)
 }
-\arguments{
-\item{A}{}
-
-\item{nSearch}{}
-}
 \description{
-Title
+Compute the fragility row for adjacency matrix A
 }

@@ -1,8 +1,8 @@
 #' Compute the normalized fragility row for adjacency matrix A
 #'
-#' @param A 
-#' @param nSearch 
-#'
+#' @param A. Numeric. Adjacency Matrix  
+#' @param nSearch. Integer. Number of eigenvalues tried to find the minimum norm vector 
+#' 
 
 fragilityRowNormalized <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
@@ -73,10 +73,9 @@ fragilityRowNormalized <- function(A, nSearch = 100) {
   return(fragNorm2)
 }
 
-#' Title
+#' Compute the fragility row for adjacency matrix A
 #'
-#' @param A 
-#' @param nSearch 
+#' @inheritParams fragilityRowNormalized
 #'
 fragilityRow <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
@@ -147,45 +146,40 @@ fragilityRow <- function(A, nSearch = 100) {
 
 #' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 #'
-#' @param ieegs ictal signal
-#' @param frag fragility matrix
-#' @param t_step fragility step size
-#' @param ElectrodesData  Electrodes data
-#' @param fs Acquisition frequency
-#' @param time_window_ictal ictal time window
+#' @param frag Numeric. Fragility matrix. Row Electrode names. Column index
+#' @param t_step Integer. Fragility step size
+#' @param elecsoz Integer.  Vector soz electrodes (for good electrodes)
+#' @param fs Numeric. Acquisition frequency (Hz) 
+#' @param time_window_ictal Numeric.Time window around seizure onset (s)
 #' 
 #'
-#' @return quantile matrix, mean and sdv from both electrodes groups
+#' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 #' @export
 #'
 #' @examples
 #' data("fragm3sp5s")
-#' data("pt01Epochm3sp5s")
-#' data("ElectrodesDataPT01")
-frag_quantile <- function(ieegts, frag, t_step, ElectrodesData, fs, time_window_ictal){
+#' data("elecsoz")
+#' fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
+frag_stat <- function( frag, elecsoz){
   
-  n_tps <- nrow(ieegts)
-  n_elec <- ncol(ieegts)
-  n_steps <- ncol(frag)
+  n_elec <- nrow(frag)    # electrode number
+  n_steps <- ncol(frag)   # Time window number
   
-  elecsoz=which(ElectrodesData$insoz==TRUE)
-  elecsozc=which(ElectrodesData$insoz==FALSE)
-  
-  stimes <- (seq_len(n_steps)-1)*t_step/fs+time_window_ictal[1]
-  colnames(frag)<-stimes
-  
+  elecvec=c(1:n_elec)
+  elecsozc=which(!elecvec%in%elecsoz)
+
   # create separate heatmaps for soz and sozc for quantile calcs
   hmapsoz <- frag[elecsoz,]
   hmapsozc <- frag[elecsozc,]
 
-  quantilematrixsozsozc=matrix(0,20,length(stimes))
-  cmeansoz=c(1:length(stimes))*0
-  cmeansozc=c(1:length(stimes))*0
-  csdsoz=c(1:length(stimes))*0
-  csdsozc=c(1:length(stimes))*0
+  quantilematrixsozsozc=matrix(0,20,n_steps)
+  cmeansoz=c(1:n_steps)*0
+  cmeansozc=c(1:n_steps)*0
+  csdsoz=c(1:n_steps)*0
+  csdsozc=c(1:n_steps)*0
   
   
-  for(i in 1:length(stimes)){
+  for(i in 1:n_steps){
     
     colsoz=hmapsoz[,i]
     colsozc=hmapsozc[,i]

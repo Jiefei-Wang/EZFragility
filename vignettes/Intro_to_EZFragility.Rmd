@@ -48,40 +48,32 @@ head(ElectrodesDataPT01,n=10)
 Plot fragility heatmaps with electrodes marked as soz colored in the bottom
 ```{r plot fragility heatmap,out.width="100%"}
 data("fragm3sp5s")
-data("pt01Epochm3sp5s")
-data("ElectrodesDataPT01")
+data("elecsoz")
 time_window=c(-3:5)
 display=c(1:nrow(fragm3sp5s))
-heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
+heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
 ```
 
 
 ## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
 This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
 ```{r}
-data("ElectrodesDataPT01",out.width="100%")
 data("fragm3sp5s")
-data("pt01Epochm3sp5s")
-elecsoz=which(ElectrodesDataPT01$insoz==TRUE)
-display=c(elecsoz,c(77:80))
-ElectrodesDataDisplay=ElectrodesDataPT01[display,]
+data("elecsoz")
 time_window=c(-3:5)
-fragdisplay=fragm3sp5s[display,]
-heatmap_frag(frag=fragdisplay,ElectrodesData=ElectrodesDataDisplay,time_window=c(-3,5),subject_code='pt01',j=1)
+display=c(elecsoz,77:80)
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
+
 
 ```
 
 ## Compute electrodes statistics of fragility map 
 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
-```{r compute_frag_stat, eval=FALSE}
+```{r compute_frag_stat, eval=TRUE}
 data("fragm3sp5s")
-data("pt01Epochm3sp5s")
-data("ElectrodesDataPT01")
-fs=1000
-time_window_ictal=c(-10,10)
-t_step=150
-fragstat=frag_quantile(ieegts=pt01Epochm3sp5s, frag=fragm3sp5s, t_step=t_step, ElectrodesData=ElectrodesDataPT01, fs=fs, time_window_ictal=time_window_ictal)
+data("elecsoz")
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 ```
 
 ## Plot Fragility distribution

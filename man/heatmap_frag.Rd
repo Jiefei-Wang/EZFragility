@@ -6,27 +6,23 @@
 \usage{
 heatmap_frag(
   frag,
-  ElectrodesData,
+  elecsoz,
   time_window,
   option = NULL,
-  subject_code,
-  j,
+  title = "PT01 seizure 1",
   display = display
 )
 }
 \arguments{
-\item{frag}{fragility matrix results}
+\item{frag}{Numeric. Fragility matrix results}
 
-\item{ElectrodesData}{electrodes data}
+\item{elecsoz}{Integer. Vector soz electrodes (for good electrodes)}
 
-\item{time_window}{Fragility heatmap time window around seizure onset}
+\item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
 
-\item{subject_code}{patient name}
+\item{title}{String. Figure title}
 
-\item{j}{seizure number}
-
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns}
+\item{display}{Integer. Electrodes to display}
 }
 \value{
 Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
@@ -36,9 +32,8 @@ plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
 data("fragm3sp5s")
-data("fragrankm3sp5s")
-data("pt01Epochm3sp5s")
-data("ElectrodesDataPT01")
+data("elecsoz")
 time_window=c(-3:5)
-heatmap_frag(frag=fragm3sp5s,ElectrodesData=ElectrodesDataPT01,time_window=c(-3,5),subject_code='pt01',j=1,display=display)
+display=c(elecsoz,77:80)
+heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
 }
