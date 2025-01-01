@@ -1,0 +1,28 @@
+---
+output:
+  md_document:
+    variant: gfm
+html_preview: false
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r echo=FALSE, results="hide", message=FALSE, warning=FALSE}
+library("badger")
+```
+
+# EZFragility: Epileptogenic Zone Localization Based on Fragility Index
+```{r, echo = FALSE, results='asis', warning=FALSE, message=FALSE}
+url <- "Jiefei-Wang/EZFragility"
+cat(
+	badge_devel(url, "blue"),
+    badge_lifecycle("experimental"),
+    badge_code_size(url),
+    badge_last_commit(url),
+    badge_dependencies(),
+	badge_github_actions(url)
+)
+```
+
+
+This is a test script
