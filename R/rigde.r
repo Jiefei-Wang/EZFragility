@@ -2,14 +2,14 @@
 #' 
 #' A x(t) = x(t+1)
 #'
-#' @param xt matrix. iEEG time series for a given window
-#' @param xtp1 matrix. the iEEG time serie at the next time point
-#' @param lambda Numeric. A user supplied lambda sequence.
+#' @param xt matrix. iEEG time series for a given window, 
+#' with time points as rows and electrodes names as columns
+#' @param xtp1 matrix. the iEEG time serie at the next time point, 
+#' with time points as rows and electrodes names as columns
+#' @param lambda Numeric Vector. A user supplied lambda sequence.
 #' @param intercept Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)
-#' @param iw 
 #'
 #' @return adjacency matrix A
-#'
 ridge <- function(xt, xtp1, lambda, intercept = FALSE) {
   if (!identical(dim(xt), dim(xtp1))) {
     stop("Unmatched dimension")
@@ -46,8 +46,7 @@ ridge <- function(xt, xtp1, lambda, intercept = FALSE) {
 
 #' computes R2 
 #' 
-#' @param xt matrix. iEEG time series for a given window
-#' @param xtp1 matrix. the iEEG time serie at the next time point
+#' @inheritParams ridge
 #' @param A adjacency matrix
 #' 
 ridgeR2 <- function(xt, xtp1, A) {
@@ -74,11 +73,9 @@ ridgeR2 <- function(xt, xtp1, A) {
 #' the lambda parmeter is found by dichotomy such that A is stable
 #' (all eigenvalues have a norm less than one)
 #' 
-#' @param xt matrix. iEEG time series for a given window
-#' @param xtp1 matrix. the iEEG time serie at the next time point
+#' @inheritParams ridge
 #'
 #' @return adjacency matrix Afin with lambda as attribute
-#'
 ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE){
   if(!identical(dim(xt),dim(xtp1)))
     stop("Unmatched dimension")

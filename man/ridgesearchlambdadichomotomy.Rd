@@ -7,9 +7,13 @@
 ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE)
 }
 \arguments{
-\item{xt}{matrix. iEEG time series for a given window}
+\item{xt}{matrix. iEEG time series for a given window,
+with time points as rows and electrodes names as columns}
 
-\item{xtp1}{matrix. the iEEG time serie at the next time point}
+\item{xtp1}{matrix. the iEEG time serie at the next time point,
+with time points as rows and electrodes names as columns}
+
+\item{intercept}{Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)}
 }
 \value{
 adjacency matrix Afin with lambda as attribute

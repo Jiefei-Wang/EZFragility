@@ -9,8 +9,8 @@ heatmap_frag(
   elecsoz,
   time_window,
   option = NULL,
-  title = "PT01 seizure 1",
-  display = display
+  title = "Fragility heatmap",
+  display = NULL
 )
 }
 \arguments{
@@ -35,5 +35,5 @@ data("fragm3sp5s")
 data("elecsoz")
 time_window=c(-3:5)
 display=c(elecsoz,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
 }

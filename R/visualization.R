@@ -9,7 +9,6 @@
 #' @param display Integer. Electrodes to display
 #'
 #' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
-#' @export
 #'
 #' @examples
 #' data("fragm3sp5s")
@@ -17,6 +16,7 @@
 #' time_window=c(-3:5)
 #' display=c(elecsoz,77:80)
 #' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
+#' @export
 heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="Fragility heatmap",display=NULL){
   titlepng<-title
   if(is.null(display)){
@@ -66,13 +66,13 @@ heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="Fragility hea
 #' @param displayChannels Integer. Channels evctor to display
 #'
 #' @return plot raw signal
-#' @export
 #'
 #' @examples
 #' data("PT01Epochm30sp30s")
 #' data("ElectrodesDataPT01")
 #' displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
 #' visuiEEGdata(ieegts=PT01Epochm30sp30s,1000000, displayChannels = displayChannels)
+#' @export
 visuiEEGdata<-function(ieegts, scaling, displayChannels){
   plotData<-ieegts[,displayChannels]/scaling
   gaps<-2

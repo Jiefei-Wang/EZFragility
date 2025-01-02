@@ -7,9 +7,11 @@
 ridgeR2(xt, xtp1, A)
 }
 \arguments{
-\item{xt}{matrix. iEEG time series for a given window}
+\item{xt}{matrix. iEEG time series for a given window,
+with time points as rows and electrodes names as columns}
 
-\item{xtp1}{matrix. the iEEG time serie at the next time point}
+\item{xtp1}{matrix. the iEEG time serie at the next time point,
+with time points as rows and electrodes names as columns}
 
 \item{A}{adjacency matrix}
 }

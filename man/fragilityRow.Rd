@@ -12,5 +12,5 @@ fragilityRow(A, nSearch = 100)
 \item{nSearch}{Integer. Number of eigenvalues tried to find the minimum norm vector}
 }
 \description{
-test
+Compute the fragility row for adjacency matrix A
 }

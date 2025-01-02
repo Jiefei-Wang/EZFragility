@@ -7,15 +7,15 @@
 ridge(xt, xtp1, lambda, intercept = FALSE)
 }
 \arguments{
-\item{xt}{matrix. iEEG time series for a given window}
+\item{xt}{matrix. iEEG time series for a given window,
+with time points as rows and electrodes names as columns}
 
-\item{xtp1}{matrix. the iEEG time serie at the next time point}
+\item{xtp1}{matrix. the iEEG time serie at the next time point,
+with time points as rows and electrodes names as columns}
 
-\item{lambda}{Numeric. A user supplied lambda sequence.}
+\item{lambda}{Numeric Vector. A user supplied lambda sequence.}
 
 \item{intercept}{Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)}
-
-\item{iw}{}
 }
 \value{
 adjacency matrix A

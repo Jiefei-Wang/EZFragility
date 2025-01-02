@@ -13,29 +13,31 @@
 #' @param ieegts Numeric. A matrix of iEEG time series x(t), 
 #' with time points as rows and electrodes names as columns
 #' @param t_window Integer. The number of time points to use in each window
-#' @param t_step Integer.The number of time points to move the window each time
+#' @param t_step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression. 
 #' If NULL, the lambda will be chosen automatically
-#' ensuring that AI is table
+#' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' 
 #' @return A list containing the normalized ieegts, 
 #' adjacency matrices, fragility, and R^2 values
 #' 
 #' @examples
+#' ## A simple example
 #' data <- matrix(rnorm(100), nrow = 10)
 #' t_window <- 10
 #' t_step <- 5
 #' lambda <- 0.1
 #' calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
 #' 
-#' @examples
+#' ## A more realistic example, but it will take a while to run
+#' \dontrun{
 #' data("pt01Epochm3sp5s")
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
 #' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda)
-#'
-#' @export 
+#' }
+#' 
 #' 
 #' @details
 #' 1/ For each time window i, a discrete stable Linear time system 
@@ -48,6 +50,7 @@
 #' for column perturbation is computed.
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
+#' @export 
 calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
