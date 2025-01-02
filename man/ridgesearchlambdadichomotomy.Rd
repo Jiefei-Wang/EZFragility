@@ -4,14 +4,12 @@
 \alias{ridgesearchlambdadichomotomy}
 \title{Ridge Regression for Electrode Readings}
 \usage{
-ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE, iw)
+ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE)
 }
 \arguments{
 \item{xt}{matrix. iEEG time series for a given window}
 
 \item{xtp1}{matrix. the iEEG time serie at the next time point}
-
-\item{iw}{}
 }
 \value{
 adjacency matrix Afin with lambda as attribute

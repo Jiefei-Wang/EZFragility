@@ -18,7 +18,7 @@ frag_stat(frag, elecsoz)
 \item{time_window_ictal}{Numeric.Time window around seizure onset (s)}
 }
 \value{
-quantile matrix, mean and sdv from both electrodes groups
+list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 }
 \description{
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
@@ -26,4 +26,5 @@ Compute quantiles, mean and standard deviation for two electrodes group marked a
 \examples{
 data("fragm3sp5s")
 data("elecsoz")
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 }

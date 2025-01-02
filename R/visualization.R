@@ -61,8 +61,8 @@ heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="PT01 seizure 
 #'
 #' @param ieegts Numeric. A matrix of iEEG time series x(t),
 #' with time points as rows and electrodes names as columns
-#' @param scaling Scaling factor
-#' @param displayChannels Channels to display
+#' @param scaling Numeric. Scaling factor
+#' @param displayChannels Integer. Channels evctor to display
 #'
 #' @return plot raw signal
 #' @export
@@ -97,30 +97,26 @@ visuiEEGdata<-function( ieegts, scaling, displayChannels){
 
 #' Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
 #'
-#' @param quantilematrixsozsozc quantile matrix for the two groupd
-#' @param time_window_ictal time window of processed ictal iEEG
-#' @param subject_code subject code
-#' @param j seizure number
+#' @param qmatsozsozc Numeric. quantile matrix for the two groups
+#' @param time_window_ictal Numeric. time window of processed ictal iEEG
+#' @param title String. Figure title
 #'
 #' @return Quantile plot
 #' @export
 #'
 #' @examples
 #' data("fragstat")
-#' time_window_ictal=c(-10,10)
-#' plot_frag_quantile( quantilematrixsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,subject_code='pt01',j=1)
-plot_frag_quantile<-function( quantilematrixsozsozc, time_window_ictal, subject_code,j){
+#' time_window_ictal=c(-3,5)
+#' plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,title=title)
+plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title=title){
  
-  nw=ncol(quantilematrixsozsozc)
+  nw=ncol(qmatsozsozc)
   stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
-  quantilesname<-c("SOZ(10th)","SOZ(20th)","SOZ(30th)","SOZ(40th)","SOZ(50th)",
-                   "SOZ(60th)","SOZ(70th)","SOZ(80th)","SOZ(90th)","SOZ(100th)",
-                   "SOZc(10th)","SOZc(20th)","SOZc(30th)","SOZc(40th)","SOZc(50th)",
-                   "SOZc(60th)","SOZc(70th)","SOZc(80th)","SOZc(90th)","SOZc(100th)")
+  quantilesname<-c(paste0("SOZ(", seq(10,100,by=10),")"),paste0("SOZc(", seq(10,100,by=10),")"))
   quantileplot<- expand.grid(Time = stimes, Stats=quantilesname)
-  quantileplot$Value <- c(t(quantilematrixsozsozc))
+  quantileplot$Value <- c(t(qmatsozsozc))
   
-  titlepng=paste(subject_code,'Seizure',as.character(j),sep=" ")
+  titlepng=title
   
   ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
     ggplot2::geom_tile() +
@@ -139,24 +135,24 @@ plot_frag_quantile<-function( quantilematrixsozsozc, time_window_ictal, subject_
 
 #'  Plot Fragility time distribution for two electrodes group marked and non-marked as soz
 #'
-#' @param cmeansoz time mean of soz group
-#' @param cmeansozc time mean of non soz group
-#' @param csdsoz time standard deviation of soz group
-#' @param csdsozc time standard deviation of non soz group
+#' @param statcurves. List of four numeric vectors for mean and standard deviation statistics of the two groups
 #' @param time_window_ictal time window of processed ictal iEEG
-#' @param subject_code subject code
-#' @param j seizure number
 #'
 #' @return plot fragility distribution
 #' @export
 #'
 #' @examples
-#' data("fragstat")
-#' time_window_ictal=c(-10,10)
-#' plot_frag_distribution( cmeansoz=fragstat[[2]],cmeansozc=fragstat[[3]],csdsoz=fragstat[[4]],csdsozc=fragstat[[5]],time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+#' time_window_ictal=c(-3,5)
+#' fragstatcurve=fragstat[-1]
+#' plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
 
-plot_frag_distribution<-function( cmeansoz,cmeansozc,csdsoz,csdsozc,time_window_ictal,subject_code,j){
-    
+plot_frag_distribution<-function( statcurves,time_window_ictal,title=title){
+  
+  cmeansoz=statcurves[[1]] # mean soz group in function of time window
+  cmeansozc=statcurves[[2]] # mean non soz group in function of time window
+  csdsoz=statcurves[[3]] # standard deviation soz group in function of time window
+  csdsozc=statcurves[[4]]  # standard deviation non soz group in function of time window
+  
   nw=length(cmeansoz)
   stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
   
@@ -174,7 +170,7 @@ plot_frag_distribution<-function( cmeansoz,cmeansozc,csdsoz,csdsozc,time_window_
   plotmeanstd$sozcsdp<-sozcsdp
   plotmeanstd$sozcsdm<-sozcsdm
   
-  titlepng=paste(subject_code,'Seizure',as.character(j),sep=" ")
+  titlepng=title
   
   ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=times, y=cmeansoz)) + 
     ggplot2::xlab('Time around seizure in s')+

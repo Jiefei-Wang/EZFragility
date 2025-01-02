@@ -4,16 +4,14 @@
 \alias{plot_frag_quantile}
 \title{Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz}
 \usage{
-plot_frag_quantile(quantilematrixsozsozc, time_window_ictal, subject_code, j)
+plot_frag_quantile(qmatsozsozc, time_window_ictal, title = title)
 }
 \arguments{
-\item{quantilematrixsozsozc}{quantile matrix for the two groupd}
+\item{qmatsozsozc}{Numeric. quantile matrix for the two groups}
 
-\item{time_window_ictal}{time window of processed ictal iEEG}
+\item{time_window_ictal}{Numeric. time window of processed ictal iEEG}
 
-\item{subject_code}{subject code}
-
-\item{j}{seizure number}
+\item{title}{String. Figure title}
 }
 \value{
 Quantile plot
@@ -23,6 +21,6 @@ Plot Fragility time quantiles for two electrodes group marked as soz non marked 
 }
 \examples{
 data("fragstat")
-time_window_ictal=c(-10,10)
-plot_frag_quantile( quantilematrixsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,subject_code='pt01',j=1)
+time_window_ictal=c(-3,5)
+plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,title=title)
 }

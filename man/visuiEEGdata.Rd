@@ -10,9 +10,9 @@ visuiEEGdata(ieegts, scaling, displayChannels)
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
 
-\item{scaling}{Scaling factor}
+\item{scaling}{Numeric. Scaling factor}
 
-\item{displayChannels}{Channels to display}
+\item{displayChannels}{Integer. Channels evctor to display}
 }
 \value{
 plot raw signal

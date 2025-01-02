@@ -4,16 +4,16 @@
 \alias{ridge}
 \title{fit a generalized linear model to compute adjacency matrix A}
 \usage{
-ridge(xt, xtp1, lambda, intercept = FALSE, iw)
+ridge(xt, xtp1, lambda, intercept = FALSE)
 }
 \arguments{
-\item{xt}{}
+\item{xt}{matrix. iEEG time series for a given window}
 
-\item{xtp1}{}
+\item{xtp1}{matrix. the iEEG time serie at the next time point}
 
-\item{lambda}{}
+\item{lambda}{Numeric. A user supplied lambda sequence.}
 
-\item{intercept}{}
+\item{intercept}{Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)}
 
 \item{iw}{}
 }
@@ -21,5 +21,5 @@ ridge(xt, xtp1, lambda, intercept = FALSE, iw)
 adjacency matrix A
 }
 \description{
-A xt = xtp1
+A x(t) = x(t+1)
 }

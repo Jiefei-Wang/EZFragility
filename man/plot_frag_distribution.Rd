@@ -4,30 +4,12 @@
 \alias{plot_frag_distribution}
 \title{Plot Fragility time distribution for two electrodes group marked and non-marked as soz}
 \usage{
-plot_frag_distribution(
-  cmeansoz,
-  cmeansozc,
-  csdsoz,
-  csdsozc,
-  time_window_ictal,
-  subject_code,
-  j
-)
+plot_frag_distribution(statcurves, time_window_ictal, title = title)
 }
 \arguments{
-\item{cmeansoz}{time mean of soz group}
-
-\item{cmeansozc}{time mean of non soz group}
-
-\item{csdsoz}{time standard deviation of soz group}
-
-\item{csdsozc}{time standard deviation of non soz group}
-
 \item{time_window_ictal}{time window of processed ictal iEEG}
 
-\item{subject_code}{subject code}
-
-\item{j}{seizure number}
+\item{statcurves.}{List of four numeric vectors for mean and standard deviation statistics of the two groups}
 }
 \value{
 plot fragility distribution
@@ -36,7 +18,7 @@ plot fragility distribution
 Plot Fragility time distribution for two electrodes group marked and non-marked as soz
 }
 \examples{
-data("fragstat")
-time_window_ictal=c(-10,10)
-plot_frag_distribution( cmeansoz=fragstat[[2]],cmeansozc=fragstat[[3]],csdsoz=fragstat[[4]],csdsozc=fragstat[[5]],time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+time_window_ictal=c(-3,5)
+fragstatcurve=fragstat[-1]
+plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
 }

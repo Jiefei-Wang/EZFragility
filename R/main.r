@@ -84,9 +84,9 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
         ## each column is coefficients from a linear regression
         ## formula: xtp1 = xt*A + E
         if (is.null(lambda)) {
-            Ai <- ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE, iw = iw)
+            Ai <- ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE)
         } else {
-            Ai <- ridge(xt, xtp1, intercept = FALSE, lambda = lambda, iw = iw)
+            Ai <- ridge(xt, xtp1, intercept = FALSE, lambda = lambda)
         }
 
         R2 <- ridgeR2(xt, xtp1, Ai)

@@ -79,15 +79,15 @@ fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 ## Plot Fragility distribution
 Plot fragility distribution for two electrodes group marked as soz non marked as soz
 ```{r visualize_frag_auantile,out.width="100%"}
-data("fragstat")
-time_window_ictal=c(-10,10)
-plot_frag_distribution( cmeansoz=fragstat[[2]],cmeansozc=fragstat[[3]],csdsoz=fragstat[[4]],csdsozc=fragstat[[5]],time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+time_window_ictal=c(-3,5)
+fragstatcurve=fragstat[-1]
+plot_frag_distribution( statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
 ```
 
 ## Plot fragility quantile
 Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
 ```{r visualize_frag_auantile,out.width="100%"}
 data("fragstat")
-time_window_ictal=c(-10,10)
-plot_frag_quantile( quantilematrixsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,subject_code='PT01',j=1)
+time_window_ictal=c(-3,5)
+plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,title='PT01 seizure 1')
 ```
