@@ -16,11 +16,13 @@
 #' data("elecsoz")
 #' time_window=c(-3:5)
 #' display=c(elecsoz,77:80)
-#' heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
-heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="PT01 seizure 1",display=display){
-  
-  titlepng=title
-  fragdisplay=frag[display,]
+#' heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
+heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="Fragility heatmap",display=NULL){
+  titlepng<-title
+  if(is.null(display)){
+    display<-1:nrow(frag)
+  }
+  fragdisplay<-frag[display,]
   n_elec <- nrow(fragdisplay)
   electot<-c(1:n_elec)
   
@@ -54,7 +56,6 @@ heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="PT01 seizure 
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4,colour=colorelec),     # Adjust depending on electrodes
     )
-  
 }
 
 #' Visualization of ictal iEEG 
@@ -72,9 +73,7 @@ heatmap_frag<-function(frag,elecsoz,time_window,option=NULL,title="PT01 seizure 
 #' data("ElectrodesDataPT01")
 #' displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
 #' visuiEEGdata(ieegts=PT01Epochm30sp30s,1000000, displayChannels = displayChannels)
-visuiEEGdata<-function( ieegts, scaling, displayChannels){
-  
-  
+visuiEEGdata<-function(ieegts, scaling, displayChannels){
   plotData<-ieegts[,displayChannels]/scaling
   gaps<-2
   displayNames=colnames(ieegts)[displayChannels]
