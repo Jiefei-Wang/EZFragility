@@ -1,14 +1,16 @@
-#' Ridge Regression for Electrode Readings
+#' fit a generalized linear model to compute adjacency matrix A 
 #' 
-#' A long long description.
-#' 
-#' @param xt matrix. What does row and column mean?
-#' @param xtp1 matrix. the electrode readings in the next time point
-#' 
-#' @examples
-#' ...
-#' 
-ridge <- function(xt, xtp1, lambda, intercept = FALSE, iw) {
+#' A x(t) = x(t+1)
+#'
+#' @param xt matrix. iEEG time series for a given window
+#' @param xtp1 matrix. the iEEG time serie at the next time point
+#' @param lambda Numeric. A user supplied lambda sequence.
+#' @param intercept Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)
+#' @param iw 
+#'
+#' @return adjacency matrix A
+#'
+ridge <- function(xt, xtp1, lambda, intercept = FALSE) {
   if (!identical(dim(xt), dim(xtp1))) {
     stop("Unmatched dimension")
   }
@@ -41,6 +43,13 @@ ridge <- function(xt, xtp1, lambda, intercept = FALSE, iw) {
   A
 }
 
+
+#' computes R2 
+#' 
+#' @param xt matrix. iEEG time series for a given window
+#' @param xtp1 matrix. the iEEG time serie at the next time point
+#' @param A adjacency matrix
+#' 
 ridgeR2 <- function(xt, xtp1, A) {
   nel <- ncol(xt)
   ypredMat <- predictRidge(xt, A)
@@ -59,7 +68,18 @@ ridgeR2 <- function(xt, xtp1, A) {
 
 
 
-ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
+#' Ridge Regression for Electrode Readings
+#' 
+#' Ridge regression to compute matrix adjancency matrix A such as A xt = xtpt1
+#' the lambda parmeter is found by dichotomy such that A is stable
+#' (all eigenvalues have a norm less than one)
+#' 
+#' @param xt matrix. iEEG time series for a given window
+#' @param xtp1 matrix. the iEEG time serie at the next time point
+#'
+#' @return adjacency matrix Afin with lambda as attribute
+#'
+ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE){
   if(!identical(dim(xt),dim(xtp1)))
     stop("Unmatched dimension")
   nel <- ncol(xt)
@@ -70,7 +90,7 @@ ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
   lambdamax <- 10
 
 
-  Aa <- ridge(xt,xtp1,lambda=lambdamin,intercept=F, iw = iw)
+  Aa <- ridge(xt,xtp1,lambda=lambdamin,intercept=F)
 
   stableam <- TRUE
 
@@ -94,7 +114,7 @@ ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
 
     lambdab=lambdamax
 
-    Ab<-ridge(xt,xtp1,lambda=lambdab,intercept=F, iw = iw)
+    Ab<-ridge(xt,xtp1,lambda=lambdab,intercept=F)
 
     stableb <- TRUE
 
@@ -111,7 +131,7 @@ ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
     while(k<20){
       lambdac <- (lambdaa + lambdab)*0.5
 
-      Ac<-ridge(xt,xtp1,lambda=lambdac,intercept=F, iw = iw)
+      Ac<-ridge(xt,xtp1,lambda=lambdac,intercept=F)
 
       stablec <- TRUE
 
@@ -141,8 +161,9 @@ ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE, iw){
     }
   }
 
-  Afin <- ridge(xt,xtp1,lambda=lambdaopt,intercept=F, iw = iw)
+  Afin <- ridge(xt,xtp1,lambda=lambdaopt,intercept=F)
 
   attr(Afin, "lambdaopt") <- lambdaopt
   Afin
 }
+

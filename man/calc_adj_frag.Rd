@@ -2,33 +2,60 @@
 % Please edit documentation in R/main.r
 \name{calc_adj_frag}
 \alias{calc_adj_frag}
-\title{Calculate adjacency matrices and fragility from voltage readings}
+\title{Calculate adjacency matrices and fragility matrix from iEEG recording}
+\source{
+Recreation of the method described in
+Li A, Huynh C, Fitzgerald Z, Cajigas I, Brusko D, Jagid J, et al.
+Neural fragility as an EEG marker of the seizure onset zone.
+Nat Neurosci. 2021 Oct;24(10):1465–74
+(\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
+We have found solutions to fill up missing details in the paper method description
+}
 \usage{
-calc_adj_frag(readings, t_window, t_step, lambda = NULL)
+calc_adj_frag(ieegts, t_window, t_step, lambda = NULL)
 }
 \arguments{
-\item{readings}{Numeric. A matrix of voltage readings,
-with time points as rows and electrodes as columns}
+\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+with time points as rows and electrodes names as columns}
 
 \item{t_window}{Integer. The number of time points to use in each window}
 
 \item{t_step}{Integer.The number of time points to move the window each time}
 
 \item{lambda}{Numeric. The lambda value to use in the ridge regression.
-If NULL, the lambda will be chosen automatically}
+If NULL, the lambda will be chosen automatically
+ensuring that AI is table}
 }
 \value{
-A list containing the normalized readings,
+A list containing the normalized ieegts,
 adjacency matrices, fragility, and R^2 values
 }
 \description{
-A very long long description to give the details of the function
+The function calculates the neural fragility column
+from an adjacency matrix in each time window
+}
+\details{
+1/ For each time window i, a discrete stable Linear time system
+(adjacency matrix) is computed named Ai
+such that
+\eqn{A_i x(t) = x(t+1)}
+option Lambda=NULL ensures that the matrix is stable
+
+2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
+for column perturbation is computed.
+Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 }
 \examples{
 data <- matrix(rnorm(100), nrow = 10)
 t_window <- 10
 t_step <- 5
 lambda <- 0.1
-calc_adj_frag(readings = data, t_window = t_window, t_step = t_step, lambda = lambda)
+calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
+
+data("pt01Epochm3sp5s")
+t_window <- 250
+t_step <- 125
+lambda <- NULL
+resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda)
 
 }

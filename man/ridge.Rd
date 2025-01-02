@@ -2,19 +2,24 @@
 % Please edit documentation in R/rigde.r
 \name{ridge}
 \alias{ridge}
-\title{Ridge Regression for Electrode Readings}
+\title{fit a generalized linear model to compute adjacency matrix A}
 \usage{
-ridge(xt, xtp1, lambda, intercept = FALSE, iw)
+ridge(xt, xtp1, lambda, intercept = FALSE)
 }
 \arguments{
-\item{xt}{matrix. What does row and column mean?}
+\item{xt}{matrix. iEEG time series for a given window}
 
-\item{xtp1}{matrix. the electrode readings in the next time point}
+\item{xtp1}{matrix. the iEEG time serie at the next time point}
+
+\item{lambda}{Numeric. A user supplied lambda sequence.}
+
+\item{intercept}{Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)}
+
+\item{iw}{}
+}
+\value{
+adjacency matrix A
 }
 \description{
-A long long description.
-}
-\examples{
-...
-
+A x(t) = x(t+1)
 }
