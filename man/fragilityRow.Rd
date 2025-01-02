@@ -6,6 +6,11 @@
 \usage{
 fragilityRow(A, nSearch = 100)
 }
+\arguments{
+\item{A}{Numeric. Adjacency Matrix}
+
+\item{nSearch}{Integer. Number of eigenvalues tried to find the minimum norm vector}
+}
 \description{
-Compute the fragility row for adjacency matrix A
+test
 }
