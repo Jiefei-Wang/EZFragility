@@ -17,6 +17,9 @@
 #' @param lambda Numeric. The lambda value to use in the ridge regression. 
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
+#' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @param title. String. Patient and seizure names for results saving
+#' @param pathres. String. Path to save results file
 #' 
 #' @return A list containing the normalized ieegts, 
 #' adjacency matrices, fragility, and R^2 values
@@ -35,7 +38,10 @@
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
-#' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda)
+#' nSearch=100
+#' title="PT01 seizure 1"
+#' pathres='~/'
+#' resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch,title=title,pathres=pathres)
 #' }
 #' 
 #' 
@@ -51,7 +57,7 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
+calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch, title, pathres) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
     stopifnot(isWholeNumber(t_step))
@@ -126,9 +132,10 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
     }
 
 
+    
     # calculate fragility
     f <- sapply(seq_len(n_steps), function(iw) {
-        fragilityRowNormalized(A[, , iw]) # Normalized minimum norm perturbation for Gammai (time window iw)
+        fragilityRowNormalized(A[, , iw],nSearch=nSearch) # Normalized minimum norm perturbation for Gammai (time window iw)
     })
     dimnames(f) <- list(
         Electrode = electrode_list,
@@ -141,6 +148,9 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL) {
     attributes(f_rank) <- attributes(f)
     f_rank <- f_rank / max(f_rank)
 
+    resfile=paste(pathres,'FragilityRes',title,'.csv',sep="")
+    write.csv(f,resfile)
+    
     return(list(
         voltage = ieegts,
         adj = A,

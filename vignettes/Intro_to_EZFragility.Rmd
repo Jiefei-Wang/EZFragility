@@ -25,23 +25,24 @@ The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.796
 
 ## Load small ictal ieeg data for patient PT01
 
-This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -3:5s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 8001 rows (time points) and 84 columns (electrodes).
+This data corresponds to the first seizure of patient PT01 from the Fragility Data Set. The data contains only the good channels. It has been notch filtered and common average referenced in RAVE It has been epoched -1:2s around the seizure onset The acquisition frequency is 1000 Hz EcoG recording gathered in collaboration with the National Institute of Health. A Matrix with 8001 rows (time points) and 84 columns (electrodes).
 
 
 ```{r ictal data}
 data("pt01Epochm3sp5s")
-
 ```
 
 
-Electrode data
-```{r electrode_data}
-data("ElectrodesDataPT01")
-head(ElectrodesDataPT01,n=10)
-
+## Compute Fragility Matrix
+```{r compute fragility, eval=FALSE}
+t_window <- 250
+t_step <- 125
+lambda <- NULL
+nSearch=100
+title="PT01 seizure 1"
+pathres='~/'
+resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch,title=title,pathres=pathres)
 ```
-
-## Compute Fragility Map
 
 ## Plot a heatmap of the Fragility results for patient PT01
 
@@ -49,9 +50,10 @@ Plot fragility heatmaps with electrodes marked as soz colored in the bottom
 ```{r plot fragility heatmap,out.width="100%"}
 data("fragm3sp5s")
 data("elecsoz")
-time_window=c(-3:5)
+time_window=c(-3,5)
 display=c(1:nrow(fragm3sp5s))
-heatmap_frag(frag=fragm3sp5s,elecsoz,time_window=c(-3,5),display=display)
+pathplot='~/'
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=time_window,title="PT01 seizure 1",display=display,pathplot=pathplot)
 ```
 
 
@@ -62,9 +64,7 @@ data("fragm3sp5s")
 data("elecsoz")
 time_window=c(-3:5)
 display=c(elecsoz,77:80)
-heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),display=display)
-
-
+heatmap_frag(frag=fragm3sp5s,elecsoz=elecsoz,time_window=c(-3,5),title="PT01 seizure 1",display=display)
 ```
 
 ## Compute electrodes statistics of fragility map 

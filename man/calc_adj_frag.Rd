@@ -12,7 +12,7 @@ Nat Neurosci. 2021 Oct;24(10):1465–74
 We have found solutions to fill up missing details in the paper method description
 }
 \usage{
-calc_adj_frag(ieegts, t_window, t_step, lambda = NULL)
+calc_adj_frag(ieegts, t_window, t_step, lambda = NULL, nSearch, title, pathres)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -59,7 +59,10 @@ data("pt01Epochm3sp5s")
 t_window <- 250
 t_step <- 125
 lambda <- NULL
-resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda)
+nSearch=100
+title="PT01 seizure 1"
+pathres='~/'
+resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch,title=title,pathres=pathres)
 }
 
 
