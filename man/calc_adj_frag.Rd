@@ -25,6 +25,12 @@ with time points as rows and electrodes names as columns}
 \item{lambda}{Numeric. The lambda value to use in the ridge regression.
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
+
+\item{nSearch}{Integer. Number of minimization to compute the fragility row}
+
+\item{title.}{String. Patient and seizure names for results saving}
+
+\item{pathres.}{String. Path to save results file}
 }
 \value{
 A list containing the normalized ieegts,
