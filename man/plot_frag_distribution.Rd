@@ -19,6 +19,13 @@ Plot Fragility time distribution for two electrodes group marked and non-marked 
 }
 \examples{
 time_window_ictal=c(-3,5)
+data("fragm3sp5s")
+data("sozindex")
+# compute fragility statistics evolution with time (mean and standard deviation) for soz and
+# non soz groups
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 fragstatcurve=fragstat[-1]
-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
+# plot the statistical results
+pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
+pfragstat
 }

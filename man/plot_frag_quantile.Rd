@@ -21,6 +21,6 @@ Plot Fragility time quantiles for two electrodes group marked as soz non marked 
 }
 \examples{
 data("fragstat")
-time_window_ictal=c(-3,5)
+time_window_ictal<-c(-3,5)
 plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,title=title)
 }

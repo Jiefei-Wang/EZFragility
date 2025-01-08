@@ -4,19 +4,11 @@
 \alias{visuiEEGdata}
 \title{Visualization of ictal iEEG}
 \usage{
-visuiEEGdata(
-  ieegts,
-  elecsoz,
-  time_window,
-  title = "PT01 seizure 1",
-  display = NULL
-)
+visuiEEGdata(ieegts, time_window, title = "PT01 seizure 1", display = NULL)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
-
-\item{elecsoz}{Integer or string. Vector soz electrodes (for good electrodes)}
 
 \item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
 
@@ -33,8 +25,8 @@ Visualization of ictal iEEG
 \examples{
 data("pt01Epochm3sp5s")
 data("sozindex")
-display=c(sozindex,77:80)
-time_window=c(-3,5)
+display<-c(sozindex,77:80)
+time_window<-c(-3,5)
 iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,elecsoz=sozindex,time_window=time_window,display=display)
 iEEGplot
 }
