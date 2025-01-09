@@ -22,10 +22,17 @@ times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
 colnames(pt01Epoch)<-times_with_sign
 
 pt01Epoch <- t(pt01Epoch)
+attr(pt01Epoch, "sozindex") <- sozindex
+attr(pt01Epoch, "soznames") <- soznames
 usethis::use_data(pt01Epoch, overwrite = TRUE)
 
 pt01Epochm1sp2s<-pt01Epoch[9001:12000,]
+attr(pt01Epochm1sp2s, "sozindex") <- sozindex
+attr(pt01Epochm1sp2s, "soznames") <- soznames
 usethis::use_data(pt01Epochm1sp2s, overwrite = TRUE)
 
-usethis::use_data(sozindex, overwrite = TRUE)
-usethis::use_data(soznames, overwrite = TRUE)
+pt01Epochm3sp5s<-pt01Epoch[7001:15000,]
+attr(pt01Epochm3sp5s, "sozindex") <- sozindex
+attr(pt01Epochm3sp5s, "soznames") <- soznames
+usethis::use_data(pt01Epochm3sp5s, overwrite = TRUE)
+

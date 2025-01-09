@@ -4,10 +4,16 @@
 \alias{plot_frag_distribution}
 \title{Plot Fragility time distribution for two electrodes group marked and non-marked as soz}
 \usage{
-plot_frag_distribution(statcurves, time_window_ictal, title = title)
+plot_frag_distribution(
+  statcurves,
+  time_window_ictal,
+  title = "Average Fragility over time"
+)
 }
 \arguments{
 \item{time_window_ictal}{time window of processed ictal iEEG}
+
+\item{title}{String. Figure title}
 
 \item{statcurves.}{List of four numeric vectors for mean and standard deviation statistics of the two groups}
 }
@@ -20,12 +26,12 @@ Plot Fragility time distribution for two electrodes group marked and non-marked 
 \examples{
 time_window_ictal=c(-3,5)
 data("fragm3sp5s")
-data("sozindex")
+sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
 fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 fragstatcurve=fragstat[-1]
 # plot the statistical results
-pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
+pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal)
 pfragstat
 }

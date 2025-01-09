@@ -4,7 +4,12 @@
 \alias{visuiEEGdata}
 \title{Visualization of ictal iEEG}
 \usage{
-visuiEEGdata(ieegts, time_window, title = "PT01 seizure 1", display = NULL)
+visuiEEGdata(
+  ieegts,
+  time_window,
+  title = "Patient name seizure number",
+  display = NULL
+)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -24,9 +29,9 @@ Visualization of ictal iEEG
 }
 \examples{
 data("pt01Epochm3sp5s")
-data("sozindex")
-display<-c(sozindex,77:80)
-time_window<-c(-3,5)
-iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,elecsoz=sozindex,time_window=time_window,display=display)
+sozindex<-attr(pt01Epochm3sp5s,"sozindex")
+display=c(sozindex,77:80)
+time_window=c(-3,5)
+iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
 iEEGplot
 }

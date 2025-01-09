@@ -4,7 +4,11 @@
 \alias{plot_frag_quantile}
 \title{Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz}
 \usage{
-plot_frag_quantile(qmatsozsozc, time_window_ictal, title = title)
+plot_frag_quantile(
+  qmatsozsozc,
+  time_window_ictal,
+  title = "Fragility Quantiles over time"
+)
 }
 \arguments{
 \item{qmatsozsozc}{Numeric. quantile matrix for the two groups}

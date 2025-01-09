@@ -12,7 +12,7 @@ Nat Neurosci. 2021 Oct;24(10):1465–74
 We have found solutions to fill up missing details in the paper method description
 }
 \usage{
-calc_adj_frag(ieegts, t_window, t_step, lambda = NULL, nSearch, title, pathres)
+calc_adj_frag(ieegts, t_window, t_step, lambda = NULL, nSearch)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -27,10 +27,6 @@ If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
 \item{nSearch}{Integer. Number of minimization to compute the fragility row}
-
-\item{title.}{String. Patient and seizure names for results saving}
-
-\item{pathres.}{String. Path to save results file}
 }
 \value{
 A list containing the normalized ieegts,
@@ -42,7 +38,7 @@ from an adjacency matrix in each time window
 }
 \details{
 1/ For each time window i, a discrete stable Linear time system
-(adjacency matrix) is computed named Ai
+(adjacency matrix) is computed named \eqn{A_i}
 such that
 \eqn{A_i x(t) = x(t+1)}
 option Lambda=NULL ensures that the matrix is stable
@@ -68,7 +64,7 @@ lambda <- NULL
 nSearch=100
 title="PT01 seizure 1"
 pathres='~/'
-resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch,title=title,pathres=pathres)
+resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
 }
 
 

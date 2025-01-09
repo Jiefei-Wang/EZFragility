@@ -13,7 +13,7 @@
 #' @examples
 #' # use integer index for display and soz electrodes
 #'data("fragm3sp5s")
-#'data("sozindex")
+#'sozindex<-attr(fragm3sp5s,"sozindex")
 #'time_window=c(-3,5)
 #'display=c(sozindex,77:80)
 #'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
@@ -21,15 +21,15 @@
 #'
 #' # use electrodes name for display and soz electrodes
 #'data("fragm3sp5s")
-#'data("soznames")
+#'soznames<-attr(fragm3sp5s,"soznames")
 #'time_window=c(-3,5)
 #'display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
 #'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # save plot to file with ggplot2
-#'data("fragm3sp5s")
 #'data("sozindex")
+#'sozindex<-attr(fragm3sp5s,"sozindex")
 #'time_window=c(-3,5)
 #'display=c(sozindex,77:80)
 #'pathplot="~"
@@ -40,7 +40,7 @@
 #'ggplot2::ggsave(resfile)
 #' 
 #' @export
-heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=NULL){
+heatmap_frag<-function(frag,elecsoz,time_window,title="Patient name seizure number",display=NULL){
   titlepng<-title
   if(is.null(display)){
     display<-1:nrow(frag)
@@ -94,7 +94,7 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
     ggplot2::theme(plot.title=ggtext::element_markdown(hjust=0.5)) +
     ggplot2::labs(x = "Time (s)", y = "Electrode",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +
-    geom_vline(xintercept =0, 
+    ggplot2::geom_vline(xintercept =0, 
                   color = "black", linetype = "dashed", size = 1) +
    ggplot2::theme_minimal() +
    ggplot2::theme(
@@ -116,13 +116,13 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="PT01 seizure 1",display=N
 #'
 #' @examples
 #'data("pt01Epochm3sp5s")
-#'data("sozindex")
-#'display<-c(sozindex,77:80)
-#'time_window<-c(-3,5)
-#'iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,elecsoz=sozindex,time_window=time_window,display=display)
+#'sozindex<-attr(pt01Epochm3sp5s,"sozindex")
+#'display=c(sozindex,77:80)
+#'time_window=c(-3,5)
+#'iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
 #'iEEGplot
 #' @export
-visuiEEGdata<-function(ieegts, time_window, title = "PT01 seizure 1", display=NULL){
+visuiEEGdata<-function(ieegts, time_window, title = "Patient name seizure number", display=NULL){
  
   titlepng<- title
   if(is.null(display)){
@@ -151,11 +151,10 @@ visuiEEGdata<-function(ieegts, time_window, title = "PT01 seizure 1", display=NU
   plotData<-data.frame(plotData)
   breakplot<-(c(1:n_elec)-1)*gaps
  
-  ggplot2::theme_set(theme_minimal())
   p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=stimes,y=plotData))+
   ggplot2::ggtitle(titlepng)+
   ggplot2::labs(x = "Time (s)", y = "Electrode",size=2)+ 
-  geom_vline(xintercept =0, 
+    ggplot2::geom_vline(xintercept =0, 
                   color = "black", linetype = "dashed", size = 1)
   
   for(i in 1:n_elec){
@@ -178,10 +177,15 @@ visuiEEGdata<-function(ieegts, time_window, title = "PT01 seizure 1", display=NU
 #' @export
 #'
 #' @examples
-#' data("fragstat")
+#' time_window_ictal=c(-3,5)
+#'data("fragm3sp5s")
+#'sozindex<-attr(fragm3sp5s,"sozindex")
+#'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
+#'# non soz groups
+#'fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 #' time_window_ictal<-c(-3,5)
-#' plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,title=title)
-plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title=title){
+#' plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal)
+plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title="Fragility Quantiles over time"){
  
   nw=ncol(qmatsozsozc)
   stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
@@ -198,6 +202,8 @@ plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title=title){
     viridis::scale_fill_viridis(option = "turbo") +  #
     
     ggplot2::theme_minimal() +
+    ggplot2::geom_vline(xintercept =0, 
+                        color = "black", linetype = "dashed", size = 1)+
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4),     # Adjust depending on electrodes
     )
@@ -208,24 +214,25 @@ plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title=title){
 
 #'  Plot Fragility time distribution for two electrodes group marked and non-marked as soz
 #'
-#' @param statcurves. List of four numeric vectors for mean and standard deviation statistics of the two groups
+#' @param statcurves. List of four numeric vectors for mean and standard deviation statistics over time of the two groups
 #' @param time_window_ictal time window of processed ictal iEEG
+#' @param title String. Figure title
 #'
 #' @return plot fragility distribution
 #' @export
 #'
 #' @examples
-#' time_window_ictal=c(-3,5)
-#' data("fragm3sp5s")
-#' data("sozindex")
-#' # compute fragility statistics evolution with time (mean and standard deviation) for soz and
-#' # non soz groups
-#' fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-#' fragstatcurve=fragstat[-1]
-#' # plot the statistical results
-#' pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal,title="PT01 seizure 1")
-#' pfragstat
-plot_frag_distribution<-function( statcurves,time_window_ictal,title=title){
+#'time_window_ictal=c(-3,5)
+#'data("fragm3sp5s")
+#'sozindex<-attr(fragm3sp5s,"sozindex")
+#'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
+#'# non soz groups
+#'fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+#'fragstatcurve=fragstat[-1]
+#'# plot the statistical results
+#'pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal)
+#'pfragstat
+plot_frag_distribution<-function( statcurves,time_window_ictal,title='Average Fragility over time'){
   
   cmeansoz=statcurves[[1]] # mean soz group in function of time window
   cmeansozc=statcurves[[2]] # mean non soz group in function of time window
@@ -251,12 +258,12 @@ plot_frag_distribution<-function( statcurves,time_window_ictal,title=title){
   
   titlepng <- title
   colors<-c("SOZ +/- sem" = "red", "SOZc +/- sem" = "black")
-  #p<-ggplot2::theme_grey(base_size = 22)
+  ggplot2::theme_grey(base_size = 22)
   p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=times, y=cmeansoz))+ 
    ggplot2::xlab('Time in s')+
    ggplot2::ylab('Fragility')+
    ggplot2::ggtitle(titlepng)+
-   geom_vline(xintercept =0, 
+   ggplot2::geom_vline(xintercept =0, 
                     color = "black", linetype = "dashed", size = 1)+
    ggplot2::geom_line(ggplot2::aes(y = meansoz,color="SOZ +/- sem"))+  
    ggplot2::geom_line(ggplot2::aes(y = sozsdp),color='red',linetype="dotted")+  

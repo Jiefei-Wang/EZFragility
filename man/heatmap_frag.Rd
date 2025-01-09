@@ -8,7 +8,7 @@ heatmap_frag(
   frag,
   elecsoz,
   time_window,
-  title = "PT01 seizure 1",
+  title = "Patient name seizure number",
   display = NULL
 )
 }
@@ -32,7 +32,7 @@ plot fragility heatmaps with electrodes marked as soz colored
 \examples{
 # use integer index for display and soz electrodes
 data("fragm3sp5s")
-data("sozindex")
+sozindex<-attr(fragm3sp5s,"sozindex")
 time_window=c(-3,5)
 display=c(sozindex,77:80)
 fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
@@ -40,15 +40,15 @@ fragplot
 
 # use electrodes name for display and soz electrodes
 data("fragm3sp5s")
-data("soznames")
+soznames<-attr(fragm3sp5s,"soznames")
 time_window=c(-3,5)
 display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
 fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
 fragplot
 
 # save plot to file with ggplot2
-data("fragm3sp5s")
 data("sozindex")
+sozindex<-attr(fragm3sp5s,"sozindex")
 time_window=c(-3,5)
 display=c(sozindex,77:80)
 pathplot="~"
