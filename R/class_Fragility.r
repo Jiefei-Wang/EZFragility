@@ -1,7 +1,7 @@
 Fragility <- setClass(
     "Fragility",
     slots = list(
-        voltage = "matrixOrNULL",
+        ieegts = "matrixOrNULL",
         adj = "arrayOrNULL",
         frag = "matrixOrNULL",
         frag_ranked = "matrixOrNULL",
@@ -23,7 +23,7 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 ## Define the print method
 setMethod("show", "Fragility", function(object) {
     cat("Fragility object:\n")
-    printSlotValue(object, "voltage")
+    printSlotValue(object, "ieegts")
     printSlotValue(object, "adj")
     printSlotValue(object, "frag")
     printSlotValue(object, "frag_ranked")

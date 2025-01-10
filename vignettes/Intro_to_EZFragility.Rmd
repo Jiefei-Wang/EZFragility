@@ -45,7 +45,7 @@ lambda <- NULL
 nSearch=100
 resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
 # Fragility matrix result
-fragm3sp5s<-resfrag[[3]]
+head(resfrag$frag, n=3)
 ```
 
 ## Plot a heatmap of the Fragility results for patient PT01
@@ -77,7 +77,7 @@ fragplot
 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
-time_window_ictal=c(-3,5)
+time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
@@ -88,7 +88,7 @@ fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 ## Plot Fragility distribution
 Plot fragility distribution for two electrodes group marked as soz non marked as soz
 ```{r visualize_frag_auantile,out.width="100%"}
-time_window_ictal=c(-3,5)
+time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
@@ -103,11 +103,11 @@ pfragstat
 ## Plot fragility quantile
 Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
 ```{r visualize_frag_auantile,out.width="100%"}
-time_window_ictal=c(-3,5)
+time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
 fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal)
+plot_frag_quantile(qmatrix=fragstat[[1]], time_window_ictal=time_window_ictal)
 ```

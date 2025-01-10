@@ -153,7 +153,7 @@ fragilityRow <- function(A, nSearch = 100) {
 #' @examples
 #' data("fragm3sp5s")
 #' data("elecsoz")
-#' fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
+#' fragstat<-frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 frag_stat <- function(frag, elecsoz){
   if (is(frag, "Fragility")) {
     frag <- frag$frag
@@ -236,14 +236,13 @@ frag_stat <- function(frag, elecsoz){
     
   }
   
-  return(list(
-    q_matrix=quantilematrixsozsozc,
+  FragStat(
+    qmatrix=quantilematrixsozsozc,
     cmeansoz=cmeansoz,
     cmeansozc=cmeansozc,
     csdsoz=csdsoz,
     csdsozc=csdsozc
-      ))
- 
+      )
 }
 
 
