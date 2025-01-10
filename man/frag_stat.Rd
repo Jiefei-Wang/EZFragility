@@ -18,7 +18,7 @@ list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 }
 \examples{
-data("fragm3sp5s")
+data("pt01Fragility")
 data("elecsoz")
-fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
+fragstat<-frag_stat(frag=pt01Fragility, elecsoz=elecsoz)
 }
