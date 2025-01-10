@@ -4,15 +4,22 @@
 \alias{visuiEEGdata}
 \title{Visualization of ictal iEEG}
 \usage{
-visuiEEGdata(ieegts, scaling, displayChannels)
+visuiEEGdata(
+  ieegts,
+  time_window,
+  title = "Patient name seizure number",
+  display = NULL
+)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
 
-\item{scaling}{Numeric. Scaling factor}
+\item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
 
-\item{displayChannels}{Integer. Channels evctor to display}
+\item{title}{String. Figure title}
+
+\item{display}{Integer or string. Vector electrodes to display}
 }
 \value{
 plot raw signal
@@ -21,8 +28,10 @@ plot raw signal
 Visualization of ictal iEEG
 }
 \examples{
-data("PT01Epochm30sp30s")
-data("ElectrodesDataPT01")
-displayChannels=which(ElectrodesDataPT01$insoz==TRUE)
-visuiEEGdata(ieegts=PT01Epochm30sp30s,1000000, displayChannels = displayChannels)
+data("pt01Epochm3sp5s")
+sozindex<-attr(pt01Epochm3sp5s,"sozindex")
+display=c(sozindex,77:80)
+time_window=c(-3,5)
+iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
+iEEGplot
 }
