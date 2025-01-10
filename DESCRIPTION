@@ -49,7 +49,8 @@ LazyData: true
 Imports: 
     ggplot2,
     viridis,
-    ggtext
+    ggtext,
+    glue
 Suggests: 
     knitr,
     rmarkdown,

@@ -24,7 +24,12 @@ Quantile plot
 Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
 }
 \examples{
-data("fragstat")
+time_window_ictal=c(-3,5)
+data("fragm3sp5s")
+sozindex<-attr(fragm3sp5s,"sozindex")
+# compute fragility statistics evolution with time (mean and standard deviation) for soz and
+# non soz groups
+fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 time_window_ictal<-c(-3,5)
-plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal,title=title)
+plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal)
 }

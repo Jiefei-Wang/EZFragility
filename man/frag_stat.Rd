@@ -7,15 +7,9 @@
 frag_stat(frag, elecsoz)
 }
 \arguments{
-\item{frag}{Numeric. Fragility matrix. Row Electrode names. Column index}
+\item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calc_adj_frag}}
 
 \item{elecsoz}{Integer.  Vector soz electrodes (for good electrodes)}
-
-\item{t_step}{Integer. Fragility step size}
-
-\item{fs}{Numeric. Acquisition frequency (Hz)}
-
-\item{time_window_ictal}{Numeric.Time window around seizure onset (s)}
 }
 \value{
 list of 5 items with quantile matrix, mean and sdv from both electrodes groups

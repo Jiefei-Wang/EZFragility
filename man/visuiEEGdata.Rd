@@ -12,8 +12,9 @@ visuiEEGdata(
 )
 }
 \arguments{
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns}
+\item{ieegts}{Matrix or Fragility object. Either a matrix of iEEG time
+series x(t), with time points as rows and electrodes names as columns,
+or a Fragility object from \code{calc_adj_frag}}
 
 \item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
 
