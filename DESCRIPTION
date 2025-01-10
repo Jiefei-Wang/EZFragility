@@ -57,12 +57,3 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-Collate: 
-    'class_AAA.r'
-    'class_fragility.r'
-    'data.r'
-    'fragility.r'
-    'main.r'
-    'rigde.r'
-    'utils.r'
-    'visualization.R'
