@@ -7,7 +7,7 @@
 heatmap_frag(
   frag,
   elecsoz,
-  time_window,
+  time_window = NULL,
   title = "Patient name seizure number",
   display = NULL
 )
@@ -17,7 +17,7 @@ heatmap_frag(
 
 \item{elecsoz}{Integer or string. Vector soz electrodes (for good electrodes)}
 
-\item{time_window}{Numeric Vector. Fragility heatmap time window around seizure onset (s)}
+\item{time_window}{Numeric Vector of length 2. The time window to display at the x-axis}
 
 \item{title}{String. Figure title}
 
@@ -31,30 +31,30 @@ plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
 # use integer index for display and soz electrodes
-data("fragm3sp5s")
-sozindex<-attr(fragm3sp5s,"sozindex")
-time_window=c(-3,5)
-display=c(sozindex,77:80)
-fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+data("fragility")
+sozindex<-attr(fragility,"sozindex")
+time_window <- c(-1,2)
+display <- c(sozindex,77:80)
+fragplot<-heatmap_frag(frag=fragility,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
 fragplot
 
 # use electrodes name for display and soz electrodes
-data("fragm3sp5s")
-soznames<-attr(fragm3sp5s,"soznames")
-time_window=c(-3,5)
-display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
-fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+data("fragility")
+soznames<-attr(fragility,"soznames")
+time_window <- c(-1,2)
+display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
+fragplot<-heatmap_frag(frag=fragility,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
 fragplot
 
 # save plot to file with ggplot2
 data("sozindex")
-sozindex<-attr(fragm3sp5s,"sozindex")
-time_window=c(-3,5)
-display=c(sozindex,77:80)
-pathplot="~"
-title="PT01sz1"
-resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title=title,display=display)
+sozindex<-attr(fragility,"sozindex")
+time_window <- c(-1,2)
+display <- c(sozindex,77:80)
+pathplot <- "~"
+title <- "PT01sz1"
+resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
+fragplot<-heatmap_frag(frag=fragility,elecsoz=sozindex,time_window=time_window,title=title,display=display)
 fragplot
 ggplot2::ggsave(resfile)
 

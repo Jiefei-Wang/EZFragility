@@ -32,7 +32,9 @@
 #' 
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
-#' data("pt01Epochm3sp5s")
+#' data("pt01Epoch")
+#' ## We will use data from -1s to 2s around the seizure onset
+#' pt01Epochm1sp2s<-pt01Epoch[9001:12000,]
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
