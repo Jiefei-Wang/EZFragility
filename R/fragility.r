@@ -156,40 +156,40 @@ fragilityRow <- function(A, nSearch = 100) {
 #' @examples
 #' data("fragm3sp5s")
 #' data("elecsoz")
-#' fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
+#' fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 frag_stat <- function( frag, elecsoz){
   
   n_elec <- nrow(frag)    # electrode number
   n_steps <- ncol(frag)   # Time window number
   
-  elecvec=c(1:n_elec)
-  elecsozc=which(!elecvec%in%elecsoz)
+  elecvec <- c(1:n_elec)
+  elecsozc <- which(!elecvec%in%elecsoz)
 
   # create separate heatmaps for soz and sozc for quantile calcs
   hmapsoz <- frag[elecsoz,]
   hmapsozc <- frag[elecsozc,]
 
-  quantilematrixsozsozc=matrix(0,20,n_steps)
-  cmeansoz=c(1:n_steps)*0
-  cmeansozc=c(1:n_steps)*0
-  csdsoz=c(1:n_steps)*0
-  csdsozc=c(1:n_steps)*0
+  quantilematrixsozsozc <- matrix(0,20,n_steps)
+  cmeansoz <- c(1:n_steps)*0
+  cmeansozc <- c(1:n_steps)*0
+  csdsoz <- c(1:n_steps)*0
+  csdsozc <- c(1:n_steps)*0
   
   
   for(i in 1:n_steps){
     
-    colsoz=hmapsoz[,i]
-    colsozc=hmapsozc[,i]
+    colsoz <- hmapsoz[,i]
+    colsozc <- hmapsozc[,i]
     
-    meansoz=mean(colsoz)
-    sdsoz=sd(colsoz)
-    meansozc=mean(colsozc)
-    sdsozc=sd(colsozc)
+    meansoz <- mean(colsoz)
+    sdsoz <- sd(colsoz)
+    meansozc <- mean(colsozc)
+    sdsozc <- sd(colsozc)
     
-    cmeansoz[i]=meansoz
-    cmeansozc[i]=meansozc
-    csdsoz[i]=sdsoz
-    csdsozc[i]=sdsozc
+    cmeansoz[i] <- meansoz
+    cmeansozc[i] <- meansozc
+    csdsoz[i] <- sdsoz
+    csdsozc[i] <- sdsozc
     
     f10colsoz<-quantile(colsoz,probs=c(0.1))
     f20colsoz<-quantile(colsoz,probs=c(0.2))

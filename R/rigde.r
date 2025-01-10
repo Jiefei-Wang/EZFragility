@@ -109,7 +109,7 @@ ridgesearchlambdadichomotomy <- function(xt, xtp1, intercept = FALSE){
     stablea <- stableam
     lambdaa <- lambdamin
 
-    lambdab=lambdamax
+    lambdab <- lambdamax
 
     Ab<-ridge(xt,xtp1,lambda=lambdab,intercept=F)
 

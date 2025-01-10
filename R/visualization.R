@@ -14,27 +14,27 @@
 #' # use integer index for display and soz electrodes
 #'data("fragm3sp5s")
 #'sozindex<-attr(fragm3sp5s,"sozindex")
-#'time_window=c(-3,5)
-#'display=c(sozindex,77:80)
-#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+#'time_window <- c(-3,5)
+#'display <- c(sozindex,77:80)
+#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # use electrodes name for display and soz electrodes
 #'data("fragm3sp5s")
 #'soznames<-attr(fragm3sp5s,"soznames")
-#'time_window=c(-3,5)
-#'display=c(soznames,"MLT1","MLT2","MLT3","MLT4")
-#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+#'time_window <- c(-3,5)
+#'display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
+#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # save plot to file with ggplot2
 #'data("sozindex")
 #'sozindex<-attr(fragm3sp5s,"sozindex")
-#'time_window=c(-3,5)
-#'display=c(sozindex,77:80)
-#'pathplot="~"
-#'title="PT01sz1"
-#'resfile=paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
+#'time_window <- c(-3,5)
+#'display <- c(sozindex,77:80)
+#'pathplot <- "~"
+#'title <- "PT01sz1"
+#'resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
 #'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window=time_window,title=title,display=display)
 #'fragplot
 #'ggplot2::ggsave(resfile)
@@ -117,8 +117,8 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="Patient name seizure numb
 #' @examples
 #'data("pt01Epochm3sp5s")
 #'sozindex<-attr(pt01Epochm3sp5s,"sozindex")
-#'display=c(sozindex,77:80)
-#'time_window=c(-3,5)
+#'display <- c(sozindex,77:80)
+#'time_window <- c(-3,5)
 #'iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
 #'iEEGplot
 #' @export
@@ -177,18 +177,18 @@ visuiEEGdata<-function(ieegts, time_window, title = "Patient name seizure number
 #' @export
 #'
 #' @examples
-#' time_window_ictal=c(-3,5)
+#' time_window_ictal <- c(-3,5)
 #'data("fragm3sp5s")
 #'sozindex<-attr(fragm3sp5s,"sozindex")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+#'fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 #' time_window_ictal<-c(-3,5)
 #' plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal)
 plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title="Fragility Quantiles over time"){
  
-  nw=ncol(qmatsozsozc)
-  stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
+  nw <- ncol(qmatsozsozc)
+  stimes <- c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
   quantilesname<-c(paste0("SOZ(", seq(10,100,by=10),")"),paste0("SOZc(", seq(10,100,by=10),")"))
   quantileplot<- expand.grid(Time = stimes, Stats=quantilesname)
   quantileplot$Value <- c(t(qmatsozsozc))
@@ -222,30 +222,30 @@ plot_frag_quantile<-function( qmatsozsozc, time_window_ictal,title="Fragility Qu
 #' @export
 #'
 #' @examples
-#'time_window_ictal=c(-3,5)
+#'time_window_ictal <- c(-3,5)
 #'data("fragm3sp5s")
 #'sozindex<-attr(fragm3sp5s,"sozindex")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-#'fragstatcurve=fragstat[-1]
+#'fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+#'fragstatcurve <- fragstat[-1]
 #'# plot the statistical results
 #'pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal)
 #'pfragstat
 plot_frag_distribution<-function( statcurves,time_window_ictal,title='Average Fragility over time'){
   
-  cmeansoz=statcurves[[1]] # mean soz group in function of time window
-  cmeansozc=statcurves[[2]] # mean non soz group in function of time window
-  csdsoz=statcurves[[3]] # standard deviation soz group in function of time window
-  csdsozc=statcurves[[4]]  # standard deviation non soz group in function of time window
+  cmeansoz <- statcurves[[1]] # mean soz group in function of time window
+  cmeansozc <- statcurves[[2]] # mean non soz group in function of time window
+  csdsoz <- statcurves[[3]] # standard deviation soz group in function of time window
+  csdsozc <- statcurves[[4]]  # standard deviation non soz group in function of time window
   
-  nw=length(cmeansoz)
-  stimes=c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
+  nw <- length(cmeansoz)
+  stimes <- c(1:nw)*(time_window_ictal[2]-time_window_ictal[1])/nw+time_window_ictal[1] 
   
-  sozsdp=cmeansoz+csdsoz
-  sozsdm=cmeansoz-csdsoz
-  sozcsdp=cmeansozc+csdsozc
-  sozcsdm=cmeansozc-csdsozc
+  sozsdp <- cmeansoz+csdsoz
+  sozsdm <- cmeansoz-csdsoz
+  sozcsdp <- cmeansozc+csdsozc
+  sozcsdm <- cmeansozc-csdsozc
   
   plotmeanstd<-as.data.frame(stimes)
   colnames(plotmeanstd)<-"times"
@@ -276,5 +276,4 @@ plot_frag_distribution<-function( statcurves,time_window_ictal,title='Average Fr
    ggplot2::scale_color_manual(name="Electrode groups",values = c(colors)) 
     
   return(p)
-
 }

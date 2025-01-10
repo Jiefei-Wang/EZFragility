@@ -36,9 +36,8 @@
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
-#' nSearch=100
-#' title="PT01 seizure 1"
-#' pathres='~/'
+#' nSearch <- 100
+#' title <- "PT01 seizure 1"
 #' resfrag<-calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
 #' }
 #' 
