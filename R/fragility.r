@@ -143,11 +143,8 @@ fragilityRow <- function(A, nSearch = 100) {
 
 #' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 #'
-#' @param frag Numeric. Fragility matrix. Row Electrode names. Column index
-#' @param t_step Integer. Fragility step size
+#' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calc_adj_frag}
 #' @param elecsoz Integer.  Vector soz electrodes (for good electrodes)
-#' @param fs Numeric. Acquisition frequency (Hz) 
-#' @param time_window_ictal Numeric.Time window around seizure onset (s)
 #' 
 #'
 #' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
@@ -157,17 +154,20 @@ fragilityRow <- function(A, nSearch = 100) {
 #' data("fragm3sp5s")
 #' data("elecsoz")
 #' fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
-frag_stat <- function( frag, elecsoz){
+frag_stat <- function(frag, elecsoz){
+  if (is(frag, "Fragility")) {
+    frag <- frag$frag
+  }
   
   n_elec <- nrow(frag)    # electrode number
   n_steps <- ncol(frag)   # Time window number
   
-  elecvec=c(1:n_elec)
+  elecvec=1:n_elec
   elecsozc=which(!elecvec%in%elecsoz)
 
   # create separate heatmaps for soz and sozc for quantile calcs
-  hmapsoz <- frag[elecsoz,]
-  hmapsozc <- frag[elecsozc,]
+  hmapsoz <- frag[elecsoz,,drop=FALSE]
+  hmapsozc <- frag[elecsozc,,drop=FALSE]
 
   quantilematrixsozsozc=matrix(0,20,n_steps)
   cmeansoz=c(1:n_steps)*0

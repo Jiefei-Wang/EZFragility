@@ -15,7 +15,7 @@ plot_frag_distribution(
 
 \item{title}{String. Figure title}
 
-\item{statcurves.}{List of four numeric vectors for mean and standard deviation statistics of the two groups}
+\item{statcurves.}{List of four numeric vectors for mean and standard deviation statistics over time of the two groups}
 }
 \value{
 plot fragility distribution

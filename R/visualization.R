@@ -1,8 +1,8 @@
 #' Visualization functions (raw signal, fragility matrix)
 #' 
 #' plot fragility heatmaps with electrodes marked as soz colored
-#'
-#' @param frag Numeric. Fragility matrix results
+#' 
+#' @inheritParams frag_stat
 #' @param elecsoz Integer or string. Vector soz electrodes (for good electrodes)
 #' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
 #' @param title String. Figure title
@@ -44,6 +44,10 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="Patient name seizure numb
   titlepng<-title
   if(is.null(display)){
     display<-1:nrow(frag)
+  }
+  
+  if (is(frag, "Fragility")) {
+    frag <- frag$frag
   }
 
   elecname<-rownames(frag)
@@ -107,8 +111,9 @@ heatmap_frag<-function(frag,elecsoz,time_window,title="Patient name seizure numb
 
 #' Visualization of ictal iEEG 
 #'
-#' @param ieegts Numeric. A matrix of iEEG time series x(t),
-#' with time points as rows and electrodes names as columns
+#' @param ieegts Matrix or Fragility object. Either a matrix of iEEG time 
+#' series x(t), with time points as rows and electrodes names as columns, 
+#' or a Fragility object from \code{calc_adj_frag}
 #' @param time_window Numeric Vector. Fragility heatmap time window around seizure onset (s)
 #' @param title String. Figure title
 #' @param display Integer or string. Vector electrodes to display
@@ -127,6 +132,10 @@ visuiEEGdata<-function(ieegts, time_window, title = "Patient name seizure number
   titlepng<- title
   if(is.null(display)){
     display<-1:nrow(frag)
+  }
+
+  if(is(ieegts, "Fragility")){
+    ieegts <- ieegts$ieegts
   }
   
   elecname<-colnames(ieegts)

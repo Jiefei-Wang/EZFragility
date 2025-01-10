@@ -146,12 +146,12 @@ calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch) {
     attributes(f_rank) <- attributes(f)
     f_rank <- f_rank / max(f_rank)
 
-    return(list(
-        voltage = ieegts,
+    Fragility(
+        ieegts = ieegts,
         adj = A,
         frag = f,
         frag_ranked = f_rank,
         R2 = R2,
         lambdas = lambdas
-    ))
+    )
 }
