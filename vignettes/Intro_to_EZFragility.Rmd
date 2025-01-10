@@ -45,9 +45,9 @@ t_window <- 250
 t_step <- 125
 lambda <- NULL
 nSearch <- 10
-fragility <- calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
+pt01Fragility <- calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
 # Fragility matrix result
-fragility$frag[1:5, 1:5]
+pt01Fragility$frag[1:5, 1:5]
 ```
 
 ## Plot a heatmap of the Fragility results for patient PT01
@@ -55,9 +55,9 @@ fragility$frag[1:5, 1:5]
 Plot fragility heatmaps with electrodes marked as soz colored in the bottom
 The result running the previous section is saved in the data package and loaded here.
 ```{r plot fragility heatmap,out.width="100%"}
-data("fragility")
+data("pt01Fragility")
 time_window <- c(-1,2)
-fragplot<-heatmap_frag(frag=fragility,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1")
+fragplot<-heatmap_frag(frag=pt01Fragility,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1")
 fragplot
 ```
 
@@ -66,7 +66,7 @@ fragplot
 This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
 ```{r}
 display <- c(sozindex,77:80)
-fragplot <- heatmap_frag(frag=fragility,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+fragplot <- heatmap_frag(frag=pt01Fragility,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
 fragplot
 ```
 
@@ -74,7 +74,7 @@ fragplot
 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
-fragstat <- frag_stat(frag=fragility, elecsoz=sozindex)
+fragstat <- frag_stat(frag=pt01Fragility, elecsoz=sozindex)
 fragstat
 ```
 
