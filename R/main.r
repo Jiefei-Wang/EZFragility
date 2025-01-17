@@ -17,7 +17,8 @@
 #' @param lambda Numeric. The lambda value to use in the ridge regression. 
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
-#' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @param nSearch Integer. Number of minimization to compute the fragility row,
+#' default 10.
 #' 
 #' @return A list containing the normalized ieegts, 
 #' adjacency matrices, fragility, and R^2 values
@@ -56,7 +57,7 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch) {
+calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch = 10) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
     stopifnot(isWholeNumber(t_step))
