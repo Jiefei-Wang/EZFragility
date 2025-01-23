@@ -20,5 +20,5 @@ Compute quantiles, mean and standard deviation for two electrodes group marked a
 \examples{
 data("fragm3sp5s")
 data("elecsoz")
-fragstat=frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
+fragstat<-frag_stat(frag=fragm3sp5s, elecsoz=elecsoz)
 }

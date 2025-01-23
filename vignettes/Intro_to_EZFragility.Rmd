@@ -31,8 +31,13 @@ This data corresponds to the first seizure of patient PT01 from the Fragility Da
 ```{r ictal data}
 data("pt01Epochm3sp5s")
 head(pt01Epochm3sp5s)
+# seizure onset (soz) electrodes indices
 sozindex<-attr(pt01Epochm3sp5s,"sozindex")
+# seizure onset electrodes names
 soznames<-attr(pt01Epochm3sp5s,"soznames")
+# test patient data for consistency of soz indices and names
+valid<-valid_soz(ieegts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
+
 ```
 
 
@@ -74,7 +79,6 @@ fragplot
 ```
 
 ## Compute electrodes statistics of fragility map 
-
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
 time_window=c(-3,5)
@@ -87,27 +91,27 @@ fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 
 ## Plot Fragility distribution
 Plot fragility distribution for two electrodes group marked as soz non marked as soz
-```{r visualize_frag_auantile,out.width="100%"}
+```{r visualize_frag_distribution,out.width="100%"}
 time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
 fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-fragstatcurve=fragstat[-1]
 # plot the statistical results
-pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal)
+pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
 pfragstat
 ```
 
 ## Plot fragility quantile
 Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
-```{r visualize_frag_auantile,out.width="100%"}
+```{r visualize_frag_quantile,out.width="100%"}
 time_window=c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
 fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-plot_frag_quantile(qmatrix=fragstat[[1]], time_window_ictal=time_window_ictal)
+qfragplot<-plot_frag_quantile(stat=fragstat, time_window=time_window)
+qfragplot
 ```

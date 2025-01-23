@@ -24,11 +24,11 @@
 #'soznames<-attr(fragm3sp5s,"soznames")
 #'time_window <- c(-3,5)
 #'display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
-#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
+#'fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=soznames,time_window <- time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # save plot to file with ggplot2
-#'data("sozindex")
+#'data("fragm3sp5s")
 #'sozindex<-attr(fragm3sp5s,"sozindex")
 #'time_window <- c(-3,5)
 #'display <- c(sozindex,77:80)
@@ -42,6 +42,8 @@
 #' @export
 heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizure number",display=NULL){
   titlepng<-title
+  
+  
   if(is.null(display)){
     display<-1:nrow(frag)
   }
@@ -50,25 +52,86 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
     frag <- frag$frag
   }
 
+  
   elecname<-rownames(frag)
+  elecind=c(1:nrow(frag))
+  
+  
   if(typeof(display)=="integer"){  
+    
+    displaytot<-1:nrow(frag)
+    diffdisplaytot<-setdiff(display,displaytot)
+    
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(as.character(diffdisplaytot),collapse=" ")
+      message<-paste("ERROR in display electrodes indices. Number(s) ",listdisplaymissing,"are out of electrode number limit")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(as.character(display),collapse=" ")
+      message<-paste("Keeping indices.",displaycor)
+      warning(message)
+      
+    }  
     displayid<-display
+    
   }else{
     
+    diffdisplaytot<-setdiff(display,elecname)
+    
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(diffdisplaytot,collapse=" ")
+      message<-paste("ERROR in display electrodes names. Name(s) ",listdisplaymissing,"are out of name list")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(display,collapse=" ")
+      message<-paste("Keeping names.",displaycor)
+      warning(message)
+      
+    }  
+    
     displayid<-which(elecname%in%display)
+    
   }
+  
   fragdisplay<-frag[displayid,]
   n_elec <- nrow(fragdisplay)
   electot<-c(1:n_elec)
   
   if(typeof(elecsoz)=="integer"){  
-    elecsozi<-elecsoz
+    
+    diffelecind<-setdiff(elecsoz,elecind)
+    
+    if(length(diffelecind)!=0){
+      listelecmissing<-paste(as.character(diffelecind),collapse=" ")
+      message<-paste("ERROR in soz electrodes indices. Number(s) ",listelecmissing,"are out of electrode number limit")
+      warning(message)
+      elecsoz<-elecsoz[!elecsoz%in%diffelecind]
+      listsozcor<-paste(as.character(elecsoz),collapse=" ")
+      message<-paste("Keeping indices.",listsozcor)
+      warning(message)
+    }
+    elecsozid<-elecsoz
+    
   }else{
+
+    diffsoztot<-setdiff(elecsoz,elecname)
+    
+    if(length(diffsoztot)!=0){
+      listsozmissing<-paste(diffsoztot,collapse=" ")
+      message<-paste("ERROR in soz electrodes names. Name(s) ",listsozmissing,"are out of name list")
+      warning(message)
+      elecsoz<-elecsoz[!elecsoz%in%diffsoztot]
+      sozcor<-paste(elecsoz,collapse=" ")
+      message<-paste("Keeping names.",sozcor)
+      warning(message)
+      
+    }  
+    
     elecsozid<-which(elecname%in%elecsoz)
   }
 
-  elecsozd<-which(displayid%in%elecsozi)
-  elecsozcd<-which(!displayid%in%elecsozi)
+  elecsozd<-which(displayid%in%elecsozid)
+  elecsozcd<-which(!displayid%in%elecsozid)
   elecsozsozc<-c(elecsozd,elecsozcd)
 
   elecnum <- rownames(fragdisplay)
@@ -140,18 +203,44 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
  
   titlepng<- title
   if(is.null(display)){
-    display<-1:nrow(frag)
+    display<-1:ncol(ieegts)
   }
 
-  if(is(ieegts, "Fragility")){
-    ieegts <- ieegts$ieegts
-  }
   
   elecname<-colnames(ieegts)
   if(typeof(display)=="integer"){  
-    displayid<-display
-  }else{
+
+    displaytot<-1:nrow(frag)
+    diffdisplaytot<-setdiff(display,displaytot)
     
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(as.character(diffdisplaytot),collapse=" ")
+      message<-paste("ERROR in display electrodes indices. Numbers ",listdisplaymissing,"are out of electrode number limit")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(as.character(display),collapse=" ")
+      message<-paste("Keeping indices.",displaycor)
+      warning(message)
+      
+    }  
+  
+     displayid<-display
+     
+  }else{
+
+    diffdisplaytot<-setdiff(display,elecname)
+    
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(diffdisplaytot,collapse=" ")
+      message<-paste("ERROR in display electrodes names. Names ",listdisplaymissing,"are out of name list")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(display,collapse=" ")
+      message<-paste("Keeping names.",displaycor)
+      warning(message)
+      
+    }  
+        
     displayid<-which(elecname%in%display)
   }
   
@@ -211,13 +300,13 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
 #'fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-#' time_window<-c(-3,5)
-#' plot_frag_quantile(qmatrix=fragstat, time_window=time_window)
-plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quantiles over time"){
-  if(is(qmatrix, "FragStat")){
-    qmatrix <- qmatrix$qmatrix
-  }
+#'qfragplot<-plot_frag_quantile(stat=fragstat, time_window=time_window)
+#'qfragplot
+plot_frag_quantile<-function(stat, time_window = NULL,title="Fragility Quantiles over time"){
   
+  if(!is.null(stat)){
+    qmatrix<-stat$qmatrix
+  }
   nw <- ncol(qmatrix)
   if(is.null(time_window)){
     xlabel<-"Time Index"
@@ -235,18 +324,22 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
   
   titlepng <- title
   
-  ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
+  p<-ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(titlepng)+
     ggplot2::labs(x = xlabel, y = "Quantiles",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +  #
     
     ggplot2::theme_minimal() +
-    ggplot2::geom_vline(xintercept =0, 
-                        color = "black", linetype = "dashed", size = 1)+
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4),     # Adjust depending on electrodes
     )
+
+  if(!is.null(time_window)){
+    p <- p + ggplot2::geom_vline(xintercept =0, 
+                                 color = "black", linetype = "dashed", size = 1)}
+
+  return(p)
 }
 
 

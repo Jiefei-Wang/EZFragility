@@ -5,15 +5,16 @@
 \title{Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz}
 \usage{
 plot_frag_quantile(
-  qmatsozsozc,
-  time_window_ictal,
+  qmatrix,
+  time_window = NULL,
   title = "Fragility Quantiles over time"
 )
 }
 \arguments{
-\item{qmatsozsozc}{Numeric. quantile matrix for the two groups}
+\item{qmatrix}{Matrix or FragStat object, either a quantile matrix
+for the two groups or a FragStat object from \code{frag_stat}}
 
-\item{time_window_ictal}{Numeric. time window of processed ictal iEEG}
+\item{time_window}{Numeric Vector of length 2. The time window to display at the x-axis}
 
 \item{title}{String. Figure title}
 }
@@ -24,12 +25,12 @@ Quantile plot
 Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
 }
 \examples{
-time_window_ictal=c(-3,5)
+time_window <- c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-time_window_ictal<-c(-3,5)
-plot_frag_quantile( qmatsozsozc=fragstat[[1]], time_window_ictal=time_window_ictal)
+fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
+time_window<-c(-3,5)
+plot_frag_quantile(qmatrix=fragstat, time_window=time_window)
 }

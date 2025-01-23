@@ -5,17 +5,29 @@
 \title{Plot Fragility time distribution for two electrodes group marked and non-marked as soz}
 \usage{
 plot_frag_distribution(
-  statcurves,
-  time_window_ictal,
+  stat = NULL,
+  time_window = NULL,
+  cmeansoz = NULL,
+  cmeansozc = NULL,
+  csdsoz = NULL,
+  csdsozc = NULL,
   title = "Average Fragility over time"
 )
 }
 \arguments{
-\item{time_window_ictal}{time window of processed ictal iEEG}
+\item{stat}{FragStat object, a FragStat object from \code{frag_stat}, if specified, the arguments cmeansoz, cmeansozc, csdsoz, csdsozc will be ignored}
+
+\item{time_window}{Numeric Vector of length 2. The time window to display at the x-axis}
+
+\item{cmeansoz}{Numeric Vector. mean soz group in function of time window}
+
+\item{cmeansozc}{Numeric Vector. mean non soz group in function of time window}
+
+\item{csdsoz}{Numeric Vector. standard deviation soz group in function of time window}
+
+\item{csdsozc}{Numeric Vector. standard deviation non soz group in function of time window}
 
 \item{title}{String. Figure title}
-
-\item{statcurves.}{List of four numeric vectors for mean and standard deviation statistics over time of the two groups}
 }
 \value{
 plot fragility distribution
@@ -24,14 +36,13 @@ plot fragility distribution
 Plot Fragility time distribution for two electrodes group marked and non-marked as soz
 }
 \examples{
-time_window_ictal=c(-3,5)
+time_window <- c(-3,5)
 data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-fragstat=frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
-fragstatcurve=fragstat[-1]
+fragstat <- frag_stat(frag=fragm3sp5s, elecsoz=sozindex)
 # plot the statistical results
-pfragstat<-plot_frag_distribution(statcurves=fragstatcurve,time_window_ictal=time_window_ictal)
+pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
 pfragstat
 }
