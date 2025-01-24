@@ -43,11 +43,11 @@ data("fragm3sp5s")
 soznames<-attr(fragm3sp5s,"soznames")
 time_window <- c(-3,5)
 display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
-fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
+fragplot<-heatmap_frag(frag=fragm3sp5s,elecsoz=soznames,time_window <- time_window,title="PT01 seizure 1",display=display)
 fragplot
 
 # save plot to file with ggplot2
-data("sozindex")
+data("fragm3sp5s")
 sozindex<-attr(fragm3sp5s,"sozindex")
 time_window <- c(-3,5)
 display <- c(sozindex,77:80)

@@ -19,7 +19,7 @@ devtools::load_all()
 The package contains an example data. To see it, type
 
 ``` r
-ptEpoch
+pt01Epoch
 ```
 
 For your test code, please consider creating a folder scripts and put

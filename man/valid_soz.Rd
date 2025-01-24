@@ -4,10 +4,10 @@
 \alias{valid_soz}
 \title{validate seizure onset data}
 \usage{
-valid_soz(ieegts, sozindex, soznames)
+valid_soz(ieeg_ts, sozindex, soznames)
 }
 \arguments{
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+\item{ieeg_ts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
 
 \item{sozindex}{Integer. Vector soz electrodes}
@@ -24,6 +24,6 @@ validate seizure onset data
 data("pt01Epochm3sp5s")
 sozindex<-attr(pt01Epochm3sp5s,"sozindex")
 soznames<-attr(pt01Epochm3sp5s,"soznames")
-valid<-valid_soz(ieegts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
+valid<-valid_soz(ieeg_ts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
 
 }

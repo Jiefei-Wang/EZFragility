@@ -196,10 +196,10 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 #'sozindex<-attr(pt01Epochm3sp5s,"sozindex")
 #'display <- c(sozindex,77:80)
 #'time_window <- c(-3,5)
-#'iEEGplot<-visuiEEGdata(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
+#'iEEGplot<-visu_iEEG_data(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
 #'iEEGplot
 #' @export
-visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure number", display=NULL){
+visu_iEEG_data<-function(ieegts, time_window=NULL, title = "Patient name seizure number", display=NULL){
  
   titlepng<- title
   if(is.null(display)){
@@ -210,7 +210,7 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
   elecname<-colnames(ieegts)
   if(typeof(display)=="integer"){  
 
-    displaytot<-1:nrow(frag)
+    displaytot<-1:nrow(ieegts)
     diffdisplaytot<-setdiff(display,displaytot)
     
     if(length(diffdisplaytot)!=0){
@@ -252,11 +252,11 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
   nt<-nrow(plotData)
   if(is.null(time_window)){
     xlabel<-"Time Index"
-    stimes<-seq_len(nw)
+    stimes<-seq_len(nt)
   }
   else{
     xlabel<-"Time (s)"
-    stimes<-seq(time_window[1],time_window[2],length.out=nw)
+    stimes<-seq(time_window[1],time_window[2],length.out=nt)
   }
 
 
