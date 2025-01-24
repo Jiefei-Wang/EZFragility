@@ -39,7 +39,7 @@ Authors@R:
     role = "ctb")
     )
 Description: Calculate fragility matrix based on intracranial electrocorticographic (iEEG) recordings. The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

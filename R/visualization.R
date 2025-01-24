@@ -46,6 +46,8 @@
 #' @export
 heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizure number",display=NULL){
   titlepng<-title
+  
+  
   if(is.null(display)){
     display<-1:nrow(frag$frag)
   }
@@ -54,25 +56,86 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
     frag <- frag$frag
   }
 
+  
   elecname<-rownames(frag)
+  elecind=c(1:nrow(frag))
+  
+  
   if(typeof(display)=="integer"){  
+    
+    displaytot<-1:nrow(frag)
+    diffdisplaytot<-setdiff(display,displaytot)
+    
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(as.character(diffdisplaytot),collapse=" ")
+      message<-paste("ERROR in display electrodes indices. Number(s) ",listdisplaymissing,"are out of electrode number limit")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(as.character(display),collapse=" ")
+      message<-paste("Keeping indices.",displaycor)
+      warning(message)
+      
+    }  
     displayid<-display
+    
   }else{
     
+    diffdisplaytot<-setdiff(display,elecname)
+    
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(diffdisplaytot,collapse=" ")
+      message<-paste("ERROR in display electrodes names. Name(s) ",listdisplaymissing,"are out of name list")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(display,collapse=" ")
+      message<-paste("Keeping names.",displaycor)
+      warning(message)
+      
+    }  
+    
     displayid<-which(elecname%in%display)
+    
   }
+  
   fragdisplay<-frag[displayid,]
   n_elec <- nrow(fragdisplay)
   electot<-c(1:n_elec)
   
   if(typeof(elecsoz)=="integer"){  
-    elecsozi<-elecsoz
+    
+    diffelecind<-setdiff(elecsoz,elecind)
+    
+    if(length(diffelecind)!=0){
+      listelecmissing<-paste(as.character(diffelecind),collapse=" ")
+      message<-paste("ERROR in soz electrodes indices. Number(s) ",listelecmissing,"are out of electrode number limit")
+      warning(message)
+      elecsoz<-elecsoz[!elecsoz%in%diffelecind]
+      listsozcor<-paste(as.character(elecsoz),collapse=" ")
+      message<-paste("Keeping indices.",listsozcor)
+      warning(message)
+    }
+    elecsozid<-elecsoz
+    
   }else{
-    elecsozi<-which(elecname%in%elecsoz)
+
+    diffsoztot<-setdiff(elecsoz,elecname)
+    
+    if(length(diffsoztot)!=0){
+      listsozmissing<-paste(diffsoztot,collapse=" ")
+      message<-paste("ERROR in soz electrodes names. Name(s) ",listsozmissing,"are out of name list")
+      warning(message)
+      elecsoz<-elecsoz[!elecsoz%in%diffsoztot]
+      sozcor<-paste(elecsoz,collapse=" ")
+      message<-paste("Keeping names.",sozcor)
+      warning(message)
+      
+    }  
+    
+    elecsozid<-which(elecname%in%elecsoz)
   }
 
-  elecsozd<-which(displayid%in%elecsozi)
-  elecsozcd<-which(!displayid%in%elecsozi)
+  elecsozd<-which(displayid%in%elecsozid)
+  elecsozcd<-which(!displayid%in%elecsozid)
   elecsozsozc<-c(elecsozd,elecsozcd)
 
   elecnum <- rownames(fragdisplay)
@@ -141,25 +204,51 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 #'
 #' display <- c(sozindex,77:80)
 #' time_window <- c(-1,2)
-#' iEEGplot<-visuiEEGdata(ieegts=pt01Epochm1sp2s,time_window=time_window,display=display)
+#' iEEGplot<-visu_iEEG_data(ieegts=pt01Epochm1sp2s,time_window=time_window,display=display)
 #' iEEGplot
 #' @export
-visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure number", display=NULL){
+visu_iEEG_data<-function(ieegts, time_window=NULL, title = "Patient name seizure number", display=NULL){
  
   titlepng<- title
   if(is.null(display)){
-    display<-1:nrow(frag)
+    display<-1:ncol(ieegts)
   }
 
-  if(is(ieegts, "Fragility")){
-    ieegts <- ieegts$ieegts
-  }
   
   elecname<-colnames(ieegts)
   if(typeof(display)=="integer"){  
-    displayid<-display
-  }else{
+
+    displaytot<-1:nrow(ieegts)
+    diffdisplaytot<-setdiff(display,displaytot)
     
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(as.character(diffdisplaytot),collapse=" ")
+      message<-paste("ERROR in display electrodes indices. Numbers ",listdisplaymissing,"are out of electrode number limit")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(as.character(display),collapse=" ")
+      message<-paste("Keeping indices.",displaycor)
+      warning(message)
+      
+    }  
+  
+     displayid<-display
+     
+  }else{
+
+    diffdisplaytot<-setdiff(display,elecname)
+    
+    if(length(diffdisplaytot)!=0){
+      listdisplaymissing<-paste(diffdisplaytot,collapse=" ")
+      message<-paste("ERROR in display electrodes names. Names ",listdisplaymissing,"are out of name list")
+      warning(message)
+      display<-display[!display%in%diffdisplaytot]
+      displaycor<-paste(display,collapse=" ")
+      message<-paste("Keeping names.",displaycor)
+      warning(message)
+      
+    }  
+        
     displayid<-which(elecname%in%display)
   }
   
@@ -171,11 +260,11 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
   nt<-nrow(plotData)
   if(is.null(time_window)){
     xlabel<-"Time Index"
-    stimes<-seq_len(nw)
+    stimes<-seq_len(nt)
   }
   else{
     xlabel<-"Time (s)"
-    stimes<-seq(time_window[1],time_window[2],length.out=nw)
+    stimes<-seq(time_window[1],time_window[2],length.out=nt)
   }
 
 
@@ -244,18 +333,22 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
   
   titlepng <- title
   
-  ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
+  p<-ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(titlepng)+
     ggplot2::labs(x = xlabel, y = "Quantiles",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +  #
     
     ggplot2::theme_minimal() +
-    ggplot2::geom_vline(xintercept =0, 
-                        color = "black", linetype = "dashed", size = 1)+
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4),     # Adjust depending on electrodes
     )
+
+  if(!is.null(time_window)){
+    p <- p + ggplot2::geom_vline(xintercept =0, 
+                                 color = "black", linetype = "dashed", size = 1)}
+
+  return(p)
 }
 
 
