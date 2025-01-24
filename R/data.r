@@ -14,13 +14,13 @@
 #' ## EEG data
 #' data(pt01Epoch)
 #' 
-#' ## pt01Fragility Object
-#' data(pt01Fragility)
+#' ## pt01Fragm1sp2s Object
+#' data(pt01Fragm1sp2s)
 #'
 #' @format 
 #' pt01Epoch: A Matrix with 20001 rows (time points) and 84 columns (electrodes)
 #' 
-#' pt01Fragility: A fragility object result of example 2 for 
+#' pt01Fragm1sp2s: A fragility object result of example 2 for 
 #' calc_adj_frag function help with and 84 columns (electrodes)
 #'  [-1:2]s around the seizure onset
 #'
@@ -29,6 +29,6 @@
 #' @source Fragility Multi-Center Retrospective Study
 #' (\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
 #' 
-#' @aliases pt01Epoch pt01Fragility
+#' @aliases pt01Epoch pt01Fragm1sp2s
 "pt01Epoch"
 

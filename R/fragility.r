@@ -151,9 +151,9 @@ fragilityRow <- function(A, n_search = 100) {
 #' @export
 #'
 #' @examples
-#' data("pt01Fragility")
+#' data("pt01Fragm1sp2s")
 #' data("elecsoz")
-#' fragstat<-frag_stat(frag=pt01Fragility, elecsoz=elecsoz)
+#' fragstat<-frag_stat(frag=pt01Fragm1sp2s, elecsoz=elecsoz)
 frag_stat <- function(frag, elecsoz){
   if (is(frag, "Fragility")) {
     frag <- frag$frag

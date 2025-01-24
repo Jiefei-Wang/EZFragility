@@ -30,5 +30,5 @@ t_window <- 250
 t_step <- 125
 lambda <- NULL
 nSearch <- 10
-pt01Fragility <- calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
-usethis::use_data(pt01Fragility, overwrite = TRUE)
+pt01Fragm1sp2s <- calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
+usethis::use_data(pt01Fragm1sp2s, overwrite = TRUE)

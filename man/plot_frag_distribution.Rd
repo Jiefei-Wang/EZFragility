@@ -41,11 +41,11 @@ sozindex<-attr(pt01Epoch,"sozindex")
 
 ## Load the precomputed fragility object
 time_window <- c(-1,2)
-data("pt01Fragility")
+data("pt01Fragm1sp2s")
 
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-fragstat <- frag_stat(frag=pt01Fragility, elecsoz=sozindex)
+fragstat <- frag_stat(frag=pt01Fragm1sp2s, elecsoz=sozindex)
 # plot the statistical results
 pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
 pfragstat
