@@ -1,3 +1,51 @@
+RIDGE <- function(xt, xtp1, lambda) {
+  glmnetDefArgs <- list(alpha = 0, standardize = FALSE, intercept = FALSE)
+  n <- ncol(xt)
+  fn <- \(i) {
+    ARGS <- c(list(x = xt, y = xtp1[, i], lambda = lambda), glmnetDefArgs)
+    do.call(glmnet::glmnet, ARGS)[["beta"]]@x
+  }
+  vapply(seq_len(n), fn, numeric(n)) |> structure(lambda = lambda)
+}
+
+RIDGESearchLambdaDichomotomy <- function(xt, xtp1) {
+  if (!identical(dim(xt), dim(xtp1))) stop("Unmatched dimension")
+  e <- environment()
+  low = current = lambdaopt <- 0.0001
+  high = 10
+  A <- RIDGE(xt, xtp1, current)
+  isStable <- \(e) (eigen(e$A)$values |> Mod() |> max()) < 1
+  updateRange <- \(e) {
+    if (isStable(e)) {
+      e$high <- e$current
+      e$lambdaopt <- e$current
+    }
+    else {
+      e$low <- e$current
+      e$lambdaopt <- e$high
+    }
+    (e$high - e$low) < .01
+  }
+  
+  if (!isStable(e)) {
+    for (i in seq_len(20L)) {
+      current <- (low + high) * .5
+      A <- RIDGE(xt, xtp1, current)
+      if (updateRange(e)) break
+    }
+  }
+  if (current != lambdaopt) A <- RIDGE(xt, xtp1, lambdaopt)
+  structure(A, lambda = lambdaopt)
+}
+
+RidgeRSQ <- function(xt, xtp1, A) {
+  E <- xtp1 - xt %*% A
+  yc <- t(t(xtp1) - colMeans(xtp1))
+  sse <- diag(crossprod(E))
+  sst <- diag(crossprod(yc))
+  1 - sse / sst
+}
+
 #' fit a generalized linear model to compute adjacency matrix A 
 #' 
 #' A x(t) = x(t+1)

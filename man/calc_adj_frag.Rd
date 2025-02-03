@@ -12,7 +12,7 @@ Nat Neurosci. 2021 Oct;24(10):1465–74
 We have found solutions to fill up missing details in the paper method description
 }
 \usage{
-calc_adj_frag(ieegts, t_window, t_step, lambda = NULL, nSearch)
+calc_adj_frag(ieegts, t_window, t_step, lambda = NULL, nSearch = 10)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
@@ -26,7 +26,8 @@ with time points as rows and electrodes names as columns}
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
-\item{nSearch}{Integer. Number of minimization to compute the fragility row}
+\item{nSearch}{Integer. Number of minimization to compute the fragility row,
+default 10.}
 }
 \value{
 A list containing the normalized ieegts,
