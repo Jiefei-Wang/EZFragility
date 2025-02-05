@@ -11,7 +11,7 @@ html_preview: false
 library("badger")
 ```
 
-# EZFragility: Epileptogenic Zone Localization Based on Fragility Index
+# EZFragility: Epileptogenic Zone Localization Based on neural Fragility EEG marker
 ```{r, echo = FALSE, results='asis', warning=FALSE, message=FALSE}
 url <- "Jiefei-Wang/EZFragility"
 cat(
@@ -37,6 +37,10 @@ The package contains an example data. To see it, type
 pt01Epoch
 ```
 For your test code, please consider creating a folder scripts and put your code there. This folder will be ignored by git.
+
+## INTRODUCTION
+
+## EZFRAGILITY PACKAGE TUTORIAL
 
 ## TODO:
 
