@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# EZFragility: Epileptogenic Zone Localization Based on Fragility Index
+# EZFragility: Epileptogenic Zone Localization Based on neural Fragility EEG marker
 
 [![](https://img.shields.io/badge/devel%20version-0.99.0-blue.svg)](https://github.com/Jiefei-Wang/EZFragility)
 [![](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -24,6 +24,10 @@ pt01Epoch
 
 For your test code, please consider creating a folder scripts and put
 your code there. This folder will be ignored by git.
+
+## INTRODUCTION
+
+## EZFRAGILITY PACKAGE TUTORIAL
 
 ## TODO:
 
