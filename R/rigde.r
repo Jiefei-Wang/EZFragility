@@ -1,41 +1,30 @@
-RIDGE <- function(xt, xtp1, lambda) {
-  glmnetDefArgs <- list(alpha = 0, standardize = FALSE, intercept = FALSE)
-  n <- ncol(xt)
-  fn <- \(i) {
-    ARGS <- c(list(x = xt, y = xtp1[, i], lambda = lambda), glmnetDefArgs)
-    do.call(glmnet::glmnet, ARGS)[["beta"]]@x
+RIDGE <- function(x, x1, l) {
+  n <- ncol(x)
+  cb <- \(i) { glmnet::glmnet(x = x, y = x1[, i], lambda = l,
+    nlambda = 1, alpha = 0, standardize = FALSE, intercept = FALSE,
+    family = "gaussian", type.gaussian = "covariance" )[["beta"]]@x
   }
-  vapply(seq_len(n), fn, numeric(n)) |> structure(lambda = lambda)
+  A <- vapply(seq_len(n), cb, numeric(n), USE.NAMES = FALSE)
+  isStable <- (eigen(A, FALSE, TRUE)$values |> Mod() |> max()) < 1.0
+  structure(A, lambda = l, stable = isStable)
 }
 
 RIDGESearchLambdaDichomotomy <- function(xt, xtp1) {
   if (!identical(dim(xt), dim(xtp1))) stop("Unmatched dimension")
   e <- environment()
-  low = current = lambdaopt <- 0.0001
-  high = 10
-  A <- RIDGE(xt, xtp1, current)
-  isStable <- \(e) (eigen(e$A)$values |> Mod() |> max()) < 1
-  updateRange <- \(e) {
-    if (isStable(e)) {
-      e$high <- e$current
-      e$lambdaopt <- e$current
-    }
-    else {
-      e$low <- e$current
-      e$lambdaopt <- e$high
-    }
-    (e$high - e$low) < .01
-  }
-  
-  if (!isStable(e)) {
+  low = lmbd <- 1e-4
+  high <- 10.0
+  A <- RIDGE(xt, xtp1, lmbd)
+  if (!attr(A, "stable")) {
     for (i in seq_len(20L)) {
-      current <- (low + high) * .5
-      A <- RIDGE(xt, xtp1, current)
-      if (updateRange(e)) break
+      lmbd <- (low + high) * .5
+      A <- RIDGE(xt, xtp1, lmbd)
+      if (attr(A, "stable")) high <- lmbd
+      else low <- lmbd
+      if (high - low < 0.01) break
     }
   }
-  if (current != lambdaopt) A <- RIDGE(xt, xtp1, lambdaopt)
-  structure(A, lambda = lambdaopt)
+  structure(A, lambda = lmbd)
 }
 
 RidgeRSQ <- function(xt, xtp1, A) {
@@ -43,16 +32,16 @@ RidgeRSQ <- function(xt, xtp1, A) {
   yc <- t(t(xtp1) - colMeans(xtp1))
   sse <- diag(crossprod(E))
   sst <- diag(crossprod(yc))
-  1 - sse / sst
+  1.0 - sse / sst
 }
 
-#' fit a generalized linear model to compute adjacency matrix A 
-#' 
+#' fit a generalized linear model to compute adjacency matrix A
+#'
 #' A x(t) = x(t+1)
 #'
-#' @param xt matrix. iEEG time series for a given window, 
+#' @param xt matrix. iEEG time series for a given window,
 #' with time points as rows and electrodes names as columns
-#' @param xtp1 matrix. the iEEG time serie at the next time point, 
+#' @param xtp1 matrix. the iEEG time serie at the next time point,
 #' with time points as rows and electrodes names as columns
 #' @param lambda Numeric Vector. A user supplied lambda sequence.
 #' @param intercept Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)
@@ -92,11 +81,11 @@ ridge <- function(xt, xtp1, lambda, intercept = FALSE) {
 }
 
 
-#' computes R2 
-#' 
+#' computes R2
+#'
 #' @inheritParams ridge
 #' @param A adjacency matrix
-#' 
+#'
 ridgeR2 <- function(xt, xtp1, A) {
   nel <- ncol(xt)
   ypredMat <- predictRidge(xt, A)
@@ -116,11 +105,11 @@ ridgeR2 <- function(xt, xtp1, A) {
 
 
 #' Ridge Regression for Electrode Readings
-#' 
+#'
 #' Ridge regression to compute matrix adjancency matrix A such as A xt = xtpt1
 #' the lambda parmeter is found by dichotomy such that A is stable
 #' (all eigenvalues have a norm less than one)
-#' 
+#'
 #' @inheritParams ridge
 #'
 #' @return adjacency matrix Afin with lambda as attribute

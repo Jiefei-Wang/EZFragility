@@ -44,13 +44,14 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 3.5)
+    R (>= 4.2)
 LazyData: true
 Imports: 
     ggplot2,
     viridis,
     ggtext,
-    glue
+    glue,
+    glmnet
 Suggests: 
     knitr,
     rmarkdown,

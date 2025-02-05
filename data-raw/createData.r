@@ -1,34 +1,21 @@
 ## load pt01epochdata.mat
-## Patient PT01 from the Fragility data set
 
 library(R.matlab)
 library(readxl)
-data <- readMat('data-raw/pt01epochdata.mat')
-pt01Epoch <- data$a
+data <- readMat('pt01epochdata.mat')
+ptEpoch <- data$a
 
 ## add channel names to the rows
 goodChannels <- c(1:4,7:36,42:43,46:69,72:95)
-sozChannels<-c(33:34,62:69)
 channelNames <- read_excel('data-raw/Pt01ictalRun01EcoGChannels.xls')
-rownames(pt01Epoch) <- channelNames$name[goodChannels]
-sozindex<-which(goodChannels%in%sozChannels==TRUE)
-soznames<-channelNames$name[sozChannels]
+rownames(ptEpoch) <- channelNames$name[goodChannels]
 
 ## Add time stamps to the columns
-times <- seq(-10, 10, length.out=ncol(pt01Epoch))
+times <- seq(-10, 10, length.out=ncol(ptEpoch))
 times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
-colnames(pt01Epoch)<-times_with_sign
+colnames(ptEpoch) <- paste0('t', times_with_sign)
 
-pt01Epoch <- t(pt01Epoch)
-attr(pt01Epoch, "sozindex") <- sozindex
-attr(pt01Epoch, "soznames") <- soznames
-usethis::use_data(pt01Epoch, overwrite = TRUE)
+ptEpoch <- t(ptEpoch)
 
+usethis::use_data(ptEpoch, overwrite = TRUE)
 
-## load fragility matrix
-t_window <- 250
-t_step <- 125
-lambda <- NULL
-nSearch <- 10
-pt01Fragility <- calc_adj_frag(ieegts = pt01Epochm1sp2s, t_window = t_window, t_step = t_step, lambda = lambda,nSearch=nSearch)
-usethis::use_data(pt01Fragility, overwrite = TRUE)
