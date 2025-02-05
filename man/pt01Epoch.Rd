@@ -3,14 +3,13 @@
 \docType{data}
 \name{pt01Epoch}
 \alias{pt01Epoch}
-\alias{pt01Fragm1sp2s}
+\alias{pt01Frag}
 \title{Pt01 seizure 1 (-10:10s) around seizure onset}
 \format{
 pt01Epoch: A Matrix with 20001 rows (time points) and 84 columns (electrodes)
 
-pt01Fragm1sp2s: A fragility object result of example 2 for
+pt01Frag: A fragility object result of example 3 for
 calc_adj_frag function help with and 84 columns (electrodes)
-\link{-1:2}s around the seizure onset
 }
 \source{
 Fragility Multi-Center Retrospective Study
@@ -19,9 +18,6 @@ Fragility Multi-Center Retrospective Study
 \usage{
 ## EEG data
 data(pt01Epoch)
-
-## pt01Fragm1sp2s Object
-data(pt01Fragm1sp2s)
 }
 \description{
 This data corresponds to the first seizure of patient PT01 from

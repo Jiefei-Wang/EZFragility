@@ -48,6 +48,8 @@ Depends:
 LazyData: true
 Imports: 
     ggplot2,
+    glmnet,
+    methods,
     viridis,
     ggtext,
     glue

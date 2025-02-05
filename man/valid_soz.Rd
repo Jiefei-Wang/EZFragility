@@ -21,9 +21,9 @@ boolean
 validate seizure onset data
 }
 \examples{
-data("pt01Epochm3sp5s")
-sozindex<-attr(pt01Epochm3sp5s,"sozindex")
-soznames<-attr(pt01Epochm3sp5s,"soznames")
-valid<-valid_soz(ieegts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
+data("pt01Epoch")
+sozindex<-attr(pt01Epoch,"sozindex")
+soznames<-attr(pt01Epoch,"soznames")
+valid<-valid_soz(ieegts=pt01Epoch,sozindex=sozindex,soznames=soznames)
 
 }

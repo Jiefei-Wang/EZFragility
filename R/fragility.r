@@ -82,7 +82,7 @@ fragilityRow <- function(A, n_search = 100) {
   me <- max(e)
 
   if (me >= 1) {
-    #return(0)
+    return(0)
   }
 
 
@@ -151,9 +151,10 @@ fragilityRow <- function(A, n_search = 100) {
 #' @export
 #'
 #' @examples
-#' data("pt01Fragm1sp2s")
-#' data("elecsoz")
-#' fragstat<-frag_stat(frag=pt01Fragm1sp2s, elecsoz=elecsoz)
+#' data("pt01Frag")
+#' data("pt01Epoch")
+#' sozindex<-attr(pt01Epoch,"sozindex")
+#' fragstat<-frag_stat(frag=pt01Frag, elecsoz=sozindex)
 frag_stat <- function(frag, elecsoz){
   if (is(frag, "Fragility")) {
     frag <- frag$frag
