@@ -3,6 +3,7 @@ stat = fstat   <- NULL
 nelec <- 10
 ntime <- 100
 elecsoz <- c(1, 2, 3)
+sozindex <- attr(pt01Epoch, "sozindex")
 
 
 test_that("calc_adj_frag", {
@@ -48,11 +49,32 @@ test_that("fragStat", {
 })
 
 test_that("heatmap_frag", {
-    # skip_if(!is(frag, "Fragility"))
-    ## Why this does not work?
-    sozindex <- attr(pt01Epoch, "sozindex")
-    heatmap_frag(pt01Fragility, sozindex, c(-1,2), " ", c(sozindex,77:80)) |>
-        expect_no_error()
+    heatmap_frag(
+        pt01Fragility,
+        sozindex,
+        c(-1,2),
+        " ",
+        c(sozindex, 77:80)
+        ) |> expect_no_error()
+})
+
+test_that("heatmap_frag", {
+    heatmap_frag(
+        frag        = pt01Fragility,
+        elecsoz     = sozindex,
+        time_window = c(-1,2),
+        title       = " ",
+        display     = c(sozindex, 77:80)
+    ) |> expect_no_error()
+})
+
+test_that("visu_iEEG_data", {
+    visu_iEEG_data(
+        ieegts      = pt01Epoch[9001:12000, ],
+        time_window = c(-1, 2),
+        title       = " ",
+        display     = c(sozindex, 77:80)
+    ) |> expect_no_error()
 })
 
 
