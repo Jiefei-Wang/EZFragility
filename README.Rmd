@@ -1,8 +1,9 @@
 ---
 output:
   md_document:
-    variant: gfm
-html_preview: false
+    variant: markdown_github
+  bibliography: bibliography.bib
+html_preview: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->

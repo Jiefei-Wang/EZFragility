@@ -36,12 +36,12 @@ your code there. This folder will be ignored by git.
 
 ## TODO:
 
-- Exported function names and parameters to snake case(e.g. nSearch -\>
-  n_search)
-- Unit test
-- Vignette
-- Check examples in the function documentation to make sure they are
-  working
-- Make sure all required functions/class have been exported
-- Clear all error and warning in `devtools::check()` and
-  `R CMD check --as-cran`
+-   Exported function names and parameters to snake case(e.g. nSearch
+    -\> n_search)
+-   Unit test
+-   Vignette
+-   Check examples in the function documentation to make sure they are
+    working
+-   Make sure all required functions/class have been exported
+-   Clear all error and warning in `devtools::check()` and
+    `R CMD check --as-cran`
