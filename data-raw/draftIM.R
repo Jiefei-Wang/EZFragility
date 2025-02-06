@@ -1,13 +1,8 @@
 ## We will use data from -1s to 2s around the seizure onset
 
 
-iEEGts <- pt01Epoch[9001:12000,]
-
-idx <- seq_len(nrow(iEEGts))
-idx <- 1:250
-
 argL <- list(
-  ieegts = iEEGts[idx, ],
+  ieegts = pt01Epoch[9001:12000,],
   t_window = 250,
   t_step = 125,
   lambda = NULL,
@@ -101,7 +96,7 @@ R2 <- function(xt, xtp1) {
 }
 
 ieegts <- pt01Epoch[1:750, ]
-ieegts <- ieegts/ 10^floor(log10(max(ieegts)))
+# ieegts <- ieegts/ 10^floor(log10(max(ieegts)))
 argL <- list(
   ieegts = ieegts,
   t_window = 250,
@@ -164,3 +159,47 @@ myRigde <- function(x, x1, l) {
   vapply(seq_len(n), cb, numeric(n), USE.NAMES = FALSE) |> structure(lambda = l)
 }
 
+#' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+#'
+#' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calc_adj_frag}
+#' @param elecsoz Integer.  Vector soz electrodes (for good electrodes)
+#'
+#'
+#' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
+#' @export
+#'
+#' @examples
+#' data("pt01Fragility")
+#' data("elecsoz")
+#' fragstat<-frag_stat(frag=pt01Fragility, elecsoz=elecsoz)
+
+frag_stat <- function(frag, sozID) {
+  if (is(frag, "Fragility")) frag <- frag$frag
+  if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
+  steps <- ncol(frag)
+  sozCID <- which(!(seq_len(nrow(frag)) %in% sozID)) 
+  hmapSOZ  <- frag[sozID,  , drop = FALSE]
+  hmapSOZC <- frag[sozCID, , drop = FALSE]
+  muSOZ  <- colMeans(hmapSOZ)
+  muSOZC <- colMeans(hmapSOZC)
+  sdSOZ  <- apply(hmapSOZ,  2L, sd)
+  sdSOZC <- apply(hmapSOZC, 2L, sd)
+  Q <- seq(.1, 1, by = .1)
+  qmatrix <- rbind(
+    apply(hmapSOZ,  2, quantile, Q),
+    apply(hmapSOZC, 2, quantile, Q)
+  )
+  rowPrefix <- rep(c("SOZ", "SOZC"), each = 10)
+  dimN <- dimnames(qmatrix)
+  dimnames(qmatrix) <- list(
+    Quantiles = paste0(rowPrefix, dimN[[1L]]),
+    Step      = dimN[[2L]]
+  )
+  FragStat(
+    qmatrix   = qmatrix,
+    cmeansoz  = muSOZ,
+    cmeansozc = muSOZC,
+    csdsoz    = sdSOZ,
+    csdsozc   = sdSOZC
+  )
+}

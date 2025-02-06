@@ -1,0 +1,48 @@
+---
+title: "benchmark"
+author: "Ioannis Malagaris"
+date: "2025-02-06"
+output: 
+  html_document: 
+    highlight: espresso
+    theme: paper
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "")
+devtools::load_all()
+```
+
+## R Markdown
+
+### Create argument list using the example in the documentation
+```{r, cache=TRUE}
+argL <- list(
+  ieegts = pt01Epoch[9001:12000, ],
+  t_window = 250,
+  t_step = 125,
+  lambda = NULL,
+  nSearch = 100
+)
+```
+
+### Measure time it takes "**calc_adj_frag**" (old) to complete
+```{r, cache=TRUE}
+system.time({ 
+  fragOld <- do.call(calc_adj_frag, argL) 
+})
+```
+
+### Measure time it takes "**GetAdjFrag**" (new) to complete
+```{r, cache=TRUE}
+system.time({ 
+  fragNew <- do.call(GetAdjFrag, argL) 
+})
+```
+
+### Compare output
+```{r}
+print(fragOld)
+print(fragNew)
+```
+
