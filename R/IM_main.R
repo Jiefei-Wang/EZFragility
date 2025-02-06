@@ -1,4 +1,21 @@
-# Replaces calc_adj_frag (I don't like snake_case - I prefer CamelCase)
+#' Replaces calc_adj_frag (I don't like snake_case - I prefer CamelCase)
+#'
+#' Calculate adjacency matrices and fragility matrix from iEEG recording
+#' @param ieegts Numeric. A matrix of iEEG time series x(t),
+#' with time points as rows and electrodes names as columns
+#' @param t_window Integer. The number of time points to use in each window
+#' @param t_step Integer. The number of time points to move the window each time
+#' @param lambda Numeric. The lambda value to use in the ridge regression.
+#' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @return Fragility obj with adjacency matrices, fragility, and R^2 values
+#' @examples
+#' # A simple example
+#' GetAdjFrag(matrix(rnorm(100), 10), 10, 5, .1)
+#' # A more realistic example, but it will take a while to run
+#' \dontrun{
+#' resfrag <- GetAdjFrag(pt01Epoch[9001:12000,], 250, 125, NULL, 100)
+#' }
+#' @export
 GetAdjFrag <- function(ieegts, t_window, t_step, lambda = NULL, nSearch = 10L) {
   stopifnot(isWholeNumber(t_window))
   stopifnot(isWholeNumber(t_step))
@@ -110,7 +127,7 @@ ConsoleLogger <- \(e) {
     hFmt <- do.call(sprintf, c(list("%5s | %9s | %9s | %5s"), header))
     len <- nchar(hFmt)
     self$StepDash <- paste(rep("-", len + 1), collapse = "")
-    subTitle <- paste(rep("-", len - 12), collapse = "") 
+    subTitle <- paste(rep("-", len - 12), collapse = "")
     subtext <- "Runtime (sec)"
     id <- (1 + 0.5 * (nchar(subTitle) - nchar(subtext))) |> ceiling()
     substr(subTitle, id, id + nchar(subtext)) <- subtext

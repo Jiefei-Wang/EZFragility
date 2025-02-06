@@ -1,7 +1,7 @@
 #' Visualization functions (raw signal, fragility matrix)
-#' 
+#'
 #' plot fragility heatmaps with electrodes marked as soz colored
-#' 
+#'
 #' @inheritParams frag_stat
 #' @param elecsoz Integer or string. Vector soz electrodes (for good electrodes)
 #' @param time_window Numeric Vector of length 2. The time window to display at the x-axis
@@ -23,7 +23,7 @@
 #' # use electrodes name for display and soz electrodes
 #' data("pt01Epoch")
 #' soznames<-attr(pt01Epoch,"soznames")
-#' 
+#'
 #'data("pt01Fragility")
 #'time_window <- c(-1,2)
 #'display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
@@ -33,7 +33,7 @@
 #' # save plot to file with ggplot2
 #' data("pt01Epoch")
 #' sozindex<-attr(pt01Epoch,"sozindex")
-#' 
+#'
 #'time_window <- c(-1,2)
 #'display <- c(sozindex,77:80)
 #'pathplot <- "~"
@@ -42,30 +42,30 @@
 #'fragplot<-heatmap_frag(frag=pt01Fragility,elecsoz=sozindex,time_window=time_window,title=title,display=display)
 #'fragplot
 #'ggplot2::ggsave(resfile)
-#' 
+#'
 #' @export
 heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizure number",display=NULL){
   titlepng<-title
   if(is.null(display)){
     display<-1:nrow(frag$frag)
   }
-  
+
   if (is(frag, "Fragility")) {
     frag <- frag$frag
   }
 
   elecname<-rownames(frag)
-  if(typeof(display)=="integer"){  
+  if(typeof(display)=="integer"){
     displayid<-display
   }else{
-    
+
     displayid<-which(elecname%in%display)
   }
   fragdisplay<-frag[displayid,]
   n_elec <- nrow(fragdisplay)
   electot<-c(1:n_elec)
-  
-  if(typeof(elecsoz)=="integer"){  
+
+  if(typeof(elecsoz)=="integer"){
     elecsozi<-elecsoz
   }else{
     elecsozi<-which(elecname%in%elecsoz)
@@ -86,7 +86,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
   elecsozsozc<-rev(elecsozsozc)
   fragord<-fragdisplay[elecsozsozc,]
   fragdf<-data.frame(fragord)
-  
+
   if(is.null(time_window)){
     xlabel<-"Time Index"
     stimes<-seq_len(nw)
@@ -98,35 +98,36 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 
   colnames(fragdf)<-stimes
   rownames(fragdf)<-elecnum
-  
+
   elecnum<-rev(elecnum)
-  
+
   fragmap_data <- expand.grid(Time = stimes, Electrode = elecnum)
   fragmap_data$Value <- c(t(fragord))
 
-  
+
   p<-ggplot2::ggplot(fragmap_data, ggplot2::aes(x = Time, y = Electrode, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(as.character(titlepng)) +
     ggplot2::theme(plot.title=ggtext::element_markdown(hjust=0.5)) +
     ggplot2::labs(x = xlabel, y = "Electrode",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +
-    ggplot2::geom_vline(xintercept =0, 
-                  color = "black", linetype = "dashed", size = 1) +
+    ggplot2::geom_vline(xintercept =0,
+                  color = "black", linetype = "dashed", linewidth = 1) +
    ggplot2::theme_minimal() +
    ggplot2::theme(
-      axis.text.y = ggplot2::element_text(size=6,colour=colorelec),     # Adjust depending on electrodes
+     axis.text.y = ggtext::element_markdown(size=6,colour=colorelec),
+      # axis.text.y = ggplot2::element_text(size=6,colour=colorelec),     # Adjust depending on electrodes
     )
-  
+
   return(p)
 
 }
 
-#' Visualization of ictal iEEG 
+#' Visualization of ictal iEEG
 #'
 #' @inheritParams heatmap_frag
-#' @param ieegts Matrix or Fragility object. Either a matrix of iEEG time 
-#' series x(t), with time points as rows and electrodes names as columns, 
+#' @param ieegts Matrix or Fragility object. Either a matrix of iEEG time
+#' series x(t), with time points as rows and electrodes names as columns,
 #' or a Fragility object from \code{calc_adj_frag}
 #' @param title String. Figure title
 #' @param display Integer or string. Vector electrodes to display
@@ -135,7 +136,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 #' @examples
 #' data("pt01Epoch")
 #' sozindex <- attr(pt01Epoch,"sozindex")
-#' 
+#'
 #' ## We will use data from -1s to 2s around the seizure onset
 #' pt01Epochm1sp2s<-pt01Epoch[9001:12000,]
 #'
@@ -145,7 +146,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 #' iEEGplot
 #' @export
 visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure number", display=NULL){
- 
+
   titlepng<- title
   if(is.null(display)){
     display<-1:nrow(frag)
@@ -154,15 +155,15 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
   if(is(ieegts, "Fragility")){
     ieegts <- ieegts$ieegts
   }
-  
+
   elecname<-colnames(ieegts)
-  if(typeof(display)=="integer"){  
+  if(typeof(display)=="integer"){
     displayid<-display
   }else{
-    
+
     displayid<-which(elecname%in%display)
   }
-  
+
   scaling <- 10^floor(log10(max(ieegts)))
   plotData<-ieegts[,displayid]/scaling
   gaps<-2
@@ -185,19 +186,19 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
   }
   plotData<-data.frame(plotData)
   breakplot<-(c(1:n_elec)-1)*gaps
- 
+
   p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=stimes,y=plotData))+
   ggplot2::ggtitle(titlepng)+
-  ggplot2::labs(x = xlabel, y = "Electrode",size=2)+ 
-    ggplot2::geom_vline(xintercept =0, 
+  ggplot2::labs(x = xlabel, y = "Electrode",size=2)+
+    ggplot2::geom_vline(xintercept =0,
                   color = "black", linetype = "dashed", size = 1)
-  
+
   for(i in 1:n_elec){
       p<-p+ggplot2::geom_line(ggplot2::aes_string(y=names(plotData)[i]))
   }
   displayNames<-rev(displayNames)
   p<-p+ggplot2::scale_y_continuous(labels=displayNames,breaks=breakplot)
-  
+
   return(p)
 
 }
@@ -205,7 +206,7 @@ visuiEEGdata<-function(ieegts, time_window=NULL, title = "Patient name seizure n
 #' Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
 #'
 #' @inheritParams heatmap_frag
-#' @param qmatrix Matrix or FragStat object, either a quantile matrix 
+#' @param qmatrix Matrix or FragStat object, either a quantile matrix
 #' for the two groups or a FragStat object from \code{frag_stat}
 #' @param title String. Figure title
 #'
@@ -226,7 +227,7 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
   if(is(qmatrix, "FragStat")){
     qmatrix <- qmatrix$qmatrix
   }
-  
+
   nw <- ncol(qmatrix)
   if(is.null(time_window)){
     xlabel<-"Time Index"
@@ -241,17 +242,17 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
   quantilesname<-c(paste0("SOZ(", seq(10,100,by=10),")"),paste0("SOZc(", seq(10,100,by=10),")"))
   quantileplot<- expand.grid(Time = stimes, Stats=quantilesname)
   quantileplot$Value <- c(t(qmatrix))
-  
+
   titlepng <- title
-  
+
   ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(titlepng)+
     ggplot2::labs(x = xlabel, y = "Quantiles",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +  #
-    
+
     ggplot2::theme_minimal() +
-    ggplot2::geom_vline(xintercept =0, 
+    ggplot2::geom_vline(xintercept =0,
                         color = "black", linetype = "dashed", size = 1)+
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(size=4),     # Adjust depending on electrodes
@@ -275,11 +276,11 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
 #' @examples
 #' data("pt01Epoch")
 #' sozindex<-attr(pt01Epoch,"sozindex")
-#' 
+#'
 #' ## Load the precomputed fragility object
 #' time_window <- c(-1,2)
 #' data("pt01Fragility")
-#' 
+#'
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
 #'fragstat <- frag_stat(frag=pt01Fragility, elecsoz=sozindex)
@@ -287,7 +288,7 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
 #'pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
 #'pfragstat
 plot_frag_distribution<-function(
-  stat = NULL, 
+  stat = NULL,
   time_window = NULL,
   cmeansoz = NULL, cmeansozc = NULL, csdsoz = NULL, csdsozc = NULL,
   title='Average Fragility over time'){
@@ -297,7 +298,7 @@ plot_frag_distribution<-function(
     csdsoz <- stat$csdsoz
     csdsozc <- stat$csdsozc
   }
-  
+
   nw <- length(cmeansoz)
   if(is.null(time_window)){
     xlabel<-"Time Index"
@@ -308,12 +309,12 @@ plot_frag_distribution<-function(
     stimes<-seq(time_window[1],time_window[2],length.out=nw)
   }
 
-  
+
   sozsdp <- cmeansoz+csdsoz
   sozsdm <- cmeansoz-csdsoz
   sozcsdp <- cmeansozc+csdsozc
   sozcsdm <- cmeansozc-csdsozc
-  
+
   plotmeanstd<-as.data.frame(stimes)
   colnames(plotmeanstd)<-"times"
   plotmeanstd$meansoz<-cmeansoz
@@ -322,27 +323,27 @@ plot_frag_distribution<-function(
   plotmeanstd$meansozc<-cmeansozc
   plotmeanstd$sozcsdp<-sozcsdp
   plotmeanstd$sozcsdm<-sozcsdm
-  
+
   titlepng <- title
   colors<-c("SOZ +/- sem" = "red", "SOZc +/- sem" = "black")
   ggplot2::theme_grey(base_size = 22)
-  p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=times, y=cmeansoz))+ 
+  p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=times, y=cmeansoz))+
    ggplot2::xlab(xlabel)+
    ggplot2::ylab('Fragility')+
    ggplot2::ggtitle(titlepng)+
-   ggplot2::geom_line(ggplot2::aes(y = meansoz,color="SOZ +/- sem"))+  
-   ggplot2::geom_line(ggplot2::aes(y = sozsdp),color='red',linetype="dotted")+  
-   ggplot2::geom_line(ggplot2::aes(y = sozsdm),color='red',linetype="dotted")+ 
+   ggplot2::geom_line(ggplot2::aes(y = meansoz,color="SOZ +/- sem"))+
+   ggplot2::geom_line(ggplot2::aes(y = sozsdp),color='red',linetype="dotted")+
+   ggplot2::geom_line(ggplot2::aes(y = sozsdm),color='red',linetype="dotted")+
    ggplot2::geom_line(ggplot2::aes(y = meansozc,color="SOZc +/- sem"))+
-   ggplot2::geom_line(ggplot2::aes(y = sozcsdp),color='black',linetype="dotted")+  
+   ggplot2::geom_line(ggplot2::aes(y = sozcsdp),color='black',linetype="dotted")+
    ggplot2::geom_line(ggplot2::aes(y = sozcsdm),color='black',linetype="dotted")+
    ggplot2::geom_ribbon(ggplot2::aes(ymin=sozsdm,ymax=sozsdp), fill="red",alpha=0.5)+
-   ggplot2::geom_ribbon(ggplot2::aes(ymin=sozcsdm,ymax=sozcsdp), fill="black",alpha=0.5)+  
-   ggplot2::scale_color_manual(name="Electrode groups",values = c(colors)) 
-    
+   ggplot2::geom_ribbon(ggplot2::aes(ymin=sozcsdm,ymax=sozcsdp), fill="black",alpha=0.5)+
+   ggplot2::scale_color_manual(name="Electrode groups",values = c(colors))
+
   ## add vertical line at time 0 if time_window is specified
   if(!is.null(time_window)){
-    p <- p + ggplot2::geom_vline(xintercept =0, 
+    p <- p + ggplot2::geom_vline(xintercept =0,
                   color = "black", linetype = "dashed", size = 1)}
   return(p)
 }
