@@ -1,9 +1,6 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
-  bibliography: bibliography.bib
-html_preview: true
+output: github_document
+bibliography: "references.bib"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->

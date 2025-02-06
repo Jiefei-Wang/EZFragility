@@ -1,3 +1,4 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # EZFragility: Epileptogenic Zone Localization Based on neural Fragility EEG marker
@@ -13,7 +14,7 @@ coverage](https://codecov.io/gh/Jiefei-Wang/Fragility/graph/badge.svg)](https://
 ## Introduction
 
 The goal of this Rpackage is to allow the neuroscientists to reproduce
-and test the neural fragility methods described in \[@LiFragility2021\]
+and test the neural fragility methods described in (Ly et al. 2021)
 
 ## EZFragility package tutorial
 
@@ -36,12 +37,26 @@ your code there. This folder will be ignored by git.
 
 ## TODO:
 
--   Exported function names and parameters to snake case(e.g. nSearch
-    -\> n_search)
--   Unit test
--   Vignette
--   Check examples in the function documentation to make sure they are
-    working
--   Make sure all required functions/class have been exported
--   Clear all error and warning in `devtools::check()` and
-    `R CMD check --as-cran`
+- Exported function names and parameters to snake case(e.g. nSearch -\>
+  n_search)
+- Unit test
+- Vignette
+- Check examples in the function documentation to make sure they are
+  working
+- Make sure all required functions/class have been exported
+- Clear all error and warning in `devtools::check()` and
+  `R CMD check --as-cran`
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-LiFragility2021" class="csl-entry">
+
+Ly, Adam, Chester Huynh, Zhary Fitzgerald, Iahn Cajigas, and Damina
+Brusko. 2021. “Neural Fragility as an EEG Marker of the Seizure Onset
+Zone.” *Nature Neuroscience* 24 (10): 1465–74.
+<https://doi.org/10.1038/s41593-021-00901-w>.
+
+</div>
+
+</div>
