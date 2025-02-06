@@ -10,6 +10,13 @@
 [![Codecov test
 coverage](https://codecov.io/gh/Jiefei-Wang/Fragility/graph/badge.svg)](https://app.codecov.io/gh/Jiefei-Wang/Fragility)
 
+## Introduction
+
+The goal of this Rpackage is to allow the neuroscientists to reproduce
+and test the neural fragility methods described in \[@LiFragility2021\]
+
+## EZFragility package tutorial
+
 To load the package
 
 ``` r
@@ -25,9 +32,7 @@ pt01Epoch
 For your test code, please consider creating a folder scripts and put
 your code there. This folder will be ignored by git.
 
-## INTRODUCTION
-
-## EZFRAGILITY PACKAGE TUTORIAL
+## References
 
 ## TODO:
 
