@@ -11,7 +11,7 @@
 #' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
 #'
 #' @examples
-# use integer index for display and soz electrodes
+#' # use integer index for display and soz electrodes
 #' data("pt01Epoch")
 #' sozindex <- attr(pt01Epoch, "sozindex")
 #' data("pt01Frag")

@@ -1,6 +1,99 @@
 ## We will use data from -1s to 2s around the seizure onset
 
 
+si   <- i0 + (iw - 1L) * t_step
+
+fn <- \(win, tst, dat, mapDatRangeInSeconds) {
+  self <- environment()
+  dat <- dat;
+  w <- win;
+  u <- tst;
+  n <- nrow(dat);
+  tr <- mapDatRangeInSeconds
+  tm <- do.call(seq, as.list(c(tr, by = 1e-3)))[-(n + 1L)]
+  sb <- \(x, y = NULL) {
+    if (length(x) == 2L) {
+      y <- x[2L]
+      x <- x[1L]
+    }
+    else if (is.null(y)) return(dat[x  <= tm, ])
+    else if (is.null(x)) return(dat[tm <  y,  ])
+    dat[x <= tm & tm < y, ]
+  }
+  Step2Idx <- \(i) w + u * (i - 1L)
+  self
+}
+
+SubsetFragilityObj <- \(win, tst, frag, mapDatRangeInSeconds) {
+  self <- environment()
+  frag <- frag;
+  w <- win;
+  u <- tst;
+  dat <- frag@ieegts
+  n <- nrow(dat);
+  tr <- mapDatRangeInSeconds
+  steps <- dim(frag@adj)[3L]
+  Step2Idx <- \(i) w + u * (i - 1L)
+  idx2Step <- \(idx) (idx - w) %/% u + 1L
+  tm <- do.call(seq, as.list(c(tr, by = 1e-3)))[-(n + 1L)]
+  sb <- \(x, y = NULL) {
+    if (length(x) == 2L) {
+      y <- x[2L]
+      x <- x[1L]
+    }
+    else if (is.null(y)) return(dat[x  <= tm, ])
+    else if (is.null(x)) return(dat[tm <  y,  ])
+    dat[x <= tm & tm < y, ]
+  }
+  self
+}
+
+ff <- \(win, tst, frag, mapDatRangeInSeconds) {
+  self <- environment()
+  frag <- frag;
+  w <- win;
+  u <- tst;
+  n <- nrow(dat);
+  tr <- mapDatRangeInSeconds
+  tm <- do.call(seq, as.list(c(tr, by = 1e-3)))[-(n + 1L)]
+  sb <- \(x, y = NULL) {
+    if (length(x) == 2L) {
+      y <- x[2L]
+      x <- x[1L]
+    }
+    else if (is.null(y)) return(dat[x  <= tm, ])
+    else if (is.null(x)) return(dat[tm <  y,  ])
+    dat[x <= tm & tm < y, ]
+  }
+  Step2Idx <- \(i) w + u * (i - 1L)
+  self
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FragSlotOnly <- pt01Frag
+
+exList <- slotNames(FragSlotOnly) |>
+  (\(x) x[x != "frag"])() |>
+  lapply(\(i) substitute(FragSlotOnly@x <- NULL, list(x = i)))
+
+for (i in seq_along(exList)) eval(exList[[i]])
+
+
+
+lapply(sl, \(i) substitute(frag1@x <- NULL, list(x = i)))
+
 argL <- list(
   ieegts = pt01Epoch[9001:12000,],
   t_window = 250,
@@ -177,7 +270,7 @@ frag_stat <- function(frag, sozID) {
   if (is(frag, "Fragility")) frag <- frag$frag
   if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
   steps <- ncol(frag)
-  sozCID <- which(!(seq_len(nrow(frag)) %in% sozID)) 
+  sozCID <- which(!(seq_len(nrow(frag)) %in% sozID))
   hmapSOZ  <- frag[sozID,  , drop = FALSE]
   hmapSOZC <- frag[sozCID, , drop = FALSE]
   muSOZ  <- colMeans(hmapSOZ)

@@ -30,11 +30,11 @@ Visualization of ictal iEEG
 }
 \examples{
 data("pt01Epoch")
-sozindex <- attr(pt01Epoch,"sozindex")
+sozindex <- attr(pt01Epoch, "sozindex")
 ## We will use data from -3s to 5s around the seizure onset
-pt01Epochm3sp5s<-pt01Epoch[7001:15000,]
-display <- c(sozindex,77:80)
-time_window <- c(-3,5)
-iEEGplot<-visu_iEEG_data(ieegts=pt01Epochm3sp5s,time_window=time_window,display=display)
+pt01Epochm3sp5s <- pt01Epoch[7001:15000, ]
+display <- c(sozindex, 77:80)
+time_window <- c(-3, 5)
+iEEGplot <- visu_iEEG_data(ieegts = pt01Epochm3sp5s, time_window = time_window, display = display)
 iEEGplot
 }

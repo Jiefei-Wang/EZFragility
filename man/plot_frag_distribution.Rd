@@ -37,14 +37,14 @@ Plot Fragility time distribution for two electrodes group marked and non-marked 
 }
 \examples{
 data("pt01Epoch")
-sozindex<-attr(pt01Epoch,"sozindex")
+sozindex <- attr(pt01Epoch, "sozindex")
 # Load the precomputed fragility object
-time_window <- c(-10,10)
+time_window <- c(-10, 10)
 data("pt01Frag")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-fragstat <- frag_stat(frag=pt01Frag, elecsoz=sozindex)
+fragstat <- frag_stat(frag = pt01Frag, elecsoz = sozindex)
 # plot the statistical results
-pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
+pfragstat <- plot_frag_distribution(stat = fragstat, time_window = time_window)
 pfragstat
 }
