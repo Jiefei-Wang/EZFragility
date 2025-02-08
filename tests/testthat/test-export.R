@@ -23,7 +23,9 @@ test_that("calc_adj_frag", {
 })
 
 test_that("GetAdjFrag", {
-  capture.output({fg <<- GetAdjFrag(ieegts, 250, 125, 1e-4)}) |> expect_no_error()
+  capture.output({
+    fg <<- GetAdjFrag(ieegts, 250, 125, 1e-4)
+  }) |> expect_no_error()
   R2 <- fg$R2 |> expect_no_error()
   fg@R2 <- NULL
   print(fg) |> capture.output() |> expect_no_error()

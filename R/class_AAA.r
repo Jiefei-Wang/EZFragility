@@ -37,41 +37,36 @@ printSlotValue <- function(object, slotName, k = 3) {
 
 
 
-jn <- \(..., dlm = "", s = "") {
-  fn <- \(x) if (length(x) > 1) paste0(x, collapse = dlm) else x
+jn <- \(..., j = "", s = "") {
+  fn <- \(x) if (length(x) > 1) paste0(x, collapse = j) else x
   ARGS <- lapply(list(...), fn)
   do.call(paste, c(ARGS, sep = s))
 }
 
 slotSpecs <- \(x, k = 3, dm = dim(x), vec = is.null(dm), len = length(x)) {
   val = x[seq_len(min(k, len))]
-  if (is.null(x)) return(c(d = "[NULL]:", v = " NULL"))
+  if (is.null(x)) return(c(cl = "NULL", d = "[NULL]:", v = " NULL"))
   if (is.double(x)) val <- sprintf("%7.4f", val)
-  c(d = jn("[", if (vec) len else dm, "]:", dlm = 'x'),
-    v = jn(val, if (len > k) "...", dlm = ", ")
+  c(cl = class(x)[1L],
+    d = jn("[", if (vec) len else dm, "]", j = ','),
+    v = jn(val, if (len > k) "...", j = ", ")
   )
 }
 
-printSlots <- \(object, nb = 0) {
-  nn <- methods::slotNames(object)
-  colN <- c(" Slots", " DIM|LEN", " Values")
+printSlots <- \(object, nb = 1) {
+  colN <- c("Slot", "Class", "DIM/LEN", " Values")
   maxL <- sapply(colN, nchar)
   ftb <- \(i) paste0("%", -i, "s")
   meta <- list()
-  dL <- nchar("DIM|LEN") 
-  for (n in nn) {
+  for (n in methods::slotNames(object)) {
     x <- c(name = n, slotSpecs(methods::slot(object, n)))
     for (i in seq_along(maxL)) maxL[i] <- max(nchar(x[[i]]), maxL[[i]])
     meta[[n]][names(x)] <- x
-    dL <- max(dL, nchar(x[['d']]))
-    nL <- max(nL, nchar(n))
   }
-  print(maxL)
-  fmts   <- c(ftb(nL), ftb(dL), "%s")
-  fmt    <- list(fmt = jn(fmts, dlm = " "))
-  header <- do.call(sprintf, c(fmt, " Slots", " DIM|LEN", " Values"))
-  dash   <- rep("-", nchar(header)) |> jn() |> shift(nb)
-  cat(dash, shift(header, nb), dash, sep = "\n")
-  for (x in meta) do.call(sprintf, c(fmt, x)) |> shift(nb + 1) |> cat("\n")
+  fmt = list(fmt = sapply(maxL, ftb) |> jn(j = " | "))
+  header <- do.call(sprintf, c(fmt, colN)) |> shift(nb)
+  dash   <- rep("-", nchar(header) + nb) |> jn()
+  cat(dash, header, dash, sep = "\n")
+  for (x in meta) do.call(sprintf, c(fmt, x)) |> shift(nb) |> cat("\n")
   dash |> cat("\n")
 }

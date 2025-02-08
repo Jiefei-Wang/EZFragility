@@ -35,7 +35,7 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 # })
 
 setMethod("show", "Fragility", function(object) {
-  cat("Fragility object\n")
+  cat("\nFragility object\n")
   printSlots(object)
   cat("Use '@' to access the data\n")
   invisible(object)

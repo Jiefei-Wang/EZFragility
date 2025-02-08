@@ -34,7 +34,7 @@ setMethod("$<-", "FragStat", function(x, name, value) {
 # })
 
 setMethod("show", "FragStat", function(object) {
-    cat("FragStat object\n")
+    cat("\nFragStat object (Summary Statistics by Step)\n")
     printSlots(object)
     cat("Use '@' to access the data\n")
     invisible(object)
