@@ -1,6 +1,11 @@
 ## We will use data from -1s to 2s around the seizure onset
 
 
+
+
+
+
+
 si   <- i0 + (iw - 1L) * t_step
 
 fn <- \(win, tst, dat, mapDatRangeInSeconds) {
@@ -11,6 +16,7 @@ fn <- \(win, tst, dat, mapDatRangeInSeconds) {
   n <- nrow(dat);
   tr <- mapDatRangeInSeconds
   tm <- do.call(seq, as.list(c(tr, by = 1e-3)))[-(n + 1L)]
+  time2Idx <- \(x, y) 
   sb <- \(x, y = NULL) {
     if (length(x) == 2L) {
       y <- x[2L]
@@ -20,7 +26,8 @@ fn <- \(win, tst, dat, mapDatRangeInSeconds) {
     else if (is.null(x)) return(dat[tm <  y,  ])
     dat[x <= tm & tm < y, ]
   }
-  Step2Idx <- \(i) w + u * (i - 1L)
+  Step2Idx <- \(s) w + u * (s - 1L)
+  idx2Step <- \(i) (i - 1L) %/% u + 1 * (i < w / 2)
   self
 }
 

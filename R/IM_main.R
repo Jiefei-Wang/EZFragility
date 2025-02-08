@@ -78,16 +78,16 @@ ConsoleLogger <- \(e) {
   t_step <- e$t_step;
   samples <- nrow(e$ieegts)
   self <- environment()
-  # Shifts to the right all strings of a list with a number of blanks
-  shift <- \(strL, nBlanks) {
-    pre <- paste(rep(" ", nBlanks), collapse = "")
-    lapply(strL, \(x) sprintf("%s%s", pre, x)) |> unlist()
-  }
-  # Get number of seconds from a reference timestamp in specified format
-  getTimeSecs <- \(ref) {
-    difT <- difftime(Sys.time(), ref, units = "secs") |> as.double()
-    sprintf("%.2f", difT)
-  }
+  # # Shifts to the right all strings of a list with a number of blanks
+  # shift <- \(strL, nBlanks) {
+  #   pre <- paste(rep(" ", nBlanks), collapse = "")
+  #   lapply(strL, \(x) sprintf("%s%s", pre, x)) |> unlist()
+  # }
+  # # Get number of seconds from a reference timestamp in specified format
+  # getTimeSecs <- \(ref) {
+  #   difT <- difftime(Sys.time(), ref, units = "secs") |> as.double()
+  #   sprintf("%.2f", difT)
+  # }
   # Save time of Ridge (and step) start and print step number
   RidgeStart <- \() {
     self$stepStart <- Sys.time()
