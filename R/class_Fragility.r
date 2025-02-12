@@ -17,6 +17,7 @@ setMethod("$", "Fragility", function(x, name) {
 
 setMethod("$<-", "Fragility", function(x, name, value) {
     slot(x, name) <- value
+    invisible(x)
 })
 
 

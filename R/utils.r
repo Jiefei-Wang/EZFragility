@@ -10,7 +10,6 @@ isWholeNumber <- function(x) {
 #' @param soznames Vector string. soz electrodes names 
 #'
 #' @return boolean
-#' @export
 #'
 #' @examples
 #' data("pt01Epochm3sp5s")
