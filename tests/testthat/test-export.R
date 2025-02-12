@@ -41,16 +41,10 @@ test_that("S4 methods", {
   stat1@csdsozc <- stat1$csdsozc[1:2]
   print(stat1) |> capture.output() |> expect_no_error()
 
-  # '$<-' does not work as intended
-  # value overwrites the whole object instead of the slot
-  # should use *** methods::`slot<-`(x, name, TRUE, value)` ***
+  ## Test assignment
   frag |> is("Fragility") |> expect_equal(TRUE)
   frag$lambdas <- NULL
-  frag |> is("Fragility") |> expect_equal(FALSE)
-  frag |> is.null()       |> expect_equal(TRUE)
-  stat1$csdsozc <- NULL
-  stat1 |> is.null()      |> expect_equal(TRUE)
-  
+  frag |> is("Fragility") |> expect_equal(TRUE)
 })
 
 # Visualization ----------------------------------------------------------------
@@ -70,7 +64,8 @@ def <- \(x) {
     }
 }
 
-fg <- data(fragility)
+data(pt01Fragm1sp2s)
+fg <- pt01Fragm1sp2s
 int <- 77:84
 intError <- 77:85
 str <-  colnames(fg@ieegts)[int]
