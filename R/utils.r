@@ -12,10 +12,12 @@ isWholeNumber <- function(x) {
 #' @return boolean
 #'
 #' @examples
-#' data("pt01Epochm3sp5s")
-#'sozindex<-attr(pt01Epochm3sp5s,"sozindex")
-#'soznames<-attr(pt01Epochm3sp5s,"soznames")
-#'valid<-valid_soz(ieegts=pt01Epochm3sp5s,sozindex=sozindex,soznames=soznames)
+#' \dontrun{
+#' data("pt01Fragm1sp2s")
+#' sozindex<-attr(pt01Fragm1sp2s,"sozindex")
+#' soznames<-attr(pt01Fragm1sp2s,"soznames")
+#' valid<-valid_soz(ieegts=pt01Fragm1sp2s,sozindex=sozindex,soznames=soznames)
+#' }
 #'
 valid_soz <- function( ieegts, sozindex, soznames){
   

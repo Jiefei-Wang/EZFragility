@@ -58,6 +58,7 @@ This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
 - `77:80` are the index of the non soz electrodes
 ```{r}
 display <- c(sozindex,77:80)
+time_window <- c(-3,5)
 fragplot <- heatmap_frag(frag=pt01Fragm1sp2s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
 fragplot
 ```

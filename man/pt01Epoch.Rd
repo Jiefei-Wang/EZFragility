@@ -10,7 +10,7 @@ pt01Epoch: A Matrix with 20001 rows (time points) and 84 columns (electrodes)
 
 pt01Fragm1sp2s: A fragility object result of example 2 for
 calc_adj_frag function help with and 84 columns (electrodes)
-\link{-1:2}s around the seizure onset
+[-1:2]s around the seizure onset
 }
 \source{
 Fragility Multi-Center Retrospective Study

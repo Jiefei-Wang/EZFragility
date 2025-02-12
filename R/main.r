@@ -28,7 +28,8 @@
 #' t_window <- 10
 #' t_step <- 5
 #' lambda <- 0.1
-#' calc_adj_frag(ieegts = data, t_window = t_window, t_step = t_step, lambda = lambda)
+#' calc_adj_frag(ieegts = data, t_window = t_window, 
+#' t_step = t_step, lambda = lambda)
 #' 
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
@@ -40,7 +41,8 @@
 #' lambda <- NULL
 #' n_search <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, t_step = t_step, lambda = lambda,n_search=n_search)
+#' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, 
+#' t_step = t_step, lambda = lambda,n_search=n_search)
 #' }
 #' 
 #' 
