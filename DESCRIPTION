@@ -47,6 +47,8 @@ Depends:
     R (>= 3.5)
 LazyData: true
 Imports: 
+    stats,
+    methods, 
     ggplot2,
     viridis,
     ggtext,

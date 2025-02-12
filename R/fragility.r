@@ -151,8 +151,10 @@ fragilityRow <- function(A, n_search = 100) {
 #' @export
 #'
 #' @examples
+#' data("pt01Epoch")
 #' data("pt01Fragm1sp2s")
-#' data("elecsoz")
+#' ## TODO: use either elecsoz or sozindex
+#' elecsoz <- attr(pt01Epoch,"sozindex")
 #' fragstat<-frag_stat(frag=pt01Fragm1sp2s, elecsoz=elecsoz)
 frag_stat <- function(frag, elecsoz){
   if (is(frag, "Fragility")) {
