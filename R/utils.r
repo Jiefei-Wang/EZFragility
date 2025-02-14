@@ -10,14 +10,14 @@ isWholeNumber <- function(x) {
 #' @param soznames Vector string. soz electrodes names 
 #'
 #' @return boolean
-#' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("pt01Epoch")
-#'sozindex<-attr(pt01Epoch,"sozindex")
-#'soznames<-attr(pt01Epoch,"soznames")
-#'valid<-valid_soz(ieegts=pt01Epoch,sozindex=sozindex,soznames=soznames)
-#'
+#' sozindex<-attr(pt01Epoch,"sozindex")
+#' soznames<-attr(pt01Epoch,"soznames")
+#' valid<-valid_soz(ieegts=pt01Epoch,sozindex=sozindex,soznames=soznames)
+#' }
 valid_soz <- function( ieegts, sozindex, soznames){
   
   valid<-TRUE

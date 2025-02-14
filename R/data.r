@@ -1,3 +1,4 @@
+# TODO: What is example 3?
 #' Pt01 seizure 1 (-10:10s) around seizure onset
 #' 
 #' This data corresponds to the first seizure of patient PT01 from 
@@ -19,6 +20,7 @@
 #' 
 #' pt01Frag: A fragility object result of example 3 for 
 #' calc_adj_frag function help with and 84 columns (electrodes)
+#'  \[-1:2\]s around the seizure onset
 #'
 #' @keywords datasets
 #'

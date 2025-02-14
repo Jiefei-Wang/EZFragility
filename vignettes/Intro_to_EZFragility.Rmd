@@ -67,7 +67,7 @@ sozindex<-attr(pt01Epoch,"sozindex")
 data("pt01Frag")
 time_window <- c(-10,10)
 display <- c(sozindex,77:80)
-fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,time_window <- time_window,title="PT01 seizure 1",display=display)
+fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,time_window = time_window,title="PT01 seizure 1",display=display)
 fragplot
 ```
 

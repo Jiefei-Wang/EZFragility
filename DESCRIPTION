@@ -47,12 +47,13 @@ Depends:
     R (>= 3.5)
 LazyData: true
 Imports: 
+    stats,
+    methods, 
     ggplot2,
-    glmnet,
-    methods,
     viridis,
     ggtext,
-    glue
+    glue,
+    glmnet
 Suggests: 
     knitr,
     rmarkdown,
