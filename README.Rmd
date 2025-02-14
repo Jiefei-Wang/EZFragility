@@ -60,12 +60,19 @@ The method to compute the row perturbation is also not clear
 
 ## TODO:
 
-- Exported function names and parameters to snake case(e.g. nSearch -> n_search)
-- Unit test
+- Unit test (`test-main.R` from cecile)
 - Vignette
-- Check examples in the function documentation to make sure they are working
 - Make sure all required functions/class have been exported
-- Clear all error and warning in `devtools::check()` and `R CMD check --as-cran`
+- Clear all error and warning in `devtools::check()` and
+  `R CMD check --as-cran`
+
+Data:
+
+- why we call the data PT01? This number does not make any sense to users. Will we have PT02?
+- The data is too large. We need to find a way to reduce it.
+    - Do we really need to recreate the result in the paper? For users, they just need to know how to use the package. If they want, they can download the data from the paper.
+- What is example 3?
+
 
 
 ## References

@@ -1,6 +1,4 @@
-## TODO: why we call the data PT01? This number does not make any sense to users
-## Will we have PT02?
-## TODO: Data is too large!
+
 ## load pt01epochdata.mat
 ## Patient PT01 from the Fragility data set
 
