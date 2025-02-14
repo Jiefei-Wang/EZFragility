@@ -1,8 +1,6 @@
 ---
-output:
-  md_document:
-    variant: gfm
-html_preview: false
+output: github_document
+bibliography: "references.bib"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -11,7 +9,7 @@ html_preview: false
 library("badger")
 ```
 
-# EZFragility: Epileptogenic Zone Localization Based on Fragility Index
+# EZFragility: Epileptogenic Zone Localization Based on neural Fragility EEG marker
 ```{r, echo = FALSE, results='asis', warning=FALSE, message=FALSE}
 url <- "Jiefei-Wang/EZFragility"
 cat(
@@ -27,6 +25,13 @@ cat(
 
 ```
 
+
+## Introduction
+
+The goal of this Rpackage is to allow neuroscientists to reproduce and test the neural fragility method described in [@LiFragility2017;@LiFragility2021]. This method is a iEEG marker of the epileptogenic zone localization. In this method, seizures are conceptualized as transitions from a stable networked system to an unstable one. To quantify this, node fragility is computed from linear network models, measuring each node's susceptibility to destabilization. There are significant details missing in [@LiFragility2017;@LiFragility2021] to reproduce the neural fragility method and adjust the parameters. This Rpackage aims to identify and fill up the implementation details. It will also allow users to test the method parameters on their data.
+
+## EZFragility package tutorial
+
 To load the package
 ```r
 devtools::load_all()
@@ -36,7 +41,22 @@ The package contains an example data. To see it, type
 ```r
 pt01Epoch
 ```
+The package contains an example results. To see it, type
+```r
+pt01Frag
+```
+
 For your test code, please consider creating a folder scripts and put your code there. This folder will be ignored by git.
+
+## Implementation details
+
+The method is based on building a discrete time linear system computing a stable adjacency matrix A for the evolution of x(t).
+Equation ...
+We used a ridge regression  ...
+In ... they recommend a lambda of 1e-4, however testing on the data from pt01 (data available in this package) this lambda value does not ensure that A is always stable.
+
+The method to compute the row perturbation is also not clear
+
 
 ## TODO:
 
@@ -46,3 +66,6 @@ For your test code, please consider creating a folder scripts and put your code 
 - Check examples in the function documentation to make sure they are working
 - Make sure all required functions/class have been exported
 - Clear all error and warning in `devtools::check()` and `R CMD check --as-cran`
+
+
+## References

@@ -64,8 +64,8 @@ def <- \(x) {
     }
 }
 
-data(pt01Fragm1sp2s)
-fg <- pt01Fragm1sp2s
+data(pt01Frag)
+fg <- pt01Frag
 int <- 77:84
 intError <- 77:85
 str <-  colnames(fg@ieegts)[int]

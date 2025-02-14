@@ -35,8 +35,13 @@ sozindex <- attr(pt01Epoch,"sozindex")
 # seizure onset electrodes names
 soznames <- attr(pt01Epoch,"soznames")
 
-## We will use data from -1s to 2s around the seizure onset
+## Use data from -1s to 2s around the seizure onset
 pt01Epochm1sp2s<-pt01Epoch[9001:12000,]
+## Visualize ictal data
+display <- c(sozindex,77:80)
+time_window <- c(-1,2)
+iEEGplot<-visu_iEEG_data(ieegts=pt01Epochm1sp2s,time_window=time_window,display=display)
+iEEGplot
 ```
 
 
@@ -53,20 +58,23 @@ pt01Fragm1sp2s$frag[1:5, 1:5]
 ```
 
 ## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
-This plot reproduces Patient 01 results Figure 4 a from Li et al. paper
+This plot reproduces Patient 01 results Figure 4 a from Li et al. paper. Time window around seizure onset [-10:10]s
 - `sozindex` contains the index of the soz electrodes
 - `77:80` are the index of the non soz electrodes
 ```{r}
+data("pt01Epoch")
+sozindex<-attr(pt01Epoch,"sozindex")
+data("pt01Frag")
+time_window <- c(-10,10)
 display <- c(sozindex,77:80)
-time_window <- c(-3,5)
-fragplot <- heatmap_frag(frag=pt01Fragm1sp2s,elecsoz=sozindex,time_window=time_window,title="PT01 seizure 1",display=display)
+fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,time_window = time_window,title="PT01 seizure 1",display=display)
 fragplot
 ```
 
 ## Compute electrodes statistics of fragility map 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
-fragstat <- frag_stat(frag=pt01Fragm1sp2s, elecsoz=sozindex)
+fragstat <- frag_stat(frag=pt01Frag, elecsoz=sozindex)
 fragstat
 ```
 

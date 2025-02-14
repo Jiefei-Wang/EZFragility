@@ -18,9 +18,8 @@ list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 }
 \examples{
+data("pt01Frag")
 data("pt01Epoch")
-data("pt01Fragm1sp2s")
-## TODO: use either elecsoz or sozindex
-elecsoz <- attr(pt01Epoch,"sozindex")
-fragstat<-frag_stat(frag=pt01Fragm1sp2s, elecsoz=elecsoz)
+sozindex<-attr(pt01Epoch,"sozindex")
+fragstat<-frag_stat(frag=pt01Frag, elecsoz=sozindex)
 }

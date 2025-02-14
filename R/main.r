@@ -34,15 +34,13 @@
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
 #' data("pt01Epoch")
-#' ## We will use data from -1s to 2s around the seizure onset
-#' pt01Epochm1sp2s<-pt01Epoch[9001:12000,]
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
 #' n_search <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag<-calc_adj_frag(ieegts = pt01Epochm3sp5s, t_window = t_window, 
-#' t_step = t_step, lambda = lambda,n_search=n_search)
+#' resfrag <- calc_adj_frag(ieegts = pt01Epoch, t_window = t_window, 
+#'   t_step = t_step, lambda = lambda,n_search=n_search)
 #' }
 #' 
 #' 
