@@ -68,11 +68,21 @@ The method to compute the row perturbation is also not clear
 
 Data:
 
-- why we call the data PT01? This number does not make any sense to users. Will we have PT02?
 - The data is too large. We need to find a way to reduce it.
     - Do we really need to recreate the result in the paper? For users, they just need to know how to use the package. If they want, they can download the data from the paper.
-- What is example 3?
 
+Ioannis:
+
+- Branch1: Simplify Cecile's `frag_stat` function in another branch (one or two branches depending on the amount of work) (Reviewer: Cecile)
+- Branch2: Add hidden parameters to the Fragility class and (Reviewer: Jiefei)
+
+Cecile:
+
+- Branch3: Fix warning in `heatmap_frag` from ggplot2 and wording issue. (respect cammelCase `listelecmissing` -> `listElecMissing`) (Reviewer: Jiefei)
+- After Branch2: Use the hidden parameters in the Fragility class in visualization
+- Make the epoch data within -1 to 2s
+- why we call the data PT01? This number does not make any sense to users. Will we have PT02?
+- What is example 3?
 
 
 ## References
