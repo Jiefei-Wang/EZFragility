@@ -2,7 +2,7 @@
 #' 
 #' plot fragility heatmaps with electrodes marked as soz colored
 #' 
-#' @inheritParams frag_stat
+#' @inheritParams fragStat
 #' @param elecsoz Integer or string. Vector soz electrodes (for good electrodes)
 #' @param time_window Numeric Vector of length 2. The time window to display at the x-axis
 #' @param title String. Figure title
@@ -17,7 +17,7 @@
 #'data("pt01Frag")
 #'time_window <- c(-10,10)
 #'display <- c(sozindex,77:80)
-#'fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,
+#'fragplot<-heatmapFrag(frag=pt01Frag,elecsoz=sozindex,
 #' time_window = time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
@@ -27,7 +27,7 @@
 #'data("pt01Frag")
 #'time_window <- c(-10,10)
 #'display <- c(soznames,"MLT1","MLT2","MLT3","MLT4")
-#'fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=soznames,
+#'fragplot<-heatmapFrag(frag=pt01Frag,elecsoz=soznames,
 #' time_window = time_window,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
@@ -40,13 +40,13 @@
 #'pathplot <- "~"
 #'title <- "PT01sz1"
 #'resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-#'fragplot<-heatmap_frag(frag=pt01Frag,elecsoz=sozindex,time_window=time_window,
+#'fragplot<-heatmapFrag(frag=pt01Frag,elecsoz=sozindex,time_window=time_window,
 #' title=title,display=display)
 #'fragplot
 #'ggplot2::ggsave(resfile)
 #' 
 #' @export
-heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizure number",display=NULL){
+heatmapFrag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizure number",display=NULL){
   titlepng<-title
   
   
@@ -70,7 +70,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
     
     if(length(diffDisplayTot)!=0){
       listDisplayMissing<-paste(as.character(diffDisplayTot),collapse=" ")
-      message<-paste("ERROR in display electrodes indices. Number(s) ",listDisplayMissing,"are out of electrode number limit")
+      message<-paste("Number(s) ",listDisplayMissing,"are out of electrode number limit")
       warning(message)
       display<-display[!display%in%diffDisplayTot]
       displayCor<-paste(as.character(display),collapse=" ")
@@ -86,7 +86,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
     
     if(length(diffDisplayTot)!=0){
       listDisplayMissing<-paste(diffDisplayTot,collapse=" ")
-      message<-paste("ERROR in display electrodes names. Name(s) ",listDisplayMissing,"are out of name list")
+      message<-paste(" Name(s) ",listDisplayMissing,"are out of name list")
       warning(message)
       display<-display[!display%in%diffDisplayTot]
       displayCor<-paste(display,collapse=" ")
@@ -109,7 +109,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
     
     if(length(diffelecInd)!=0){
       listelecmissing<-paste(as.character(diffelecInd),collapse=" ")
-      message<-paste("ERROR in soz electrodes indices. Number(s) ",listelecmissing,"are out of electrode number limit")
+      message<-paste("Number(s) ",listelecmissing,"are out of electrode number limit")
       warning(message)
       elecsoz<-elecsoz[!elecsoz%in%diffelecInd]
       listsozcor<-paste(as.character(elecsoz),collapse=" ")
@@ -124,7 +124,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
     
     if(length(diffsoztot)!=0){
       listsozmissing<-paste(diffsoztot,collapse=" ")
-      message<-paste("ERROR in soz electrodes names. Name(s) ",listsozmissing,"are out of name list")
+      message<-paste("Name(s) ",listsozmissing,"are out of name list")
       warning(message)
       elecsoz<-elecsoz[!elecsoz%in%diffsoztot]
       sozcor<-paste(elecsoz,collapse=" ")
@@ -189,7 +189,7 @@ heatmap_frag<-function(frag,elecsoz,time_window = NULL,title="Patient name seizu
 
 #' Visualization of ictal iEEG 
 #'
-#' @inheritParams heatmap_frag
+#' @inheritParams heatmapFrag
 #' @param ieegts Matrix or Fragility object. Either a matrix of iEEG time 
 #' series x(t), with time points as rows and electrodes names as columns, 
 #' or a Fragility object from \code{calc_adj_frag}
@@ -293,8 +293,8 @@ visu_iEEG_data<-function(ieegts, time_window=NULL, title = "Patient name seizure
 
 #' Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
 #'
-#' @inheritParams heatmap_frag
-#' @param qmatrix Matrix or FragStat object, either a quantile matrix 
+#' @inheritParams heatmapFrag
+#' @param FragStatObj Matrix or FragStat object, either a quantile matrix 
 #' for the two groups or a FragStat object from \code{frag_stat}
 #' @param title String. Figure title
 #'
@@ -308,11 +308,11 @@ visu_iEEG_data<-function(ieegts, time_window=NULL, title = "Patient name seizure
 #'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'fragstat <- frag_stat(frag=pt01Frag, elecsoz=sozindex)
-#'plot_frag_quantile(qmatrix=fragstat, time_window=time_window)
-plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quantiles over time"){
-  if(is(qmatrix, "FragStat")){
-    qmatrix <- qmatrix$qmatrix
+#'pt01fragstat <- fragStat(frag=pt01Frag, elecSoz=sozindex)
+#'plot_frag_quantile(FragStatObj=pt01fragstat, time_window=time_window)
+plotFragQuantile<-function(FragStatObj, time_window = NULL,title="Fragility Quantiles over time"){
+  if(is(FragStatObj, "FragStat")){
+    qmatrix <- FragStatObj$qmatrix
   }
   
   nw <- ncol(qmatrix)
@@ -326,13 +326,13 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
   }
 
 
-  quantilesname<-c(paste0("SOZ(", seq(10,100,by=10),")"),paste0("SOZc(", seq(10,100,by=10),")"))
-  quantileplot<- expand.grid(Time = stimes, Stats=quantilesname)
-  quantileplot$Value <- c(t(qmatrix))
+  quantilesName<-rownames(qmatrix)
+  quantilePlot<- expand.grid(Time = stimes, Stats=quantilesName)
+  quantilePlot$Value <- c(t(qmatrix))
   
   titlepng <- title
   
-  p<-ggplot2::ggplot(quantileplot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
+  p<-ggplot2::ggplot(quantilePlot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(titlepng)+
     ggplot2::labs(x = xlabel, y = "Quantiles",size=2) +
@@ -353,12 +353,8 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
 
 #'  Plot Fragility time distribution for two electrodes group marked and non-marked as soz
 #'
-#' @inheritParams heatmap_frag
-#' @param stat FragStat object, a FragStat object from \code{frag_stat}, if specified, the arguments cmeansoz, cmeansozc, csdsoz, csdsozc will be ignored
-#' @param cmeansoz Numeric Vector. mean soz group in function of time window
-#' @param cmeansozc Numeric Vector. mean non soz group in function of time window
-#' @param csdsoz Numeric Vector. standard deviation soz group in function of time window
-#' @param csdsozc Numeric Vector. standard deviation non soz group in function of time window
+#' @inheritParams heatmapFrag
+#' @param stat FragStat object, a FragStat object from \code{fragStat}, if specified, the arguments cmeansoz, cmeansozc, csdsoz, csdsozc will be ignored
 #' @param title String. Figure title
 #'
 #' @return plot fragility distribution
@@ -372,20 +368,21 @@ plot_frag_quantile<-function(qmatrix, time_window = NULL,title="Fragility Quanti
 #'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'fragstat <- frag_stat(frag=pt01Frag, elecsoz=sozindex)
+#'pt01fragstat <- fragStat(frag=pt01Frag, elecsoz=sozindex)
 #'# plot the statistical results
-#'pfragstat<-plot_frag_distribution(stat=fragstat,time_window=time_window)
+#'pfragstat<-plotFragDistribution(stat=pt01fragstat,time_window=time_window)
 #'pfragstat
-plot_frag_distribution<-function(
+plotFragDistribution<-function(
   stat = NULL, 
   time_window = NULL,
-  cmeansoz = NULL, cmeansozc = NULL, csdsoz = NULL, csdsozc = NULL,
-  title='Average Fragility over time'){
+  title='Average Fragility over time', cmeansoz = NULL, cmeansozc=NULL, csdsoz=NULL, csdsozc=NULL){
   if(!is.null(stat)){
+    if(is(stat, "FragStat")){
     cmeansoz <- stat$cmeansoz
     cmeansozc <- stat$cmeansozc
     csdsoz <- stat$csdsoz
     csdsozc <- stat$csdsozc
+    }
   }
   
   nw <- length(cmeansoz)
