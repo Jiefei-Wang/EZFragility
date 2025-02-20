@@ -28,7 +28,7 @@ cat(
 
 ## Introduction
 
-The goal of this Rpackage is to allow neuroscientists to reproduce and test the neural fragility method described in [@LiFragility2017;@LiFragility2021]. This method is a iEEG marker of the epileptogenic zone localization. In this method, seizures are conceptualized as transitions from a stable networked system to an unstable one. To quantify this, node fragility is computed from linear network models, measuring each node's susceptibility to destabilization. There are significant details missing in [@LiFragility2017;@LiFragility2021] to reproduce the neural fragility method and adjust the parameters. This Rpackage aims to identify and fill up the implementation details. It will also allow users to test the method parameters on their data.
+The goal of this Rpackage is to allow neuroscientists to reproduce and test the neural fragility method described in [@LiFragility2017;@LiFragility2021]. This method is a intracanial EEG (iEEG) marker of the epileptogenic zone localization. In this method, seizures are conceptualized as transitions from a stable networked system to an unstable one. To quantify this, node fragility is computed from linear network models, measuring each node's susceptibility to destabilization. There are significant details missing in [@LiFragility2017;@LiFragility2021] to reproduce the neural fragility method and adjust the parameters. This Rpackage aims to identify and fill up the implementation details. It will also allow users to test the method parameters on their data.
 
 ## EZFragility package tutorial
 
