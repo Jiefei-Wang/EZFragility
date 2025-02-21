@@ -12,21 +12,21 @@ Nat Neurosci. 2021 Oct;24(10):1465–74
 We have found solutions to fill up missing details in the paper method description
 }
 \usage{
-calcAdjFrag(ieegts, t_window, t_step, lambda = NULL, n_search = 100)
+calcAdjFrag(ieegts, tWindow, tStep, lambda = NULL, nSearch = 100)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
 with time points as rows and electrodes names as columns}
 
-\item{t_window}{Integer. The number of time points to use in each window}
+\item{tWindow}{Integer. The number of time points to use in each window}
 
-\item{t_step}{Integer. The number of time points to move the window each time}
+\item{tStep}{Integer. The number of time points to move the window each time}
 
 \item{lambda}{Numeric. The lambda value to use in the ridge regression.
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
-\item{n_search}{Integer. Number of minimization to compute the fragility row}
+\item{nSearch}{Integer. Number of minimization to compute the fragility row}
 }
 \value{
 A list containing the normalized ieegts,
@@ -50,22 +50,22 @@ Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}
 \examples{
 ## A simple example
 data <- matrix(rnorm(100), nrow = 10)
-t_window <- 10
-t_step <- 5
+tWindow <- 10
+tStep <- 5
 lambda <- 0.1
-calc_adj_frag(ieegts = data, t_window = t_window, 
-t_step = t_step, lambda = lambda)
+calc_adj_frag(ieegts = data, tWindow = tWindow, 
+tStep = tStep, lambda = lambda)
 
 ## A more realistic example, but it will take a while to run
 \dontrun{
 data("pt01Epochm1sp2s")
-t_window <- 250
-t_step <- 125
+tWindow <- 250
+tStep <- 125
 lambda <- NULL
-n_search <- 100
+nSearch <- 100
 title <- "PT01 seizure 1"
-resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, t_window = t_window, 
-  t_step = t_step, lambda = lambda,n_search=n_search)
+resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, tWindow = tWindow, 
+  tStep = tStep, lambda = lambda,nSearch=nSearch)
 }
 
 

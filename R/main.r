@@ -12,12 +12,12 @@
 #' 
 #' @param ieegts Numeric. A matrix of iEEG time series x(t), 
 #' with time points as rows and electrodes names as columns
-#' @param t_window Integer. The number of time points to use in each window
-#' @param t_step Integer. The number of time points to move the window each time
+#' @param tWindow Integer. The number of time points to use in each window
+#' @param tStep Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression. 
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
-#' @param n_search Integer. Number of minimization to compute the fragility row
+#' @param nSearch Integer. Number of minimization to compute the fragility row
 #' 
 #' @return A list containing the normalized ieegts, 
 #' adjacency matrices, fragility, and R^2 values
@@ -25,22 +25,22 @@
 #' @examples
 #' ## A simple example
 #' data <- matrix(rnorm(100), nrow = 10)
-#' t_window <- 10
-#' t_step <- 5
+#' tWindow <- 10
+#' tStep <- 5
 #' lambda <- 0.1
-#' calc_adj_frag(ieegts = data, t_window = t_window, 
-#' t_step = t_step, lambda = lambda)
+#' calc_adj_frag(ieegts = data, tWindow = tWindow, 
+#' tStep = tStep, lambda = lambda)
 #' 
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
 #' data("pt01Epochm1sp2s")
-#' t_window <- 250
-#' t_step <- 125
+#' tWindow <- 250
+#' tStep <- 125
 #' lambda <- NULL
-#' n_search <- 100
+#' nSearch <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, t_window = t_window, 
-#'   t_step = t_step, lambda = lambda,n_search=n_search)
+#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, tWindow = tWindow, 
+#'   tStep = tStep, lambda = lambda,nSearch=nSearch)
 #' }
 #' 
 #' 
@@ -56,33 +56,33 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calcAdjFrag <- function(ieegts, t_window, t_step, lambda = NULL, n_search=100) {
+calcAdjFrag <- function(ieegts, tWindow, tStep, lambda = NULL, nSearch=100) {
     ## check the input types
-    stopifnot(isWholeNumber(t_window))
-    stopifnot(isWholeNumber(t_step))
+    stopifnot(isWholeNumber(tWindow))
+    stopifnot(isWholeNumber(tStep))
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
-    ## The input matrix must have at least t_window rows
-    stopifnot(nrow(ieegts) >= t_window)
+    ## The input matrix must have at least tWindow rows
+    stopifnot(nrow(ieegts) >= tWindow)
 
 
     ## Number of electrodes and time points
     n_tps <- nrow(ieegts)
     n_elec <- ncol(ieegts)
 
-    electrode_list <- colnames(ieegts)
+    electrodeList <- colnames(ieegts)
 
     # Number of steps
-    n_steps <- floor((n_tps - t_window) / t_step) + 1
+    nSteps <- floor((n_tps - tWindow) / tStep) + 1
 
     scaling <- 10^floor(log10(max(ieegts)))
     ieegts <- ieegts / scaling
 
     ## create adjacency array (array of adj matrices for each time window)
     ## iw: The index of the window we are going to calculate fragility
-    res <- lapply(seq_len(n_steps), function(iw) {
+    res <- lapply(seq_len(nSteps), function(iw) {
         ## Sample indices for the selected window
-        si <- seq_len(t_window - 1) + (iw - 1) * t_step
+        si <- seq_len(tWindow - 1) + (iw - 1) * tStep
         ## measurements at time point t
         xt <- ieegts[si, ]
         ## measurements at time point t plus 1
@@ -106,20 +106,20 @@ calcAdjFrag <- function(ieegts, t_window, t_step, lambda = NULL, n_search=100) {
         w$Ai
     }))
     ## TODO: Why do you want to do this? very error prone
-    dim(A) <- c(n_elec, n_elec, n_steps)
+    dim(A) <- c(n_elec, n_elec, nSteps)
     dimnames(A) <- list(
-        Electrode1 = electrode_list,
-        Electrode2 = electrode_list,
-        Step = seq_len(n_steps)
+        Electrode1 = electrodeList,
+        Electrode2 = electrodeList,
+        Step = seq_len(nSteps)
     )
 
     R2 <- unlist(lapply(res, function(w) {
         w$R2
     }))
-    dim(R2) <- c(n_elec, n_steps)
+    dim(R2) <- c(n_elec, nSteps)
     dimnames(R2) <- list(
-        Electrode = electrode_list,
-        Step = seq_len(n_steps)
+        Electrode = electrodeList,
+        Step = seq_len(nSteps)
     )
 
     if (is.null(lambda)){
@@ -133,12 +133,12 @@ calcAdjFrag <- function(ieegts, t_window, t_step, lambda = NULL, n_search=100) {
 
     
     # calculate fragility
-    f <- sapply(seq_len(n_steps), function(iw) {
-        fragilityRowNormalized(A[, , iw],n_search=n_search) # Normalized minimum norm perturbation for Gammai (time window iw)
+    f <- sapply(seq_len(nSteps), function(iw) {
+        fragilityRowNormalized(A[, , iw],nSearch=nSearch) # Normalized minimum norm perturbation for Gammai (time window iw)
     })
     dimnames(f) <- list(
-        Electrode = electrode_list,
-        Step = seq_len(n_steps)
+        Electrode = electrodeList,
+        Step = seq_len(nSteps)
     )
 
     ## TODO: Is this consistent with the method in the paper?

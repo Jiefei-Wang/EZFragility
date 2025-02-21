@@ -16,6 +16,8 @@ visuIEEGData(
 series x(t), with time points as rows and electrodes names as columns,
 or a Fragility object from \code{calc_adj_frag}}
 
+\item{timeWindow}{Numeric Vector of length 2. The time window to display at the x-axis}
+
 \item{title}{String. Figure title}
 
 \item{display}{Integer or string. Vector electrodes to display}

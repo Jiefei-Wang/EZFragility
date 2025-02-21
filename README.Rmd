@@ -69,7 +69,7 @@ The method to compute the row perturbation is also not clear
 Data:
 
 - The data is too large. We need to find a way to reduce it.
-    - Do we really need to recreate the result in the paper? For users, they just need to know how to use the package. If they want, they can download the data from the paper.
+    - Do we really need to recreate the result in the paper? For users, they just need to know how to use the package. If they want, they can download the data from the paper. Done
 
 Ioannis:
 

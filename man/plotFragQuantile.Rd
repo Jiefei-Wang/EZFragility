@@ -6,15 +6,15 @@
 \usage{
 plotFragQuantile(
   FragStatObj,
-  time_window = NULL,
+  timeWindow = NULL,
   title = "Fragility Quantiles over time"
 )
 }
 \arguments{
 \item{FragStatObj}{Matrix or FragStat object, either a quantile matrix
-for the two groups or a FragStat object from \code{frag_stat}}
+for the two groups or a FragStat object from \code{fragStat}}
 
-\item{time_window}{Numeric Vector of length 2. The time window to display at the x-axis}
+\item{timeWindow}{Numeric Vector of length 2. The time window to display at the x-axis}
 
 \item{title}{String. Figure title}
 }
@@ -25,12 +25,13 @@ Quantile plot
 Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
 }
 \examples{
-time_window <- c(-10,10)
-data("pt01Epoch")
-sozindex<-attr(pt01Epoch,"sozindex")
-data("pt01Frag")
+
+timeWindow <- c(-1,2)
+data("pt01Epochm1sp2s")
+sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
+data("pt01Fragm1sp2s")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-pt01fragstat <- fragStat(frag=pt01Frag, elecSoz=sozindex)
-plot_frag_quantile(FragStatObj=pt01fragstat, time_window=time_window)
+pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, elecSoz=sozIndex)
+plotFragQuantile(FragStatObj=pt01fragstat, timeWindow=timeWindow)
 }

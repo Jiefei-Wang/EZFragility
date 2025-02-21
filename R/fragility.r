@@ -1,8 +1,8 @@
 #' Compute the normalized fragility row for adjacency matrix A
 #' 
 #' @param A Numeric. Adjacency Matrix  
-#' @param n_search Integer. Number of eigenvalues tried to find the minimum norm vector 
-fragilityRowNormalized <- function(A, n_search = 100) {
+#' @param nSearch Integer. Number of eigenvalues tried to find the minimum norm vector 
+fragilityRowNormalized <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper
   nel <- ncol(A)
@@ -16,7 +16,7 @@ fragilityRowNormalized <- function(A, n_search = 100) {
 
   fragcol <- matrix(0, nel, nel)
   fragNorm <- rep(0, nel)
-  omvec <- seq(0, 1, length.out = n_search + 1)[-1]
+  omvec <- seq(0, 1, length.out = nSearch + 1)[-1]
 
   b <- c(0, -1)
   ## for each electrode
@@ -27,7 +27,7 @@ fragilityRowNormalized <- function(A, n_search = 100) {
     tek <- t(ek)
     minNorm <- 100000
     minPerturbColumn <- NA
-    for (k in seq_len(n_search)) {
+    for (k in seq_len(nSearch)) {
       ## imaginary part
       om <- omvec[k]
       ## real part
@@ -74,7 +74,7 @@ fragilityRowNormalized <- function(A, n_search = 100) {
 #' Compute the fragility row for adjacency matrix A
 #'
 #' @inheritParams fragilityRowNormalized
-fragilityRow <- function(A, n_search = 100) {
+fragilityRow <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper
   nel <- ncol(A)
@@ -88,7 +88,7 @@ fragilityRow <- function(A, n_search = 100) {
 
   fragcol <- matrix(0, nel, nel)
   fragNorm <- rep(0, nel)
-  omvec <- seq(0, 1, length.out = n_search + 1)[-1]
+  omvec <- seq(0, 1, length.out = nSearch + 1)[-1]
 
   b <- c(0, -1)
   ## for each electrode
@@ -99,7 +99,7 @@ fragilityRow <- function(A, n_search = 100) {
     tek <- t(ek)
     minNorm <- 100000
     minPerturbColumn <- NA
-    for (k in seq_len(n_search)) {
+    for (k in seq_len(nSearch)) {
       ## imaginary part
       om <- omvec[k]
       ## real part

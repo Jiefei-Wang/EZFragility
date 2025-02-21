@@ -2,18 +2,18 @@ frag <- NULL
 stat <-  NULL
 nelec <- 10
 ntime <- 100
-elecsoz <- c(1, 2, 3)
+elecSoz <- c(1, 2, 3)
 
-test_that("calc_adj_frag", {
+test_that("calcAdjFrag", {
   set.seed(123)
   ieegts <- matrix(rnorm(ntime * nelec, -10, 10), ncol = nelec)
-  t_window <- 20
-  t_step <- 10
-  frag <<- calc_adj_frag(
+  tWindow <- 20
+  tStep <- 10
+  frag <<- calcAdjFrag(
     ieegts = ieegts,
-    t_window = t_window,
-    t_step = t_step,
-    n_search = 2
+    tWindow = tWindow,
+    tStep = tStep,
+    nSearch = 2
   ) |> expect_no_error()
   expect_s4_class(frag, "Fragility")
 
@@ -21,10 +21,10 @@ test_that("calc_adj_frag", {
   print(frag) |> capture.output() |> expect_no_error()
 })
 
-test_that("frag_stat", {
+test_that("fragStat", {
   skip_if(!is(frag, "Fragility"))
-  stat <<- frag_stat(frag = frag, elecsoz = elecsoz) |> expect_no_error()
-  expect_s4_class(stat, "FragStat")
+  stat <<- fragStat(frag = frag, elecSoz = elecSoz) |> expect_no_error()
+  expect_s4_class(stat, "fragStat")
   ## Test the show method
   print(stat) |> capture.output() |> expect_no_error()
 })
@@ -78,50 +78,50 @@ test_that("valid_soz", {
   valid_soz(mat, intError, strError) |> expect_warning() |> expect_warning()
 })
 
-test_that("heatmap_frag", {
-  dargs <- list(frag = fg, elecsoz = soz, time_window = c(-1, 2), title = "")
+test_that("heatmapFrag", {
+  dargs <- list(frag = fg, elecSoz = soz, timeWindow = c(-1, 2), title = "")
   vL <- def(dargs)
-  do.call(heatmap_frag, dargs) |> expect_warning()
-  do.call(heatmap_frag, vL(time_window = NULL)) |> expect_warning()
+  do.call(heatmapFrag, dargs) |> expect_warning()
+  do.call(heatmapFrag, vL(timeWindow = NULL)) |> expect_warning()
   
-  do.call(heatmap_frag, vL(int)) |> expect_warning()
-    do.call(heatmap_frag, vL(intError)) |> expect_warning() |> 
+  do.call(heatmapFrag, vL(int)) |> expect_warning()
+    do.call(heatmapFrag, vL(intError)) |> expect_warning() |> 
     expect_warning() |>
     expect_warning()
   
-  do.call(heatmap_frag, vL(str))      |> expect_warning()
-  do.call(heatmap_frag, vL(strError)) |> expect_warning() |> 
+  do.call(heatmapFrag, vL(str))      |> expect_warning()
+  do.call(heatmapFrag, vL(strError)) |> expect_warning() |> 
     expect_warning() |> 
     expect_warning()
   
-  do.call(heatmap_frag, vL(elecsoz = int))      |> expect_warning()
-  do.call(heatmap_frag, vL(elecsoz = intError)) |> expect_warning() |> 
+  do.call(heatmapFrag, vL(elecSoz = int))      |> expect_warning()
+  do.call(heatmapFrag, vL(elecSoz = intError)) |> expect_warning() |> 
     expect_warning() |> 
     expect_warning()
   
-  do.call(heatmap_frag, vL(elecsoz = str))      |> expect_warning()
-    do.call(heatmap_frag, vL(elecsoz = strError)) |> expect_warning() |> 
+  do.call(heatmapFrag, vL(elecSoz = str))      |> expect_warning()
+    do.call(heatmapFrag, vL(elecSoz = strError)) |> expect_warning() |> 
     expect_warning() |> 
     expect_warning()
 })
 
-test_that("visu_iEEG_data", {
-  dargs <- list( ieegts = fg$ieegts, time_window = c(-1, 2), title = "" )
+test_that("visuIEEGData", {
+  dargs <- list( ieegts = fg$ieegts, timeWindow = c(-1, 2), title = "" )
   vL <- def(dargs)
-  do.call(visu_iEEG_data, dargs)        |> expect_no_error()
-  do.call(visu_iEEG_data, vL(int))      |> expect_no_error()
-  do.call(visu_iEEG_data, vL(intError)) |> expect_error()
-  do.call(visu_iEEG_data, vL(str))      |> expect_no_error()
-  do.call(visu_iEEG_data, vL(strError)) |> expect_warning() |> expect_warning()
-  do.call(visu_iEEG_data, vL(time_window = NULL)) |> expect_no_error()
+  do.call(visuIEEGData, dargs)        |> expect_no_error()
+  do.call(visuIEEGData, vL(int))      |> expect_no_error()
+  do.call(visuIEEGData, vL(intError)) |> expect_error()
+  do.call(visuIEEGData, vL(str))      |> expect_no_error()
+  do.call(visuIEEGData, vL(strError)) |> expect_warning() |> expect_warning()
+  do.call(visuIEEGData, vL(timeWindow = NULL)) |> expect_no_error()
 })
 
-test_that("plot_frag_distribution", {
-  stat |> plot_frag_distribution()         |> expect_no_error()
-  stat |> plot_frag_distribution(c(-1, 2)) |> expect_no_error()
+test_that("plotFragDistribution", {
+  stat |> plotFragDistribution()         |> expect_no_error()
+  stat |> plotFragDistribution(c(-1, 2)) |> expect_no_error()
 })
 
-test_that("plot_frag_quantile", {
-  stat |> plot_frag_quantile()             |> expect_no_error()
-  stat |> plot_frag_distribution(c(-1, 2)) |> expect_no_error()
+test_that("plotFragQuantile", {
+  stat |> plotFragQuantile()             |> expect_no_error()
+  stat |> plotFragDistribution(c(-1, 2)) |> expect_no_error()
 })
