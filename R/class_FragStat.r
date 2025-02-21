@@ -18,6 +18,7 @@ setMethod("$", "FragStat", function(x, name) {
 
 setMethod("$<-", "FragStat", function(x, name, value) {
     slot(x, name) <- value
+    invisible(x)
 })
 
 
@@ -36,6 +37,6 @@ setMethod("$<-", "FragStat", function(x, name, value) {
 setMethod("show", "FragStat", function(object) {
     cat("\nFragStat object (Summary Statistics by Step)\n")
     printSlots(object)
-    cat("Use '@' to access the data\n")
+    cat("Use '$attr' to access the data\n")
     invisible(object)
 })
