@@ -33,13 +33,13 @@
 #' 
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
-#' data("pt01Epoch")
+#' data("pt01Epochm1sp2s")
 #' t_window <- 250
 #' t_step <- 125
 #' lambda <- NULL
 #' n_search <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag <- calc_adj_frag(ieegts = pt01Epoch, t_window = t_window, 
+#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, t_window = t_window, 
 #'   t_step = t_step, lambda = lambda,n_search=n_search)
 #' }
 #' 
@@ -56,7 +56,7 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calc_adj_frag <- function(ieegts, t_window, t_step, lambda = NULL, n_search=100) {
+calcAdjFrag <- function(ieegts, t_window, t_step, lambda = NULL, n_search=100) {
     ## check the input types
     stopifnot(isWholeNumber(t_window))
     stopifnot(isWholeNumber(t_step))

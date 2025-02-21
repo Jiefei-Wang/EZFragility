@@ -4,7 +4,7 @@
 #' the Fragility Data Set.
 #' The data contains only the good channels. 
 #' It has been notch filtered and common average referenced in RAVE. 
-#' The full data (pt01Epoch) has been epoched -10:10s around the seizure onset.
+#' The full data (pt01Epoch) has been epoched -1:2s around the seizure onset.
 #' The acquisition frequency is 1000 Hz
 #' EcoG recording gathered in collaboration with the National Institue of Health
 #'
@@ -12,20 +12,19 @@
 #'
 #' @usage 
 #' ## EEG data
-#' data(pt01Epoch)
+#' data(pt01Epochm1sp2s)
 #' 
 #' @format 
-#' pt01Epoch: A Matrix with 20001 rows (time points) and 84 columns (electrodes)
+#' pt01Epochm1sp2s: A Matrix with 3000 rows (time points) and 84 columns (electrodes)
 #' 
-#' pt01Frag: A fragility object result of example 3 for 
-#' calc_adj_frag function help with and 84 columns (electrodes)
-#'  \[-1:2\]s around the seizure onset
+#' pt01Fragm1sp2s: A fragility object results of applying the main function \code(calc_ad_frag)
+#' to pt01Epochm1sp2s
 #'
 #' @keywords datasets
 #'
 #' @source Fragility Multi-Center Retrospective Study
 #' (\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
 #' 
-#' @aliases pt01Epoch pt01Frag
-"pt01Epoch"
+#' @aliases pt01Epochm1sp2s pt01Fragm1sp2s
+"pt01Epochm1sp2s"
 
