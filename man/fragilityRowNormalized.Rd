@@ -4,12 +4,12 @@
 \alias{fragilityRowNormalized}
 \title{Compute the normalized fragility row for adjacency matrix A}
 \usage{
-fragilityRowNormalized(A, n_search = 100)
+fragilityRowNormalized(A, nSearch = 100)
 }
 \arguments{
 \item{A}{Numeric. Adjacency Matrix}
 
-\item{n_search}{Integer. Number of eigenvalues tried to find the minimum norm vector}
+\item{nSearch}{Integer. Number of eigenvalues tried to find the minimum norm vector}
 }
 \description{
 Compute the normalized fragility row for adjacency matrix A

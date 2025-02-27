@@ -1,8 +1,8 @@
 #' Compute the normalized fragility row for adjacency matrix A
 #' 
 #' @param A Numeric. Adjacency Matrix  
-#' @param n_search Integer. Number of eigenvalues tried to find the minimum norm vector 
-fragilityRowNormalized <- function(A, n_search = 100) {
+#' @param nSearch Integer. Number of eigenvalues tried to find the minimum norm vector 
+fragilityRowNormalized <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper
   nel <- ncol(A)
@@ -16,7 +16,7 @@ fragilityRowNormalized <- function(A, n_search = 100) {
 
   fragcol <- matrix(0, nel, nel)
   fragNorm <- rep(0, nel)
-  omvec <- seq(0, 1, length.out = n_search + 1)[-1]
+  omvec <- seq(0, 1, length.out = nSearch + 1)[-1]
 
   b <- c(0, -1)
   ## for each electrode
@@ -27,7 +27,7 @@ fragilityRowNormalized <- function(A, n_search = 100) {
     tek <- t(ek)
     minNorm <- 100000
     minPerturbColumn <- NA
-    for (k in seq_len(n_search)) {
+    for (k in seq_len(nSearch)) {
       ## imaginary part
       om <- omvec[k]
       ## real part
@@ -74,7 +74,7 @@ fragilityRowNormalized <- function(A, n_search = 100) {
 #' Compute the fragility row for adjacency matrix A
 #'
 #' @inheritParams fragilityRowNormalized
-fragilityRow <- function(A, n_search = 100) {
+fragilityRow <- function(A, nSearch = 100) {
   ## The adjacency matrix A here is a transpose of the
   ## adjacency matrix in the original paper
   nel <- ncol(A)
@@ -88,7 +88,7 @@ fragilityRow <- function(A, n_search = 100) {
 
   fragcol <- matrix(0, nel, nel)
   fragNorm <- rep(0, nel)
-  omvec <- seq(0, 1, length.out = n_search + 1)[-1]
+  omvec <- seq(0, 1, length.out = nSearch + 1)[-1]
 
   b <- c(0, -1)
   ## for each electrode
@@ -99,7 +99,7 @@ fragilityRow <- function(A, n_search = 100) {
     tek <- t(ek)
     minNorm <- 100000
     minPerturbColumn <- NA
-    for (k in seq_len(n_search)) {
+    for (k in seq_len(nSearch)) {
       ## imaginary part
       om <- omvec[k]
       ## real part
@@ -143,6 +143,7 @@ fragilityRow <- function(A, n_search = 100) {
 #' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 #'
 #' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calc_adj_frag}
+
 #' @param sozID Integer.  Vector soz electrodes (for good electrodes)
 #' 
 #'
@@ -153,8 +154,8 @@ fragilityRow <- function(A, n_search = 100) {
 #' data("pt01Frag")
 #' data("pt01Epoch")
 #' sozindex<-attr(pt01Epoch,"sozindex")
-#' fragstat<-frag_stat(frag=pt01Frag, sozID=sozindex)
-frag_stat <- function(frag, sozID) {
+#' pt01fragstat<-fragStat(frag=pt01Frag, sozID=sozindex)
+fragStat <- function(frag, sozID) {
   if (is(frag, "Fragility")) frag <- frag$frag
   if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
   steps <- ncol(frag)
