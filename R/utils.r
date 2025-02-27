@@ -47,3 +47,9 @@ valid_soz <- function( ieegts, sozindex, soznames){
   return(valid)
   
 }
+
+# Shifts to the right all strings of a list with a number of blanks
+shift <- \(strL, nBlanks = 0) {
+  pre <- paste(rep(" ", nBlanks), collapse = "")
+  lapply(strL, \(x) sprintf("%s%s", pre, x)) |> unlist()
+}

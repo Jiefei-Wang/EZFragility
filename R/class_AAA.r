@@ -32,3 +32,40 @@ printSlotValue <- function(object, slotName, k = 3) {
     cat(msg)
     cat("\n")
 }
+
+# Automatically collapses every vector len > 1 (joined by "j") and use "s" (sep)
+jn <- \(..., j = "", s = "") {
+    fn <- \(x) if (length(x) > 1) paste0(x, collapse = j) else x
+    ARGS <- lapply(list(...), fn)
+    do.call(paste, c(ARGS, sep = s))
+}
+
+# extract properties of the object's members
+slotSpecs <- \(x, k = 3, dm = dim(x), vec = is.null(dm), len = length(x)) {
+    val = x[seq_len(min(k, len))]
+    if (is.null(x)) return(c(cl = "NULL", d = "[NULL]:", v = " NULL"))
+    if (is.double(x)) val <- sprintf("%7.4f", val)
+    c(cl = class(x)[1L],
+      d = jn("[", if (vec) len else dm, "]", j = ','),
+      v = jn(val, if (len > k) "...", j = ", ")
+    )
+}
+
+# Class printing
+printSlots <- \(object, nb = 1) {
+    colN <- c("Slot", "Class", "DIM/LEN", " Values")
+    maxL <- sapply(colN, nchar)
+    ftb <- \(i) paste0("%", -i, "s")
+    meta <- list()
+    for (n in methods::slotNames(object)) {
+        x <- c(name = n, slotSpecs(methods::slot(object, n)))
+        for (i in seq_along(maxL)) maxL[i] <- max(nchar(x[[i]]), maxL[[i]])
+        meta[[n]][names(x)] <- x
+    }
+    fmt = list(fmt = sapply(maxL, ftb) |> jn(j = " | "))
+    header <- do.call(sprintf, c(fmt, colN)) |> shift(nb)
+    dash   <- rep("-", nchar(header) + nb) |> jn()
+    cat(dash, header, dash, sep = "\n")
+    for (x in meta) do.call(sprintf, c(fmt, x)) |> shift(nb) |> cat("\n")
+    dash |> cat("\n")
+}

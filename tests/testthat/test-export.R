@@ -23,7 +23,7 @@ test_that("calcAdjFrag", {
 
 test_that("fragStat", {
   skip_if(!is(frag, "Fragility"))
-  stat <<- fragStat(frag = frag, elecSoz = elecSoz) |> expect_no_error()
+  stat <<- fragStat(frag = frag, sozID = elecSoz) |> expect_no_error()
   expect_s4_class(stat, "fragStat")
   ## Test the show method
   print(stat) |> capture.output() |> expect_no_error()

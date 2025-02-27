@@ -23,14 +23,8 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 
 ## Define the print method
 setMethod("show", "Fragility", function(object) {
-    cat("Fragility object:\n")
-    printSlotValue(object, "ieegts")
-    printSlotValue(object, "adj")
-    printSlotValue(object, "frag")
-    printSlotValue(object, "frag_ranked")
-    printSlotValue(object, "R2")
-    printSlotValue(object, "lambdas")
+    cat("\nFragility object\n")
+    printSlots(object)
     cat("Use '$attr' to access the data\n")
-    
     invisible(object)
 })
