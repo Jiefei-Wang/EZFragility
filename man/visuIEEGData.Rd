@@ -6,7 +6,7 @@
 \usage{
 visuIEEGData(
   ieegts,
-  timeWindow = NULL,
+  timeRange = NULL,
   title = "Patient name seizure number",
   display = NULL
 )
@@ -16,7 +16,7 @@ visuIEEGData(
 series x(t), with time points as rows and electrodes names as columns,
 or a Fragility object from \code{calc_adj_frag}}
 
-\item{timeWindow}{Numeric Vector of length 2. The time window to display at the x-axis}
+\item{timeRange}{Numeric Vector of length 2. The time window to display at the x-axis}
 
 \item{title}{String. Figure title}
 
@@ -32,7 +32,7 @@ Visualization of ictal iEEG
 data("pt01Epochm1sp2s")
 sozIndex <- attr(pt01Epochm1sp2s,"sozIndex")
 display <- c(sozIndex,77:80)
-timeWindow <- c(-1,2)
-iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeWindow=timeWindow,display=display)
+timeRange <- c(-1,2)
+iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeRange=timeRange,display=display)
 iEEGplot
 }

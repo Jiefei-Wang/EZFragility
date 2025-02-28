@@ -6,7 +6,7 @@
 \usage{
 plotFragDistribution(
   stat = NULL,
-  timeWindow = NULL,
+  timeRange = NULL,
   title = "Average Fragility over time",
   cmeansoz = NULL,
   cmeansozc = NULL,
@@ -17,7 +17,7 @@ plotFragDistribution(
 \arguments{
 \item{stat}{FragStat object, a FragStat object from \code{fragStat}, if specified, the arguments cmeansoz, cmeansozc, csdsoz, csdsozc will be ignored}
 
-\item{timeWindow}{Numeric Vector of length 2. The time window to display at the x-axis}
+\item{timeRange}{Numeric Vector of length 2. The time window to display at the x-axis}
 
 \item{title}{String. Figure title}
 }
@@ -31,12 +31,12 @@ Plot Fragility time distribution for two electrodes group marked and non-marked 
 data("pt01Epoch")
 sozindex<-attr(pt01Epoch,"sozindex")
 # Load the precomputed fragility object
-timeWindow <- c(-10,10)
+timeRange <- c(-10,10)
 data("pt01Frag")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-pt01fragstat <- fragStat(frag=pt01Frag, elecSoz=sozindex)
+pt01fragstat <- fragStat(frag=pt01Frag, sozID=sozindex)
 # plot the statistical results
-pfragstat<-plotFragDistribution(stat=pt01fragstat,timeWindow=timeWindow)
+pfragstat<-plotFragDistribution(stat=pt01fragstat,timeRange=timeRange)
 pfragstat
 }

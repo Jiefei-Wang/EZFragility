@@ -3,8 +3,8 @@
 #' plot fragility heatmaps with electrodes marked as soz colored
 #' 
 #' @inheritParams fragStat
-#' @param elecSoz Integer or string. Vector soz electrodes (for good electrodes)
-#' @param timeWindow Numeric Vector of length 2. The time window to display at the x-axis
+#' @param sozID Integer or string. Vector soz electrodes 
+#' @param timeRange Numeric Vector of length 2. The time window to display at the x-axis
 #' @param title String. Figure title
 #' @param display Integer or string. Vector electrodes to display
 #'
@@ -15,10 +15,10 @@
 #'data("pt01Epochm1sp2s")
 #'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
 #'data("pt01Fragm1sp2s")
-#'timeWindow <- c(-1,2)
+#'timeRange <- c(-1,2)
 #'display <- c(sozIndex,77:80)
-#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,elecSoz=sozIndex,
-#'timeWindow = timeWindow,title="PT01 seizure 1",display=display)
+#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,
+#'timeRange = timeRange,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #'
@@ -26,28 +26,28 @@
 #'data("pt01Epochm1sp2s")
 #'sozNames<-attr(pt01Epochm1sp2s,"sozNames")
 #'data("pt01Fragm1sp2s")
-#'timeWindow <- c(-1,2)
+#'timeRange <- c(-1,2)
 #'display <- c(sozNames,"MLT1","MLT2","MLT3","MLT4")
-#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,elecSoz=sozNames,
-#'                     timeWindow = timeWindow,title="PT01 seizure 1",display=display)
+#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozNames,
+#'                     timeRange = timeRange,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # save plot to file with ggplot2
-#'data("pt01Epoch")
-#'data("pt01Frag")
-#'sozindex<-attr(pt01Epoch,"sozindex")
-#'timeWindow <- c(-10,10)
-#'display <- c(sozindex,77:80)
+#'data("pt01Epochm1sp2s")
+#'data("pt01Fragm1sp2s")
+#'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
+#'timeRange <- c(-10,10)
+#'display <- c(sozIndex,77:80)
 #'pathplot <- "~"
 #'title <- "PT01sz1"
 #'resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-#'fragplot<-heatmapFrag(frag=pt01Frag,elecSoz=sozindex,timeWindow=timeWindow,
-#' title=title,display=display)
+#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,timeRange=timeRange,
+#'                      title=title,display=display)
 #'fragplot
 #'ggplot2::ggsave(resfile)
 #' 
 #' @export
-heatmapFrag<-function(frag,elecSoz,timeWindow = NULL,title="Patient name seizure number",display=NULL){
+heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure number",display=NULL){
   titlepng<-title
   
   
@@ -104,62 +104,62 @@ heatmapFrag<-function(frag,elecSoz,timeWindow = NULL,title="Patient name seizure
   nElec <- nrow(fragDisplay)
   elecTot<-c(1:nElec)
   
-  if(typeof(elecSoz)=="integer"){  
+  if(typeof(sozID)=="integer"){  
     
-    diffelecInd<-setdiff(elecSoz,elecInd)
+    diffelecInd<-setdiff(sozID,elecInd)
     
     if(length(diffelecInd)!=0){
       listElecMissing<-paste(as.character(diffelecInd),collapse=" ")
       message<-paste("Number(s) ",listElecMissing,"are out of electrode number limit")
       warning(message)
-      elecSoz<-elecSoz[!elecSoz%in%diffelecInd]
-      listSozCor<-paste(as.character(elecSoz),collapse=" ")
+      sozID<-sozID[!sozID%in%diffelecInd]
+      listSozCor<-paste(as.character(sozID),collapse=" ")
       message<-paste("Keeping indices.",listSozCor)
       warning(message)
     }
-    elecSozid<-elecSoz
+    sozIDid<-sozID
     
   }else{
 
-    diffsoztot<-setdiff(elecSoz,elecName)
+    diffsoztot<-setdiff(sozID,elecName)
     
     if(length(diffsoztot)!=0){
       listSozMissing<-paste(diffsoztot,collapse=" ")
       message<-paste("Name(s) ",listSozMissing,"are out of name list")
       warning(message)
-      elecSoz<-elecSoz[!elecSoz%in%diffsoztot]
-      sozcor<-paste(elecSoz,collapse=" ")
+      sozID<-sozID[!sozID%in%diffsoztot]
+      sozcor<-paste(sozID,collapse=" ")
       message<-paste("Keeping names.",sozcor)
       warning(message)
       
     }  
     
-    elecSozid<-which(elecName%in%elecSoz)
+    sozIDid<-which(elecName%in%sozID)
   }
 
-  elecSozd<-which(displayid%in%elecSozid)
-  elecSozCd<-which(!displayid%in%elecSozid)
-  elecSozSozC<-c(elecSozd,elecSozCd)
+  sozIDd<-which(displayid%in%sozIDid)
+  sozIDCd<-which(!displayid%in%sozIDid)
+  sozIDSozC<-c(sozIDd,sozIDCd)
 
   elecNum <- rownames(fragDisplay)
   nw<- ncol(fragDisplay)
   colorelec<-elecNum
-  nsoz<-length(elecSoz)
+  nsoz<-length(sozID)
   colorelec[1:nElec]<-"blue"
   nb<-nElec-nsoz
   colorelec[1:nb]<-"black"
 
-  elecSozSozC<-rev(elecSozSozC)
-  fragord<-fragDisplay[elecSozSozC,]
+  sozIDSozC<-rev(sozIDSozC)
+  fragord<-fragDisplay[sozIDSozC,]
   fragdf<-data.frame(fragord)
   
-  if(is.null(timeWindow)){
+  if(is.null(timeRange)){
     xlabel<-"Time Index"
     stimes<-seq_len(nw)
   }
   else{
     xlabel<-"Time (s)"
-    stimes<-seq(timeWindow[1],timeWindow[2],length.out=nw)
+    stimes<-seq(timeRange[1],timeRange[2],length.out=nw)
   }
 
   colnames(fragdf)<-stimes
@@ -202,11 +202,11 @@ heatmapFrag<-function(frag,elecSoz,timeWindow = NULL,title="Patient name seizure
 #'data("pt01Epochm1sp2s")
 #'sozIndex <- attr(pt01Epochm1sp2s,"sozIndex")
 #'display <- c(sozIndex,77:80)
-#'timeWindow <- c(-1,2)
-#'iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeWindow=timeWindow,display=display)
+#'timeRange <- c(-1,2)
+#'iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeRange=timeRange,display=display)
 #'iEEGplot
 #' @export
-visuIEEGData<-function(ieegts, timeWindow=NULL, title = "Patient name seizure number", display=NULL){
+visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure number", display=NULL){
  
   titlepng<- title
   if(is.null(display)){
@@ -257,13 +257,13 @@ visuIEEGData<-function(ieegts, timeWindow=NULL, title = "Patient name seizure nu
   displayNames<-colnames(ieegts)[displayid]
   nElec<-length(displayid)
   nt<-nrow(plotData)
-  if(is.null(timeWindow)){
+  if(is.null(timeRange)){
     xlabel<-"Time Index"
     stimes<-seq_len(nt)
   }
   else{
     xlabel<-"Time (s)"
-    stimes<-seq(timeWindow[1],timeWindow[2],length.out=nt)
+    stimes<-seq(timeRange[1],timeRange[2],length.out=nt)
   }
 
 
@@ -302,27 +302,27 @@ visuIEEGData<-function(ieegts, timeWindow=NULL, title = "Patient name seizure nu
 #'
 #' @examples
 #'
-#'timeWindow <- c(-1,2)
+#'timeRange <- c(-1,2)
 #'data("pt01Epochm1sp2s")
 #'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
 #'data("pt01Fragm1sp2s")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, elecSoz=sozIndex)
-#'plotFragQuantile(FragStatObj=pt01fragstat, timeWindow=timeWindow)
-plotFragQuantile<-function(FragStatObj, timeWindow = NULL,title="Fragility Quantiles over time"){
+#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozIndex)
+#'plotFragQuantile(FragStatObj=pt01fragstat, timeRange=timeRange)
+plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quantiles over time"){
   if(is(FragStatObj, "FragStat")){
     qmatrix <- FragStatObj$qmatrix
   }
   
   nw <- ncol(qmatrix)
-  if(is.null(timeWindow)){
+  if(is.null(timeRange)){
     xlabel<-"Time Index"
     stimes<-seq_len(nw)
   }
   else{
     xlabel<-"Time (s)"
-    stimes<-seq(timeWindow[1],timeWindow[2],length.out=nw)
+    stimes<-seq(timeRange[1],timeRange[2],length.out=nw)
   }
 
 
@@ -343,7 +343,7 @@ plotFragQuantile<-function(FragStatObj, timeWindow = NULL,title="Fragility Quant
       axis.text.y = ggplot2::element_text(size=4),     # Adjust depending on electrodes
     )
 
-  if(!is.null(timeWindow)){
+  if(!is.null(timeRange)){
     p <- p + ggplot2::geom_vline(xintercept =0, 
                                  color = "black", linetype = "dashed", size = 1)}
 
@@ -364,17 +364,17 @@ plotFragQuantile<-function(FragStatObj, timeWindow = NULL,title="Fragility Quant
 #'data("pt01Epoch")
 #'sozindex<-attr(pt01Epoch,"sozindex")
 #'# Load the precomputed fragility object
-#'timeWindow <- c(-10,10)
+#'timeRange <- c(-10,10)
 #'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'pt01fragstat <- fragStat(frag=pt01Frag, elecSoz=sozindex)
+#'pt01fragstat <- fragStat(frag=pt01Frag, sozID=sozindex)
 #'# plot the statistical results
-#'pfragstat<-plotFragDistribution(stat=pt01fragstat,timeWindow=timeWindow)
+#'pfragstat<-plotFragDistribution(stat=pt01fragstat,timeRange=timeRange)
 #'pfragstat
 plotFragDistribution<-function(
   stat = NULL, 
-  timeWindow = NULL,
+  timeRange = NULL,
   title='Average Fragility over time', cmeansoz = NULL, cmeansozc=NULL, csdsoz=NULL, csdsozc=NULL){
   if(!is.null(stat)){
     if(is(stat, "FragStat")){
@@ -386,13 +386,13 @@ plotFragDistribution<-function(
   }
   
   nw <- length(cmeansoz)
-  if(is.null(timeWindow)){
+  if(is.null(timeRange)){
     xlabel<-"Time Index"
     stimes<-seq_len(nw)
   }
   else{
     xlabel<-"Time (s)"
-    stimes<-seq(timeWindow[1],timeWindow[2],length.out=nw)
+    stimes<-seq(timeRange[1],timeRange[2],length.out=nw)
   }
 
   
@@ -427,8 +427,8 @@ plotFragDistribution<-function(
    ggplot2::geom_ribbon(ggplot2::aes(ymin=sozcsdm,ymax=sozcsdp), fill="black",alpha=0.5)+  
    ggplot2::scale_color_manual(name="Electrode groups",values = c(colors)) 
     
-  ## add vertical line at time 0 if timeWindow is specified
-  if(!is.null(timeWindow)){
+  ## add vertical line at time 0 if timeRange is specified
+  if(!is.null(timeRange)){
     p <- p + ggplot2::geom_vline(xintercept =0, 
                   color = "black", linetype = "dashed", size = 1)}
   return(p)

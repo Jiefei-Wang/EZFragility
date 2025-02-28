@@ -79,10 +79,10 @@ test_that("valid_soz", {
 })
 
 test_that("heatmapFrag", {
-  dargs <- list(frag = fg, elecSoz = soz, timeWindow = c(-1, 2), title = "")
+  dargs <- list(frag = fg, sozID = soz, timeRange = c(-1, 2), title = "")
   vL <- def(dargs)
   do.call(heatmapFrag, dargs) |> expect_warning()
-  do.call(heatmapFrag, vL(timeWindow = NULL)) |> expect_warning()
+  do.call(heatmapFrag, vL(timeRange = NULL)) |> expect_warning()
   
   do.call(heatmapFrag, vL(int)) |> expect_warning()
     do.call(heatmapFrag, vL(intError)) |> expect_warning() |> 
@@ -94,26 +94,26 @@ test_that("heatmapFrag", {
     expect_warning() |> 
     expect_warning()
   
-  do.call(heatmapFrag, vL(elecSoz = int))      |> expect_warning()
-  do.call(heatmapFrag, vL(elecSoz = intError)) |> expect_warning() |> 
+  do.call(heatmapFrag, vL(sozID = int))      |> expect_warning()
+  do.call(heatmapFrag, vL(sozID = intError)) |> expect_warning() |> 
     expect_warning() |> 
     expect_warning()
   
-  do.call(heatmapFrag, vL(elecSoz = str))      |> expect_warning()
-    do.call(heatmapFrag, vL(elecSoz = strError)) |> expect_warning() |> 
+  do.call(heatmapFrag, vL(sozID = str))      |> expect_warning()
+    do.call(heatmapFrag, vL(sozID = strError)) |> expect_warning() |> 
     expect_warning() |> 
     expect_warning()
 })
 
 test_that("visuIEEGData", {
-  dargs <- list( ieegts = fg$ieegts, timeWindow = c(-1, 2), title = "" )
+  dargs <- list( ieegts = fg$ieegts, timeRange = c(-1, 2), title = "" )
   vL <- def(dargs)
   do.call(visuIEEGData, dargs)        |> expect_no_error()
   do.call(visuIEEGData, vL(int))      |> expect_no_error()
   do.call(visuIEEGData, vL(intError)) |> expect_error()
   do.call(visuIEEGData, vL(str))      |> expect_no_error()
   do.call(visuIEEGData, vL(strError)) |> expect_warning() |> expect_warning()
-  do.call(visuIEEGData, vL(timeWindow = NULL)) |> expect_no_error()
+  do.call(visuIEEGData, vL(timeRange = NULL)) |> expect_no_error()
 })
 
 test_that("plotFragDistribution", {
