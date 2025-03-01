@@ -39,11 +39,11 @@ devtools::load_all()
 
 The package contains an example data. To see it, type
 ```r
-pt01Epoch
+pt01Epochm1sp2s
 ```
 The package contains an example results. To see it, type
 ```r
-pt01Frag
+pt01Fragm1sp2s
 ```
 
 For your test code, please consider creating a folder scripts and put your code there. This folder will be ignored by git.

@@ -53,7 +53,7 @@ data <- matrix(rnorm(100), nrow = 10)
 window <- 10
 step <- 5
 lambda <- 0.1
-calc_adj_frag(ieegts = data, window = window, 
+calcAdjFrag(ieegts = data, window = window, 
 step = step, lambda = lambda)
 
 ## A more realistic example, but it will take a while to run

@@ -14,7 +14,7 @@ visuIEEGData(
 \arguments{
 \item{ieegts}{Matrix or Fragility object. Either a matrix of iEEG time
 series x(t), with time points as rows and electrodes names as columns,
-or a Fragility object from \code{calc_adj_frag}}
+or a Fragility object from \code{calcAdjFrag}}
 
 \item{timeRange}{Numeric Vector of length 2. The time window to display at the x-axis}
 

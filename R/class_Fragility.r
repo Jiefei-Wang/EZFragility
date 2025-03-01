@@ -25,11 +25,12 @@ Fragility <- function(ieegts, adj, frag, frag_ranked, R2, lambdas) {
     )
 }
 
-## Allow users to get and set the slots via $ operator
+#' @rdname cash-FragStat-method
 setMethod("$", "Fragility", function(x, name) {
     slot(x, name)
 })
 
+#' @rdname cash-FragStat-method
 setMethod("$<-", "Fragility", function(x, name, value) {
     slot(x, name) <- value
     invisible(x)

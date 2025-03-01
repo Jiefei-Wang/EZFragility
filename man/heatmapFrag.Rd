@@ -13,7 +13,7 @@ heatmapFrag(
 )
 }
 \arguments{
-\item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calc_adj_frag}}
+\item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}
 
 \item{sozID}{Integer or string. Vector soz electrodes}
 

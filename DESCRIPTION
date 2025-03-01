@@ -53,7 +53,8 @@ Imports:
     viridis,
     ggtext,
     glue,
-    glmnet
+    glmnet,
+    rlang
 Suggests: 
     knitr,
     rmarkdown,

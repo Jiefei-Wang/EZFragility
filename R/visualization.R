@@ -171,7 +171,7 @@ heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure nu
   fragmapData$Value <- c(t(fragord))
 
   
-  p<-ggplot2::ggplot(fragmapData, ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = Value)) +
+  p<-ggplot2::ggplot(fragmapData, ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = .data$Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(as.character(titlepng)) +
     ggplot2::theme(plot.title=ggtext::element_markdown(hjust=0.5)) +
@@ -193,7 +193,7 @@ heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure nu
 #' @inheritParams heatmapFrag
 #' @param ieegts Matrix or Fragility object. Either a matrix of iEEG time 
 #' series x(t), with time points as rows and electrodes names as columns, 
-#' or a Fragility object from \code{calc_adj_frag}
+#' or a Fragility object from \code{calcAdjFrag}
 #' @param title String. Figure title
 #' @param display Integer or string. Vector electrodes to display
 #' @return plot raw signal
@@ -271,7 +271,7 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
      plotData[, i] <- (plotData[, i]- mean(plotData[, i]))+
        (ncol(plotData)-i)*gaps
   }
-  plotData<-data.frame(plotData)
+  plotData<-data.frame(stimes = stimes, plotData = plotData)
   breakplot<-(c(1:nElec)-1)*gaps
  
   p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=.data$stimes,y=.data$plotData))+
@@ -355,36 +355,33 @@ plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quanti
 #'  Plot Fragility time distribution for two electrodes group marked and non-marked as soz
 #'
 #' @inheritParams heatmapFrag
-#' @param stat FragStat object, a FragStat object from \code{fragStat}, if specified, the arguments cmeansoz, cmeansozc, csdsoz, csdsozc will be ignored
+#' @param stat FragStat object, a FragStat object from \code{fragStat}
 #' @param title String. Figure title
 #'
 #' @return plot fragility distribution
 #' @export
 #'
 #' @examples
-#'data("pt01Epoch")
-#'sozindex<-attr(pt01Epoch,"sozindex")
+#'data("pt01Epochm1sp2s")
+#'sozindex<-attr(pt01Epochm1sp2s,"sozindex")
 #'# Load the precomputed fragility object
 #'timeRange <- c(-10,10)
-#'data("pt01Frag")
+#'data("pt01Fragm1sp2s")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'pt01fragstat <- fragStat(frag=pt01Frag, sozID=sozindex)
+#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozindex)
 #'# plot the statistical results
 #'pfragstat<-plotFragDistribution(stat=pt01fragstat,timeRange=timeRange)
 #'pfragstat
 plotFragDistribution<-function(
   stat = NULL, 
   timeRange = NULL,
-  title='Average Fragility over time', cmeansoz = NULL, cmeansozc=NULL, csdsoz=NULL, csdsozc=NULL){
-  if(!is.null(stat)){
-    if(is(stat, "FragStat")){
-    cmeansoz <- stat$cmeansoz
-    cmeansozc <- stat$cmeansozc
-    csdsoz <- stat$csdsoz
-    csdsozc <- stat$csdsozc
-    }
-  }
+  title='Average Fragility over time'){
+  stopifnot(is(stat, "FragStat"))
+  cmeansoz <- stat$cmeansoz
+  cmeansozc <- stat$cmeansozc
+  csdsoz <- stat$csdsoz
+  csdsozc <- stat$csdsozc
   
   nw <- length(cmeansoz)
   if(is.null(timeRange)){
@@ -414,7 +411,7 @@ plotFragDistribution<-function(
   titlepng <- title
   colors<-c("SOZ +/- sem" = "red", "SOZc +/- sem" = "black")
   ggplot2::theme_grey(base_size = 22)
-  p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=.data$times, y=.data$cmeansoz))+ 
+  p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=.data$times, y=.data$meansoz))+ 
    ggplot2::xlab(xlabel)+
    ggplot2::ylab('Fragility')+
    ggplot2::ggtitle(titlepng)+

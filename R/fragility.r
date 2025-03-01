@@ -142,7 +142,7 @@ fragilityRow <- function(A, nSearch = 100) {
 
 #' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 #'
-#' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calc_adj_frag}
+#' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}
 
 #' @param sozID Integer.  Vector soz electrodes (for good electrodes)
 #' 
@@ -151,10 +151,10 @@ fragilityRow <- function(A, nSearch = 100) {
 #' @export
 #'
 #' @examples
-#' data("pt01Frag")
-#' data("pt01Epoch")
-#' sozindex<-attr(pt01Epoch,"sozindex")
-#' pt01fragstat<-fragStat(frag=pt01Frag, sozID=sozindex)
+#' data("pt01Fragm1sp2s")
+#' data("pt01Epochm1sp2s")
+#' sozindex<-attr(pt01Epochm1sp2s,"sozindex")
+#' pt01fragstat<-fragStat(frag=pt01Fragm1sp2s, sozID=sozindex)
 fragStat <- function(frag, sozID) {
   if (is(frag, "Fragility")) frag <- frag$frag
   if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
