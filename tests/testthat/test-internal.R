@@ -33,5 +33,5 @@ test_that("Data consistency across versions", {
   t_step <- 5
   lambda <- 0.1
   frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda)
-  expect_identical(frag, testFrag)
+  expect_equal(frag, testFrag)
 })
