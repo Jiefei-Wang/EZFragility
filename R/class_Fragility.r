@@ -1,4 +1,4 @@
-Fragility <- setClass(
+.Fragility <- setClass(
     "Fragility",
     slots = list(
         ieegts = "matrixOrNULL",
@@ -9,6 +9,21 @@ Fragility <- setClass(
         lambdas = "numericOrNULL"
     )
 )
+
+Fragility <- function(ieegts, adj, frag, frag_ranked, R2, lambdas) {
+    if (!pkgData$debug){
+        ieegts <- NULL
+        adj <- NULL
+    }
+    .Fragility(
+        ieegts = ieegts,
+        adj = adj,
+        frag = frag,
+        frag_ranked = frag_ranked,
+        R2 = R2,
+        lambdas = lambdas
+    )
+}
 
 ## Allow users to get and set the slots via $ operator
 setMethod("$", "Fragility", function(x, name) {
@@ -24,7 +39,12 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 ## Define the print method
 setMethod("show", "Fragility", function(object) {
     cat("\nFragility object\n")
-    printSlots(object)
+    if(pkgData$debug){
+        slots <- c("ieegts", "adj", "frag", "frag_ranked", "R2", "lambdas")
+    }else{
+        slots <- c("frag", "frag_ranked", "R2", "lambdas")
+    }
+    printSlots(object, slots = slots)
     cat("Use '$attr' to access the data\n")
     invisible(object)
 })

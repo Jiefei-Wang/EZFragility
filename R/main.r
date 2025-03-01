@@ -12,8 +12,8 @@
 #' 
 #' @param ieegts Numeric. A matrix of iEEG time series x(t), 
 #' with time points as rows and electrodes names as columns
-#' @param tWindow Integer. The number of time points to use in each window
-#' @param tStep Integer. The number of time points to move the window each time
+#' @param window Integer. The number of time points to use in each window
+#' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression. 
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
@@ -25,22 +25,22 @@
 #' @examples
 #' ## A simple example
 #' data <- matrix(rnorm(100), nrow = 10)
-#' tWindow <- 10
-#' tStep <- 5
+#' window <- 10
+#' step <- 5
 #' lambda <- 0.1
-#' calc_adj_frag(ieegts = data, tWindow = tWindow, 
-#' tStep = tStep, lambda = lambda)
+#' calc_adj_frag(ieegts = data, window = window, 
+#' step = step, lambda = lambda)
 #' 
 #' ## A more realistic example, but it will take a while to run
 #' \dontrun{
 #' data("pt01Epochm1sp2s")
-#' tWindow <- 250
-#' tStep <- 125
+#' window <- 250
+#' step <- 125
 #' lambda <- NULL
 #' nSearch <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, tWindow = tWindow, 
-#'   tStep = tStep, lambda = lambda,nSearch=nSearch)
+#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, 
+#'   step = step, lambda = lambda,nSearch=nSearch)
 #' }
 #' 
 #' 
@@ -56,14 +56,14 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #' 
 #' @export 
-calcAdjFrag <- function(ieegts, tWindow, tStep, lambda = NULL, nSearch=100) {
+calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch=100) {
     ## check the input types
-    stopifnot(isWholeNumber(tWindow))
-    stopifnot(isWholeNumber(tStep))
+    stopifnot(isWholeNumber(window))
+    stopifnot(isWholeNumber(step))
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
-    ## The input matrix must have at least tWindow rows
-    stopifnot(nrow(ieegts) >= tWindow)
+    ## The input matrix must have at least window rows
+    stopifnot(nrow(ieegts) >= window)
 
 
     ## Number of electrodes and time points
@@ -73,7 +73,7 @@ calcAdjFrag <- function(ieegts, tWindow, tStep, lambda = NULL, nSearch=100) {
     electrodeList <- colnames(ieegts)
 
     # Number of steps
-    nSteps <- floor((n_tps - tWindow) / tStep) + 1
+    nSteps <- floor((n_tps - window) / step) + 1
 
     scaling <- 10^floor(log10(max(ieegts)))
     ieegts <- ieegts / scaling
@@ -82,7 +82,7 @@ calcAdjFrag <- function(ieegts, tWindow, tStep, lambda = NULL, nSearch=100) {
     ## iw: The index of the window we are going to calculate fragility
     res <- lapply(seq_len(nSteps), function(iw) {
         ## Sample indices for the selected window
-        si <- seq_len(tWindow - 1) + (iw - 1) * tStep
+        si <- seq_len(window - 1) + (iw - 1) * step
         ## measurements at time point t
         xt <- ieegts[si, ]
         ## measurements at time point t plus 1
