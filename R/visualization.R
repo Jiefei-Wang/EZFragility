@@ -178,7 +178,7 @@ heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure nu
     ggplot2::labs(x = xlabel, y = "Electrode",size=2) +
     viridis::scale_fill_viridis(option = "turbo") +
     ggplot2::geom_vline(xintercept =0, 
-                  color = "black", linetype = "dashed", size = 1) +
+                  color = "black", linetype = "dashed", linewidth = 1) +
    ggplot2::theme_minimal() +
    ggplot2::theme(
       axis.text.y = ggtext::element_markdown(size=6,colour=colorelec),     # Adjust depending on electrodes
@@ -278,10 +278,11 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
   ggplot2::ggtitle(titlepng)+
   ggplot2::labs(x = xlabel, y = "Electrode",size=2)+ 
     ggplot2::geom_vline(xintercept =0, 
-                  color = "black", linetype = "dashed", size = 1)
+                  color = "black", linetype = "dashed", linewidth = 1)
   
   for(i in 1:nElec){
-      p<-p+ggplot2::geom_line(ggplot2::aes_string(y=names(plotData)[i]))
+        y_name <- names(plotData)[i]
+        p<-p+ggplot2::geom_line(ggplot2::aes(y= .data[[y_name]]))
   }
   displayNames<-rev(displayNames)
   p<-p+ggplot2::scale_y_continuous(labels=displayNames,breaks=breakplot)
@@ -345,7 +346,7 @@ plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quanti
 
   if(!is.null(timeRange)){
     p <- p + ggplot2::geom_vline(xintercept =0, 
-                                 color = "black", linetype = "dashed", size = 1)}
+                                 color = "black", linetype = "dashed", linewidth = 1)}
 
   return(p)
 }
@@ -430,6 +431,6 @@ plotFragDistribution<-function(
   ## add vertical line at time 0 if timeRange is specified
   if(!is.null(timeRange)){
     p <- p + ggplot2::geom_vline(xintercept =0, 
-                  color = "black", linetype = "dashed", size = 1)}
+                  color = "black", linetype = "dashed", linewidth = 1)}
   return(p)
 }

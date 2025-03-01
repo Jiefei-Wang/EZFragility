@@ -31,8 +31,7 @@ usethis::use_data(pt01Epochm1sp2s, overwrite = TRUE)
 t_window <- 250
 t_step <- 125
 lambda <- NULL
-nSearch <- 100
-pt01Frag <- calc_adj_frag(ieegts = pt01Epoch, t_window = t_window, t_step = t_step, lambda = lambda,n_search=n_search)
-usethis::use_data(pt01Frag, overwrite = TRUE)
+pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = t_window, step = t_step, lambda = lambda)
+usethis::use_data(pt01Fragm1sp2s, overwrite = TRUE)
 
 
