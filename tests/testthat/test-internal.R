@@ -23,3 +23,15 @@ test_that("ridgesearchlambdadichomotomy", {
   do.call(ridgesearchlambdadichomotomy, c(ERR[-3L], FALSE)) |> expect_error()
   do.call(ridgesearchlambdadichomotomy, c(ARGS[-3L], TRUE)) |> expect_no_error()
 })
+
+
+# internal data -------------------------------------------------
+test_that("Data consistency across versions", {
+  set.seed(1)
+  data <- matrix(rnorm(200), nrow = 20)
+  t_window <- 5
+  t_step <- 5
+  lambda <- 0.1
+  frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda)
+  expect_identical(frag, testFrag)
+})
