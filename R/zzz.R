@@ -1,5 +1,6 @@
 #' @import methods
 #' @import stats
+#' @importFrom rlang .data
 NULL
 
 pkgData <- new.env()

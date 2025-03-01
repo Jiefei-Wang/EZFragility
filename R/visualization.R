@@ -171,7 +171,7 @@ heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure nu
   fragmapData$Value <- c(t(fragord))
 
   
-  p<-ggplot2::ggplot(fragmapData, ggplot2::aes(x = Time, y = Electrode, fill = Value)) +
+  p<-ggplot2::ggplot(fragmapData, ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(as.character(titlepng)) +
     ggplot2::theme(plot.title=ggtext::element_markdown(hjust=0.5)) +
@@ -274,7 +274,7 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
   plotData<-data.frame(plotData)
   breakplot<-(c(1:nElec)-1)*gaps
  
-  p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=stimes,y=plotData))+
+  p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=.data$stimes,y=.data$plotData))+
   ggplot2::ggtitle(titlepng)+
   ggplot2::labs(x = xlabel, y = "Electrode",size=2)+ 
     ggplot2::geom_vline(xintercept =0, 
@@ -333,7 +333,7 @@ plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quanti
   
   titlepng <- title
   
-  p<-ggplot2::ggplot(quantilePlot, ggplot2::aes(x = Time, y = Stats, fill = Value)) +
+  p<-ggplot2::ggplot(quantilePlot, ggplot2::aes(x = .data$Time, y = .data$Stats, fill = .data$Value)) +
     ggplot2::geom_tile() +
     ggplot2::ggtitle(titlepng)+
     ggplot2::labs(x = xlabel, y = "Quantiles",size=2) +
@@ -414,18 +414,18 @@ plotFragDistribution<-function(
   titlepng <- title
   colors<-c("SOZ +/- sem" = "red", "SOZc +/- sem" = "black")
   ggplot2::theme_grey(base_size = 22)
-  p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=times, y=cmeansoz))+ 
+  p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=.data$times, y=.data$cmeansoz))+ 
    ggplot2::xlab(xlabel)+
    ggplot2::ylab('Fragility')+
    ggplot2::ggtitle(titlepng)+
-   ggplot2::geom_line(ggplot2::aes(y = meansoz,color="SOZ +/- sem"))+  
-   ggplot2::geom_line(ggplot2::aes(y = sozsdp),color='red',linetype="dotted")+  
-   ggplot2::geom_line(ggplot2::aes(y = sozsdm),color='red',linetype="dotted")+ 
-   ggplot2::geom_line(ggplot2::aes(y = meansozc,color="SOZc +/- sem"))+
-   ggplot2::geom_line(ggplot2::aes(y = sozcsdp),color='black',linetype="dotted")+  
-   ggplot2::geom_line(ggplot2::aes(y = sozcsdm),color='black',linetype="dotted")+
-   ggplot2::geom_ribbon(ggplot2::aes(ymin=sozsdm,ymax=sozsdp), fill="red",alpha=0.5)+
-   ggplot2::geom_ribbon(ggplot2::aes(ymin=sozcsdm,ymax=sozcsdp), fill="black",alpha=0.5)+  
+   ggplot2::geom_line(ggplot2::aes(y = .data$meansoz,color="SOZ +/- sem"))+  
+   ggplot2::geom_line(ggplot2::aes(y = .data$sozsdp),color='red',linetype="dotted")+  
+   ggplot2::geom_line(ggplot2::aes(y = .data$sozsdm),color='red',linetype="dotted")+ 
+   ggplot2::geom_line(ggplot2::aes(y = .data$meansozc,color="SOZc +/- sem"))+
+   ggplot2::geom_line(ggplot2::aes(y = .data$sozcsdp),color='black',linetype="dotted")+  
+   ggplot2::geom_line(ggplot2::aes(y = .data$sozcsdm),color='black',linetype="dotted")+
+   ggplot2::geom_ribbon(ggplot2::aes(ymin=.data$sozsdm,ymax=.data$sozsdp), fill="red",alpha=0.5)+
+   ggplot2::geom_ribbon(ggplot2::aes(ymin=.data$sozcsdm,ymax=.data$sozcsdp), fill="black",alpha=0.5)+  
    ggplot2::scale_color_manual(name="Electrode groups",values = c(colors)) 
     
   ## add vertical line at time 0 if timeRange is specified
