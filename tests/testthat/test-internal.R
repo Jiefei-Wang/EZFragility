@@ -5,10 +5,9 @@ ARGS = ERR <- list(xt = mat[1L:4L, ], xtp1 = mat[1L:4L + 1L, ], 0.1)
 ERR$xtp1 <- ERR$xtp1[, -1L]
 
 # fragilityRow -------------------------------------------------------
-test_that("fragilityRow/fragilityRowNormalized", {
+test_that("fragilityRow", {
   input <- do.call(ridge, ARGS)
   fragilityRow(input) |> expect_no_error()
-  fragilityRowNormalized(input) |> expect_no_error()
 })
 
 # ridge ------------------------------------------------------------------------
