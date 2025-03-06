@@ -5,10 +5,9 @@ ARGS = ERR <- list(xt = mat[1L:4L, ], xtp1 = mat[1L:4L + 1L, ], 0.1)
 ERR$xtp1 <- ERR$xtp1[, -1L]
 
 # fragilityRow -------------------------------------------------------
-test_that("fragilityRow/fragilityRowNormalized", {
+test_that("fragilityRow", {
   input <- do.call(ridge, ARGS)
   fragilityRow(input) |> expect_no_error()
-  fragilityRowNormalized(input) |> expect_no_error()
 })
 
 # ridge ------------------------------------------------------------------------
@@ -28,8 +27,8 @@ test_that("ridgesearchlambdadichomotomy", {
 # internal data -------------------------------------------------
 test_that("Data consistency across versions", {
   set.seed(1)
-  data <- matrix(rnorm(200), nrow = 20)
-  t_window <- 5
+  data <- matrix(rnorm(800), nrow = 40)
+  t_window <- 10
   t_step <- 5
   lambda <- 0.1
   frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda)

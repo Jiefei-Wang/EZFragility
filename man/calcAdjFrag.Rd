@@ -53,7 +53,7 @@ data <- matrix(rnorm(100), nrow = 10)
 window <- 10
 step <- 5
 lambda <- 0.1
-calcAdjFrag(ieegts = data, window = window, 
+calcAdjFrag(ieegts = data, window = window,
 step = step, lambda = lambda)
 
 ## A more realistic example, but it will take a while to run
@@ -64,7 +64,7 @@ step <- 125
 lambda <- NULL
 nSearch <- 100
 title <- "PT01 seizure 1"
-resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, 
+resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
   step = step, lambda = lambda,nSearch=nSearch)
 }
 

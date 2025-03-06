@@ -2,15 +2,17 @@
 % Please edit documentation in R/fragility.r
 \name{fragilityRow}
 \alias{fragilityRow}
-\title{Compute the fragility row for adjacency matrix A}
+\title{Compute the normalized fragility row for adjacency matrix A}
 \usage{
-fragilityRow(A, nSearch = 100)
+fragilityRow(A, nSearch = 100, normalize = TRUE)
 }
 \arguments{
 \item{A}{Numeric. Adjacency Matrix}
 
 \item{nSearch}{Integer. Number of eigenvalues tried to find the minimum norm vector}
+
+\item{normalize}{Logical. If TRUE, the fragility row is normalized}
 }
 \description{
-Compute the fragility row for adjacency matrix A
+Compute the normalized fragility row for adjacency matrix A
 }
