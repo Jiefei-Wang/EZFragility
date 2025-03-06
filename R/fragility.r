@@ -10,6 +10,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
   fragNorm <- rep(0L, nel)
   omvec <- seq(0L, 1L, length.out = nSearch + 1L)[-1L]
   lambdas  <- sqrt(1 - omvec^2) + omvec * 1i
+  ## (A - (sigma + j * omega)*I)^-1
   iMats <- lapply(lambdas, \(L) t(solve(A - L * ek)))
   for (i in seq_len(nel)) {
     minNorm <- 100000
@@ -17,6 +18,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
     for (k in seq_len(nSearch)) {
       argument <- item %*% iMats[[k]]
       B <- rbind(Im(argument), Re(argument))
+      ## B^T * (B * B^T)^-1 * b
       prov <- t(B) %*% solve(B %*% t(B)) %*% b
       provNorm <- norm(prov, type = "2")
       if (provNorm < minNorm) minNorm <- provNorm
