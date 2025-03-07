@@ -15,15 +15,15 @@ coverage](https://codecov.io/gh/Jiefei-Wang/Fragility/graph/badge.svg)](https://
 
 The goal of this Rpackage is to allow neuroscientists to reproduce and
 test the neural fragility method described in (Li et al. 2017, 2021).
-This method is a iEEG marker of the epileptogenic zone localization. In
-this method, seizures are conceptualized as transitions from a stable
-networked system to an unstable one. To quantify this, node fragility is
-computed from linear network models, measuring each node’s
-susceptibility to destabilization. There are significant details missing
-in (Li et al. 2017, 2021) to reproduce the neural fragility method and
-adjust the parameters. This Rpackage aims to identify and fill up the
-implementation details. It will also allow users to test the method
-parameters on their data.
+This method implements an intracranial EEG (iEEG) marker of the
+epileptogenic zone localization. In this method, seizures are
+conceptualized as transitions from a stable networked system to an
+unstable one. To quantify this, node fragility is computed from linear
+network models, measuring each node’s susceptibility to destabilization.
+There are significant details missing in (Li et al. 2017, 2021) to
+reproduce the neural fragility method and adjust the parameters. This
+Rpackage aims to identify and fill up the implementation details. It
+will also allow users to test the method parameters on their data.
 
 ## EZFragility package tutorial
 
@@ -46,17 +46,34 @@ pt01Fragm1sp2s
 ```
 
 For your test code, please consider creating a folder scripts and put
-your code there. This folder will be ignored by git.
+your code there. This folder will be ignored by git. For explanations on
+how to use the package please refer to the vignette
+Intro_to_EZFragility.
 
 ## Implementation details
 
 The method is based on building a discrete time linear system computing
-a stable adjacency matrix A for the evolution of x(t). Equation … We
-used a ridge regression … In … they recommend a lambda of 1e-4, however
-testing on the data from pt01 (data available in this package) this
-lambda value does not ensure that A is always stable.
+a stable adjacency matrix A for the evolution of x(t).  
+$x(t+1)=A x(t)$ with $x_i(t)$ the iEEG signal at time $t$ for electrode
+$i$. A is computed for a series of time windows to derive the fragility
+row.  
+In this package, we are applying a ridge regression to fit the linear
+operator A using the glmnet R library. In (Li et al. 2017, 2021), a
+regularization parameter value of 1e-4 is recommended, however testing
+on the data from patient pt01 from the Fragility data set (data subset
+available in this package) this value does not ensure that A is always
+stable. To tackle this issue, we have implemented a dichotomy to search
+for the lowest stable lambda value rendering the matrix A stable (see R
+function ridgesearchlambdadichomotomy in file ridge.r).
 
-The method to compute the row perturbation is also not clear
+The method to compute the row perturbation is also not clear. To compute
+the fragility row, a minimum 2-induced norm additive row perturbation
+$\Delta$ is computed to destabilize the linear network placing an
+eigenvalue of $A+\Delta$ at $\lambda=\sigma+j\omega$. The minimum norm
+is a function of $\lambda$ given in (Li et al. 2017) (see function
+fragilityRow in the scrip fragility.r), however the paper does not
+describe how to choose $\lambda$ with $|\lambda|=1$. To tackle this
+issue, we search for the value that minimize the norm of $\Delta$.
 
 ## TODO:
 
@@ -71,7 +88,7 @@ Data:
 - The data is too large. We need to find a way to reduce it.
   - Do we really need to recreate the result in the paper? For users,
     they just need to know how to use the package. If they want, they
-    can download the data from the paper.
+    can download the data from the paper. Done
 
 Ioannis:
 
