@@ -36,13 +36,13 @@ devtools::load_all()
 The package contains an example data. To see it, type
 
 ``` r
-pt01Epochm1sp2s
+pt01Epoch
 ```
 
 The package contains an example results. To see it, type
 
 ``` r
-pt01Fragm1sp2s
+pt01Frag
 ```
 
 For your test code, please consider creating a folder scripts and put

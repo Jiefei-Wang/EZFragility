@@ -52,13 +52,12 @@ slotSpecs <- \(x, k = 3, dm = dim(x), vec = is.null(dm), len = length(x)) {
 }
 
 # Class printing
-printSlots <- \(object, nb = 1, slots = NULL) {
+printSlots <- \(object, nb = 1) {
     colN <- c("Slot", "Class", "DIM/LEN", " Values")
     maxL <- sapply(colN, nchar)
     ftb <- \(i) paste0("%", -i, "s")
     meta <- list()
-    slots <- if (is.null(slots)) methods::slotNames(object) else slots
-    for (n in slots) {
+    for (n in methods::slotNames(object)) {
         x <- c(name = n, slotSpecs(methods::slot(object, n)))
         for (i in seq_along(maxL)) maxL[i] <- max(nchar(x[[i]]), maxL[[i]])
         meta[[n]][names(x)] <- x

@@ -271,7 +271,9 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
      plotData[, i] <- (plotData[, i]- mean(plotData[, i]))+
        (ncol(plotData)-i)*gaps
   }
-  plotData<-data.frame(stimes = stimes, plotData = plotData)
+
+  electrodeNames<-colnames(plotData)
+  plotData<-cbind(data.frame(stimes = stimes), plotData)
   breakplot<-(c(1:nElec)-1)*gaps
  
   p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=.data$stimes,y=.data$plotData))+
@@ -279,10 +281,9 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
   ggplot2::labs(x = xlabel, y = "Electrode",size=2)+ 
     ggplot2::geom_vline(xintercept =0, 
                   color = "black", linetype = "dashed", linewidth = 1)
-  
-  for(i in 1:nElec){
-        y_name <- names(plotData)[i]
-        p<-p+ggplot2::geom_line(ggplot2::aes(y= .data[[y_name]]))
+
+  for(i in electrodeNames){
+        p<-p+ggplot2::geom_line(ggplot2::aes(y= .data[[i]]))
   }
   displayNames<-rev(displayNames)
   p<-p+ggplot2::scale_y_continuous(labels=displayNames,breaks=breakplot)
@@ -363,13 +364,13 @@ plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quanti
 #'
 #' @examples
 #'data("pt01Epochm1sp2s")
-#'sozindex<-attr(pt01Epochm1sp2s,"sozindex")
+#'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
 #'# Load the precomputed fragility object
 #'timeRange <- c(-10,10)
 #'data("pt01Fragm1sp2s")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozindex)
+#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozIndex)
 #'# plot the statistical results
 #'pfragstat<-plotFragDistribution(stat=pt01fragstat,timeRange=timeRange)
 #'pfragstat

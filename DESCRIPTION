@@ -49,12 +49,11 @@ LazyData: true
 Imports: 
     stats,
     methods, 
-    ggplot2 (>= 3.4.0),
+    ggplot2,
     viridis,
     ggtext,
     glue,
-    glmnet,
-    rlang
+    glmnet
 Suggests: 
     knitr,
     rmarkdown,
