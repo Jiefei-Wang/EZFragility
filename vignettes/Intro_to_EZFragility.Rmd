@@ -7,15 +7,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
+library(EZFragility)
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.align='center',
+  fig.width=6,
+  fig.height=4
 )
-```
-
-```{r setup}
-library(EZFragility)
 ```
 
 This is the introduction to how to use the EZFragility package.
