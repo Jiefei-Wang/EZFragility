@@ -2,7 +2,7 @@
 title: "Introduction to EZFragility package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to EZFragility package}
+  %\VignetteIndexEntry{Intro_to_EZFragility}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

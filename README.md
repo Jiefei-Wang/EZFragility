@@ -25,9 +25,23 @@ reproduce the neural fragility method and adjust the parameters. This
 Rpackage aims to identify and fill up the implementation details. It
 will also allow users to test the method parameters on their data.
 
+## Installation
+
+To install the package from GitHub
+
+``` r
+devtools::install_github("Jiefei-Wang/EZFragility")
+```
+
 ## EZFragility package tutorial
 
 To load the package
+
+``` r
+library(EZFragility)
+```
+
+If you are working with the source code, you can load the package with
 
 ``` r
 devtools::load_all()
@@ -45,18 +59,19 @@ The package contains an example results. To see it, type
 pt01Fragm1sp2s
 ```
 
-For your test code, please consider creating a folder scripts and put
-your code there. This folder will be ignored by git. For explanations on
-how to use the package please refer to the vignette
-Intro_to_EZFragility.
+For explanations on how to use the package please refer to the vignette.
+
+``` r
+vignette("Intro_to_EZFragility", package = "EZFragility")
+```
 
 ## Implementation details
 
 The method is based on building a discrete time linear system computing
 a stable adjacency matrix A for the evolution of x(t).  
-$x(t+1)=A x(t)$ with $x_i(t)$ the iEEG signal at time $t$ for electrode
-$i$. A is computed for a series of time windows to derive the fragility
-row.  
+$`x(t+1)=A x(t)`$ with $`x_i(t)`$ the iEEG signal at time $`t`$ for
+electrode $`i`$. A is computed for a series of time windows to derive
+the fragility row.  
 In this package, we are applying a ridge regression to fit the linear
 operator A using the glmnet R library. In (Li et al. 2017, 2021), a
 regularization parameter value of 1e-4 is recommended, however testing
@@ -68,46 +83,13 @@ function ridgesearchlambdadichomotomy in file ridge.r).
 
 The method to compute the row perturbation is also not clear. To compute
 the fragility row, a minimum 2-induced norm additive row perturbation
-$\Delta$ is computed to destabilize the linear network placing an
-eigenvalue of $A+\Delta$ at $\lambda=\sigma+j\omega$. The minimum norm
-is a function of $\lambda$ given in (Li et al. 2017) (see function
-fragilityRow in the scrip fragility.r), however the paper does not
-describe how to choose $\lambda$ with $|\lambda|=1$. To tackle this
-issue, we search for the value that minimize the norm of $\Delta$.
-
-## TODO:
-
-- Unit test (`test-main.R` from cecile)
-- Vignette
-- Make sure all required functions/class have been exported
-- Clear all error and warning in `devtools::check()` and
-  `R CMD check --as-cran`
-
-Data:
-
-- The data is too large. We need to find a way to reduce it.
-  - Do we really need to recreate the result in the paper? For users,
-    they just need to know how to use the package. If they want, they
-    can download the data from the paper. Done
-
-Ioannis:
-
-- Branch1: Simplify Cecile’s `frag_stat` function in another branch (one
-  or two branches depending on the amount of work) (Reviewer: Cecile)
-- Branch2: Add hidden parameters to the Fragility class and (Reviewer:
-  Jiefei)
-
-Cecile:
-
-- Branch3: Fix warning in `heatmap_frag` from ggplot2 and wording issue.
-  (respect cammelCase `listelecmissing` -\> `listElecMissing`)
-  (Reviewer: Jiefei)
-- After Branch2: Use the hidden parameters in the Fragility class in
-  visualization
-- Make the epoch data within -1 to 2s
-- why we call the data PT01? This number does not make any sense to
-  users. Will we have PT02?
-- What is example 3?
+$`\Delta`$ is computed to destabilize the linear network placing an
+eigenvalue of $`A+\Delta`$ at $`\lambda=\sigma+j\omega`$. The minimum
+norm is a function of $`\lambda`$ given in (Li et al. 2017) (see
+function fragilityRow in the scrip fragility.r), however the paper does
+not describe how to choose $`\lambda`$ with $`|\lambda|=1`$. To tackle
+this issue, we search for the value that minimize the norm of
+$`\Delta`$.
 
 ## References
 

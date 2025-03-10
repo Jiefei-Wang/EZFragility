@@ -60,3 +60,8 @@ EZFragility.Rproj
 vignettes/*.html
 vignettes/*.R
 vignettes/*.r
+
+/doc/
+/Meta/
+
+README.html
