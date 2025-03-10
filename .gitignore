@@ -56,3 +56,7 @@ EZFragility.Rproj
 .Rprofile
 *.Rproj
 .vscode/
+
+vignettes/*.html
+vignettes/*.R
+vignettes/*.r
