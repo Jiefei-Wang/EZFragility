@@ -271,8 +271,9 @@
 
 data("pt01Epochm1sp2s")
 X <-  pt01Epochm1sp2s/ (10^floor(log10(max(pt01Epochm1sp2s))))
-xt <- X[1:249 + 125*2, ]
-xtp1 <- X[2:250 + 125*2, ]
+i = 1
+xt <- X[1:249 + 125*i, ]
+xtp1 <- X[2:250 + 125*i, ]
 
 
 
@@ -282,8 +283,8 @@ ridge_svd_solver <- function(x, y, lambda) {
 
   # Standardize y as glmnet does
   y_mean <- mean(y)
-  y_sd <- sqrt(sum(y^2) / n)
-  y_std <- y / y_sd
+  y_sd <- sqrt(sum((y)^2) / n)
+  y_std <- (y) / y_sd
 
   # Key correction: Proper SVD approach matching glmnet
   svd_result <- svd(x)
@@ -293,8 +294,8 @@ ridge_svd_solver <- function(x, y, lambda) {
 
   # Apply correct scaling for glmnet's objective function:
   # 1/n * ||y - Xβ||² + λ/2 * ||β||²
-  d_mod <- d / (d^2 / n + lambda  / y_sd)
-  beta <- v %*% (d_mod * (t(u) %*% y_std) / n)
+  d_mod <- d / (d^2 / (n) + lambda  / y_sd)
+  beta <- v %*% (d_mod * (t(u) %*% y_std) / (n))
 
   # Unstandardize
   beta <- beta * y_sd
@@ -303,19 +304,20 @@ ridge_svd_solver <- function(x, y, lambda) {
 }
 
 glmnet::glmnet(
-  x = xt, y = xtp1[, 1], lambda = 1e-4, alpha = 0,
+  x = xt, y = xtp1[, 1], lambda = 1e-2, alpha = 0,
   standardize = FALSE, intercept = FALSE)[["beta"]]@x |> round(4)
-ridge_svd_solver(xt, xtp1[, 1], 1e-4) |> round(4)
+ridge_svd_solver(xt, xtp1[, 1], 1e-2) |> round(4)
 
 
 # Create glmnet model
-glmnet_model <- glmnet::glmnet( x = xt, y = xtp1[, 1], lambda = 1e-4, alpha = 0, standardize = FALSE, intercept = FALSE)
+glmnet_model <- glmnet::glmnet( x = xt, y = xtp1[, 1], lambda = 1e-3, alpha = 0, standardize = FALSE, intercept = FALSE)
 
 # Get our results
-our_coeffs <- ridge_svd_solver(xt, xtp1[, 1], 1e-4)
+our_coeffs <- ridge_svd_solver(xt, xtp1[, 1], 1e-3)
 
 # Get glmnet coefficients
 glmnet_coefs <- as.vector(coef(glmnet_model, s = 1e-4)[-1])
 
 # Compare results
 all.equal(glmnet_coefs, our_coeffs, tolerance = 1e-7)
+
