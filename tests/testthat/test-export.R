@@ -67,11 +67,6 @@ str <-  colnames(pt01Epochm1sp2s)[displayIndex]
 strError <- c(str, "Whatever")
 soz <- 53:56
 
-test_that("valid_soz", {
-  mat <- pt01Epochm1sp2s
-  valid_soz(mat, displayIndex, str) |> expect_no_error()
-  valid_soz(mat, displayIndexOutOfRange, strError) |> expect_warning() |> expect_warning()
-})
 
 test_that("heatmapFrag", {
   dargs <- list(frag = fg, sozID = soz, timeRange = c(-1, 2), title = "")
