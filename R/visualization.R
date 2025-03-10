@@ -49,93 +49,23 @@
 #' @export
 heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure number",display=NULL){
   titlepng<-title
-  
-  
-  if(is.null(display)){
-    display<-1:nrow(frag$frag)
-  }
-  
   if (is(frag, "Fragility")) {
     frag <- frag$frag
   }
 
-  
-  elecName<-rownames(frag)
-  elecInd=c(1:nrow(frag))
-  
-  
-  if(typeof(display)=="integer"){  
-    
-    displayTot<-1:nrow(frag)
-    diffDisplayTot<-setdiff(display,displayTot)
-    
-    if(length(diffDisplayTot)!=0){
-      listDisplayMissing<-paste(as.character(diffDisplayTot),collapse=" ")
-      message<-paste("Number(s) ",listDisplayMissing,"are out of electrode number limit")
-      warning(message)
-      display<-display[!display%in%diffDisplayTot]
-      displayCor<-paste(as.character(display),collapse=" ")
-      message<-paste("Keeping indices.",displayCor)
-      warning(message)
-      
-    }  
-    displayid<-display
-    
-  }else{
-    
-    diffDisplayTot<-setdiff(display,elecName)
-    
-    if(length(diffDisplayTot)!=0){
-      listDisplayMissing<-paste(diffDisplayTot,collapse=" ")
-      message<-paste(" Name(s) ",listDisplayMissing,"are out of name list")
-      warning(message)
-      display<-display[!display%in%diffDisplayTot]
-      displayCor<-paste(display,collapse=" ")
-      message<-paste("Keeping names.",displayCor)
-      warning(message)
-      
-    }  
-    
-    displayid<-which(elecName%in%display)
-    
+  if(is.null(display)){
+    display<- seq_len(nrow(frag))
   }
+  
+  elecNames <- rownames(frag)
+  displayid <- checkDisplayIndex(display, elecNames)
+  sozIDid <- checkDisplayIndex(sozID, elecNames)
+
   
   fragDisplay<-frag[displayid,]
   nElec <- nrow(fragDisplay)
   elecTot<-c(1:nElec)
   
-  if(typeof(sozID)=="integer"){  
-    
-    diffelecInd<-setdiff(sozID,elecInd)
-    
-    if(length(diffelecInd)!=0){
-      listElecMissing<-paste(as.character(diffelecInd),collapse=" ")
-      message<-paste("Number(s) ",listElecMissing,"are out of electrode number limit")
-      warning(message)
-      sozID<-sozID[!sozID%in%diffelecInd]
-      listSozCor<-paste(as.character(sozID),collapse=" ")
-      message<-paste("Keeping indices.",listSozCor)
-      warning(message)
-    }
-    sozIDid<-sozID
-    
-  }else{
-
-    diffsoztot<-setdiff(sozID,elecName)
-    
-    if(length(diffsoztot)!=0){
-      listSozMissing<-paste(diffsoztot,collapse=" ")
-      message<-paste("Name(s) ",listSozMissing,"are out of name list")
-      warning(message)
-      sozID<-sozID[!sozID%in%diffsoztot]
-      sozcor<-paste(sozID,collapse=" ")
-      message<-paste("Keeping names.",sozcor)
-      warning(message)
-      
-    }  
-    
-    sozIDid<-which(elecName%in%sozID)
-  }
 
   sozIDd<-which(displayid%in%sozIDid)
   sozIDCd<-which(!displayid%in%sozIDid)
@@ -208,49 +138,14 @@ heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure nu
 #' @export
 visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure number", display=NULL){
  
-  titlepng<- title
+  titlepng <- title
   if(is.null(display)){
-    display<-1:ncol(ieegts)
+    display <- seq_len(ncol(ieegts))
   }
 
-  
-  elecName<-colnames(ieegts)
-  if(typeof(display)=="integer"){  
+  elecNames <- colnames(ieegts)
+  displayid <- checkDisplayIndex(display, elecNames)
 
-    displayTot<-1:ncol(ieegts)
-    diffDisplayTot<-setdiff(display,displayTot)
-    
-    if(length(diffDisplayTot)!=0){
-      listDisplayMissing<-paste(as.character(diffDisplayTot),collapse=" ")
-      message<-paste("Display electrodes indices. Numbers ",listDisplayMissing,"are out of electrode number limit")
-      warning(message)
-      display<-display[!display%in%diffDisplayTot]
-      displayCor<-paste(as.character(display),collapse=" ")
-      message<-paste("Keeping indices.",displayCor)
-      warning(message)
-      
-    }  
-  
-     displayid<-display
-     
-  }else{
-
-    diffDisplayTot<-setdiff(display,elecName)
-    
-    if(length(diffDisplayTot)!=0){
-      listDisplayMissing<-paste(diffDisplayTot,collapse=" ")
-      message<-paste("Display electrodes names. Names ",listDisplayMissing,"are out of name list")
-      warning(message)
-      display<-display[!display%in%diffDisplayTot]
-      displayCor<-paste(display,collapse=" ")
-      message<-paste("Keeping names.",displayCor)
-      warning(message)
-      
-    }  
-        
-    displayid<-which(elecName%in%display)
-  }
-  
   scaling <- 10^floor(log10(max(ieegts)))
   plotData<-ieegts[,displayid]/scaling
   gaps<-2
@@ -271,8 +166,9 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
      plotData[, i] <- (plotData[, i]- mean(plotData[, i]))+
        (ncol(plotData)-i)*gaps
   }
-  plotData<-data.frame(stimes = stimes, plotData = plotData)
-  breakplot<-(c(1:nElec)-1)*gaps
+  plotData<- as.data.frame(plotData)
+  plotData$stimes <- stimes
+  breakplot <- (c(1:nElec)-1)*gaps
  
   p<-ggplot2::ggplot(data=plotData,ggplot2::aes(x=.data$stimes,y=.data$plotData))+
   ggplot2::ggtitle(titlepng)+
@@ -280,9 +176,8 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
     ggplot2::geom_vline(xintercept =0, 
                   color = "black", linetype = "dashed", linewidth = 1)
   
-  for(i in 1:nElec){
-        y_name <- names(plotData)[i]
-        p<-p+ggplot2::geom_line(ggplot2::aes(y= .data[[y_name]]))
+  for(i in displayNames){
+        p<-p+ggplot2::geom_line(ggplot2::aes(y= .data[[i]]))
   }
   displayNames<-rev(displayNames)
   p<-p+ggplot2::scale_y_continuous(labels=displayNames,breaks=breakplot)

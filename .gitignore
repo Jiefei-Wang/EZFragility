@@ -55,3 +55,4 @@ EZFragility.Rproj
 **/.DS_Store
 .Rprofile
 *.Rproj
+.vscode/

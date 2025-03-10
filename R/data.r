@@ -6,7 +6,7 @@
 #' It has been notch filtered and common average referenced in RAVE. 
 #' The full data has been epoched -1:2s around the seizure onset.
 #' The acquisition frequency is 1000 Hz
-#' EcoG recording gathered in collaboration with the National Institue of Health
+#' EcoG recording gathered in collaboration with the National Institute of Health
 #'
 #' @docType data
 #'
