@@ -271,52 +271,41 @@
 
 data("pt01Epochm1sp2s")
 X <-  pt01Epochm1sp2s/ (10^floor(log10(max(pt01Epochm1sp2s))))
-i = 1
+i = 0
+lmbd <- 1e-4
+
 xt <- X[1:249 + 125*i, ]
 xtp1 <- X[2:250 + 125*i, ]
 
 
+ridge <- function(xt, xtp1, lambda) {
+  Xsv <- svd(xt)
+  d <- Xsv$d
+  uT <- t(Xsv$u)
+  v <- Xsv$v
 
+  n <- nrow(xt)
+  p <- ncol(xt)
+  lmbd <- n * lambda
 
-ridge_svd_solver <- function(x, y, lambda) {
-  n <- nrow(x)
+  .cback <- function(i) {
+    y <- xtp1[, i]
+    Lscaled <- lmbd * sum(y^2 / n)^-.5
+    dw <- d * (d^2 + Lscaled)^-1
+    drop(v %*% (dw * uT %*% y))
+  }
 
-  # Standardize y as glmnet does
-  y_mean <- mean(y)
-  y_sd <- sqrt(sum((y)^2) / n)
-  y_std <- (y) / y_sd
-
-  # Key correction: Proper SVD approach matching glmnet
-  svd_result <- svd(x)
-  d <- svd_result$d
-  u <- svd_result$u
-  v <- svd_result$v
-
-  # Apply correct scaling for glmnet's objective function:
-  # 1/n * ||y - Xβ||² + λ/2 * ||β||²
-  d_mod <- d / (d^2 / (n) + lambda  / y_sd)
-  beta <- v %*% (d_mod * (t(u) %*% y_std) / (n))
-
-  # Unstandardize
-  beta <- beta * y_sd
-
-  return(as.vector(beta))
+  A <- vapply(seq_len(p), .cback, numeric(p), USE.NAMES = FALSE)
+  isStable <- (eigen(A, FALSE, TRUE)$values |> Mod() |> max()) < 1.0
+  structure(A, lambda = lambda, stable = isStable)
 }
 
-glmnet::glmnet(
-  x = xt, y = xtp1[, 1], lambda = 1e-2, alpha = 0,
-  standardize = FALSE, intercept = FALSE)[["beta"]]@x |> round(4)
-ridge_svd_solver(xt, xtp1[, 1], 1e-2) |> round(4)
 
-
-# Create glmnet model
-glmnet_model <- glmnet::glmnet( x = xt, y = xtp1[, 1], lambda = 1e-3, alpha = 0, standardize = FALSE, intercept = FALSE)
-
-# Get our results
-our_coeffs <- ridge_svd_solver(xt, xtp1[, 1], 1e-3)
-
-# Get glmnet coefficients
-glmnet_coefs <- as.vector(coef(glmnet_model, s = 1e-4)[-1])
-
-# Compare results
+glmnet_coefs <- glmnet::glmnet(
+  x = xt, y = xtp1[, 1], lambda = lmbd, alpha = 0, thresh = 1e-17,
+  standardize = FALSE, intercept = FALSE)[["beta"]]@x
+our_coeffs <- ridge(xt, xtp1, lmbd)[, 1]
+glmnet_coefs |> round(4); cat("\n"); our_coeffs |> round(4)
 all.equal(glmnet_coefs, our_coeffs, tolerance = 1e-7)
+
+
