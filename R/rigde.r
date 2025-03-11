@@ -8,12 +8,23 @@
 #' @param lambda Numeric Vector. A user supplied lambda sequence.
 #' @return adjacency matrix A
 ridge <- function(xt, xtp1, lambda) {
-  n <- ncol(xt)
-  cb <- \(i) {
-    glmnet::glmnet(x = xt, y = xtp1[, i], lambda = lambda, alpha = 0,
-      standardize = FALSE, intercept = FALSE)[["beta"]]@x
+  Xsv <- svd(xt)
+  d <- Xsv$d
+  uT <- t(Xsv$u)
+  v <- Xsv$v
+
+  n <- nrow(xt)
+  p <- ncol(xt)
+  lmbd <- n * lambda
+
+  .cback <- function(i) {
+    y <- xtp1[, i]
+    Lscaled <- lmbd * sum(y^2 / n)^-.5
+    dw <- d * (d^2 + Lscaled)^-1
+    drop(v %*% (dw * uT %*% y))
   }
-  A <- vapply(seq_len(n), cb, numeric(n), USE.NAMES = FALSE)
+
+  A <- vapply(seq_len(p), .cback, numeric(p), USE.NAMES = FALSE)
   isStable <- (eigen(A, FALSE, TRUE)$values |> Mod() |> max()) < 1.0
   structure(A, lambda = lambda, stable = isStable)
 }
@@ -43,11 +54,11 @@ ridgeR2 <- function(xt, xtp1, A) {
 #' (all eigenvalues have a norm less than one)
 #' @inheritParams ridge
 #' @return adjacency matrix Afin with lambda as attribute
-RidgeSearchLambdaDichomotomy <- function(xt, xtp1) {
+ridgesearchlambdadichomotomy <- function(xt, xtp1) {
   if (!identical(dim(xt), dim(xtp1))) stop("Unmatched dimension")
   low = lambda <- 1e-4
   high <- 10
-  A <- ridge1(xt, xtp1, lambda);
+  A <- ridge(xt, xtp1, lambda);
   if (!attr(A, "stable")) {
     for (i in seq_len(20L)) {
       l <- (low + high) * .5
