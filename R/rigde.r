@@ -1,54 +1,43 @@
-#' fit a generalized linear model to compute adjacency matrix A 
-#' 
+#' fit a generalized linear model to compute adjacency matrix A
+#'
 #' A x(t) = x(t+1)
 #'
-#' @param xt matrix. iEEG time series for a given window, 
+#' @param xt matrix. iEEG time series for a given window,
 #' with time points as rows and electrodes names as columns
-#' @param xtp1 matrix. the iEEG time serie at the next time point, 
+#' @param xtp1 matrix. the iEEG time serie at the next time point,
 #' with time points as rows and electrodes names as columns
 #' @param lambda Numeric Vector. A user supplied lambda sequence.
 #' @param intercept Boolean. Should intercept(s) be fitted (default=TRUE) or set to zero (FALSE)
 #'
 #' @return adjacency matrix A
 ridge <- function(xt, xtp1, lambda, intercept = FALSE) {
-  if (!identical(dim(xt), dim(xtp1))) {
-    stop("Unmatched dimension")
-  }
-  nel <- ncol(xt)
-  ## Coefficient matrix A
-  ## each column is coefficients from a linear regression
-  ## formula: xtp1 = xt*A + E
-  A <- matrix(0, nel + intercept, nel)
-  ## for each electrode
-  for (i in seq_len(nel)) {
+  Xsv <- svd(xt)
+  d <- Xsv$d
+  uT <- t(Xsv$u)
+  v <- Xsv$v
+
+  n <- nrow(xt)
+  p <- ncol(xt)
+  lmbd <- n * lambda
+
+  .cback <- function(i) {
     y <- xtp1[, i]
-    fit <- glmnet::glmnet(xt, y,
-                  alpha = 0, lambda = lambda,
-                  standardize = FALSE, intercept = intercept
-    )
-    # fit <- glmnet::cv.glmnet(xt, y,
-    #               alpha = 0,
-    #               standardize = FALSE, intercept = intercept
-    # )
-
-    if (intercept) {
-      A[, i] <- as.numeric(coef(fit))
-    } else {
-      A[, i] <- coef(fit)[-1]
-    }
+    Lscaled <- lmbd * sum(y^2 / n)^-.5
+    dw <- d * (d^2 + Lscaled)^-1
+    drop(v %*% (dw * uT %*% y))
   }
-  AEigen <- eigen(A)
-  e <- Mod(AEigen$values)
 
-  A
+  A <- vapply(seq_len(p), .cback, numeric(p), USE.NAMES = FALSE)
+  isStable <- (eigen(A, FALSE, TRUE)$values |> Mod() |> max()) < 1.0
+  structure(A, lambda = lambda, stable = isStable)
 }
 
 
-#' computes R2 
-#' 
+#' computes R2
+#'
 #' @inheritParams ridge
 #' @param A adjacency matrix
-#' 
+#'
 ridgeR2 <- function(xt, xtp1, A) {
   nel <- ncol(xt)
   ypredMat <- predictRidge(xt, A)
@@ -68,11 +57,11 @@ ridgeR2 <- function(xt, xtp1, A) {
 
 
 #' Ridge Regression for Electrode Readings
-#' 
+#'
 #' Ridge regression to compute matrix adjancency matrix A such as A xt = xtpt1
 #' the lambda parmeter is found by dichotomy such that A is stable
 #' (all eigenvalues have a norm less than one)
-#' 
+#'
 #' @inheritParams ridge
 #'
 #' @return adjacency matrix Afin with lambda as attribute
