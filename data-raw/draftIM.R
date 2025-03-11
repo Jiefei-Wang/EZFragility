@@ -320,4 +320,3 @@ glmnet_coefs <- as.vector(coef(glmnet_model, s = 1e-4)[-1])
 
 # Compare results
 all.equal(glmnet_coefs, our_coeffs, tolerance = 1e-7)
-
