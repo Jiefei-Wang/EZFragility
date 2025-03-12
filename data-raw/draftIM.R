@@ -271,13 +271,87 @@ cb <- \(x, y, l) c(solve(t(x) %*% x + diag(ncol(x)) * l) %*% t(x) %*% y)
 
 
 data("pt01Epochm1sp2s")
-X <-  pt01Epochm1sp2s/ (10^floor(log10(max(pt01Epochm1sp2s))))
+X <-  pt01Epochm1sp2s / (10^floor(log10(max(pt01Epochm1sp2s))))
+# X <-  pt01Epochm1sp2s / sd(pt01Epochm1sp2s)
 i = 0
-lmbd <- 1e-2
+lmbd <- 1e-4
 
-xt <- X[1:249 + 125*i, ]
-xtp1 <- X[2:250 + 125*i, ]
+x = xt <- X[1:249, ]
+xtp1 <- X[2:250, ]
 y <- xtp1[, 1]
+
+
+
+
+xTx <- t(x) %*% x
+ei <- eigen(xTx)
+u <- ei$vectors
+uT <- t(u)
+d <- ei$values
+rhs <- uT %*% t(x) %*% y
+
+
+
+ridge1 <- function(xt, xtp1, lambda) {
+  ei <- eigen(t(xt) %*% xt)
+  u <- ei$vectors
+  d <- ei$values
+  rhs <- t(u) %*% t(xt)
+
+
+  n <- nrow(xt)
+  p <- ncol(xt)
+  lmbd <- n * lambda
+
+  .cback <- function(i) {
+    y <- xtp1[, i]
+    Lscaled <- lmbd * sum(y^2 / n)^-.5
+    dw <- (d + Lscaled)^-1
+    drop(u %*% (dw * rhs %*% y))
+  }
+
+  A <- vapply(seq_len(p), .cback, numeric(p), USE.NAMES = FALSE)
+  isStable <- (eigen(A, FALSE, TRUE)$values |> Mod() |> max()) < 1.0
+  structure(A, lambda = lambda, stable = isStable)
+}
+
+
+
+
+
+
+
+
+l <-  glmnetEffectiveLambda(y, 1e-4)
+
+u %*% diag((d + glmNetLambda(y, 1e-4))^-1) %*% rhs |> drop()
+
+
+
+manual_ridge <- function(x, y, l) {
+  lmat <- diag(ncol(x)) * l
+  beta <- solve(t(x) %*% x + lmat) %*% t(x) %*% y
+  drop(beta)
+}
+
+glmNetLambda <- function(y, inputLambda) {
+  n <- length(y)
+  n * inputLambda * sum(y^2 / n)^-.5
+}
+
+glmnetEffectiveLambda <- function(y, inputLambda) {
+  n <- length(y)
+  n * inputLambda * sum(y^2 / n)^-.5
+}
+
+glmnet::glmnet(
+  x = xt, y = xtp1[, 1], lambda = lmbd, alpha = 0, thresh = 1e-15, maxit = 1e6,
+  standardize = FALSE, intercept = FALSE)[["beta"]]@x
+our_coeffs <- ridge(xt, xtp1, lmbd)[, 1]
+
+
+
+
 
 
 all.equal( mod$beta@x, our_coeffs)
@@ -309,8 +383,15 @@ ridge <- function(xt, xtp1, lambda) {
 }
 
 
+
+
+
+
+
+
+
 glmnet_coefs <- glmnet::glmnet(
-  x = xt, y = xtp1[, 1], lambda = lmbd, alpha = 0, thresh = 1e-18,
+  x = xt, y = xtp1[, 1], lambda = lmbd, alpha = 0, thresh = 1e-15, maxit = 1e6,
   standardize = FALSE, intercept = FALSE)[["beta"]]@x
 our_coeffs <- ridge(xt, xtp1, lmbd)[, 1]
 glmnet_coefs |> round(4);
