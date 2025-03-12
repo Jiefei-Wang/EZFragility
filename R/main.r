@@ -56,104 +56,119 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch=100) {
-    ## check the input types
+calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L) {
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
     stopifnot(is.null(lambda) | is.numeric(lambda))
-
-    ## The input matrix must have at least window rows
     stopifnot(nrow(ieegts) >= window)
-
-
-    ## Number of electrodes and time points
-    n_tps <- nrow(ieegts)
-    n_elec <- ncol(ieegts)
-
-    electrodeList <- colnames(ieegts)
-
-    # Number of steps
-    nSteps <- floor((n_tps - window) / step) + 1
-
+    self <- environment()
+    ConLogger <- ConsoleLogger(self)
     scaling <- 10^floor(log10(max(ieegts)))
-    ieegts <- ieegts / scaling
-
-    ## create adjacency array (array of adj matrices for each time window)
-    ## iw: The index of the window we are going to calculate fragility
-    res <- lapply(seq_len(nSteps), function(iw) {
-        ## Sample indices for the selected window
-        si <- seq_len(window - 1) + (iw - 1) * step
-        ## measurements at time point t
-        xt <- ieegts[si, ]
-        ## measurements at time point t plus 1
-        xtp1 <- ieegts[si + 1, ]
-
-        ## Coefficient matrix A (adjacency matrix)
-        ## each column is coefficients from a linear regression
-        ## formula: xtp1 = xt*A + E
-        if (is.null(lambda)) {
-            Ai <- ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE)
-        } else {
-            Ai <- ridge(xt, xtp1, intercept = FALSE, lambda = lambda)
-        }
-
-        R2 <- ridgeR2(xt, xtp1, Ai)
-
-        list(Ai = Ai, R2 = R2)
-    })
-
-    A <- unlist(lapply(res, function(w) {
-        w$Ai
-    }))
-    ## TODO: Why do you want to do this? very error prone
-    dim(A) <- c(n_elec, n_elec, nSteps)
-    dimnames(A) <- list(
-        Electrode1 = electrodeList,
-        Electrode2 = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    R2 <- unlist(lapply(res, function(w) {
-        w$R2
-    }))
-    dim(R2) <- c(n_elec, nSteps)
-    dimnames(R2) <- list(
-        Electrode = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    if (is.null(lambda)){
-        lambdas <- sapply(res, function(w) {
-            attr(w$Ai, "lambdaopt")
-        })
-    } else {
-        lambdas <- rep(lambda, length(res))
+    ieegts  <- ieegts / scaling
+    # Electrode count and names
+    elCnt <- ncol(ieegts)
+    elNms <- colnames(ieegts)
+    # Number/sequence of steps
+    nsteps  <- floor((nrow(ieegts) - window) / step) + 1L
+    STEPS   <- seq_len(nsteps)
+    # Pre-allocate output
+    dm   <- c(elCnt, elCnt, nsteps)
+    dmn  <- list(Electrode  = elNms, Step = STEPS)
+    dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = STEPS)
+    A    <- array(.0, dim = dm,     dimnames = dmnA)
+    R2   <- array(.0, dim = dm[-1], dimnames = dmn)
+    f = fR <- R2
+    lbd <- rep(0, nsteps) |> setNames(STEPS)
+    # Indices of window at time 0
+    i0 <- seq_len(window - 1L)
+    ConLogger$ProcessInfo()
+    for (iw in STEPS) {
+        si   <- i0 + (iw - 1L) * step
+        xt   <- ieegts[si, ]
+        xtp1 <- ieegts[si + 1L, ]
+        ConLogger$RidgeStart()
+        adjMatrix <- ridgesearchlambdadichomotomy(xt, xtp1, lambda)
+        A[,, iw]  <- adjMatrix
+        R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
+        ConLogger$FragStart()
+        f[,  iw]  <- fragilityRow(adjMatrix, nSearch)
+        fR[, iw]  <- rank(f[, iw]) / elCnt # ranks should probably be here...
+        lbd[[iw]] <- attr(adjMatrix, "lambda")
+        ConLogger$StepEnd()
     }
-
-
-
-    # calculate fragility
-    f <- sapply(seq_len(nSteps), function(iw) {
-        fragilityRow(A[, , iw],nSearch=nSearch) # Normalized minimum norm perturbation for Gammai (time window iw)
-    })
-    dimnames(f) <- list(
-        Electrode = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    ## TODO: Is this consistent with the method in the paper?
-    # ranked fragility map
-    f_rank <- matrix(rank(f), nrow(f), ncol(f))
-    attributes(f_rank) <- attributes(f)
-    f_rank <- f_rank / max(f_rank)
-
+    ConLogger$TotalTime()
     Fragility(
         ieegts = ieegts,
         adj = A,
-        frag = f,
-        frag_ranked = f_rank,
         R2 = R2,
-        lambdas = lambdas
+        frag = f,
+        frag_ranked = fR,
+        lambdas = lbd
     )
+}
 
+
+# Get number of seconds from a reference timestamp in specified format
+getTimeSecs <- \(ref) {
+    difT <- difftime(Sys.time(), ref, units = "secs") |> as.double()
+    sprintf("%.2f", difT)
+}
+
+# Optional utility which prints info while the above is running.
+ConsoleLogger <- \(e) {
+    start <- Sys.time()
+    stepStart = TimeKeeper = RidgeRun = FragRun <-  NULL;
+    InfoDash = TabDash <- NULL
+    window <- e$window;
+    step <- e$step;
+    samples <- nrow(e$ieegts)
+    self <- environment()
+    
+    # Save time of Ridge (and step) start and print step number (run before ridge)
+    RidgeStart <- \() {
+        self$stepStart <- Sys.time()
+        self$TimeKeeper <- self$stepStart
+        sprintf("%7d ", e$iw) |> cat()
+    }
+    # Save time of Fragility start and print Ridge runtime (run before fragility)
+    FragStart <- \() {
+        self$RidgeRun <- getTimeSecs(self$TimeKeeper)
+        self$TimeKeeper <- Sys.time()
+        sprintf("%11s ", self$RidgeRun) |> cat()
+    }
+    # Print runtime for Fragility and for the whole step (run at the end of the step)
+    StepEnd <- \() {
+        sprintf("%11s ", getTimeSecs(self$TimeKeeper)) |> cat()
+        sprintf("%7s",   getTimeSecs(self$stepStart))  |> cat("\n")
+    }
+    # Print the total runtime of the whole process
+    TotalTime <- \() {
+        total <- Sys.time() - start
+        fmt <- "  Total Runtime:  %21.2f %s"
+        self$StepDash |> shift(2) |> cat("\n")
+        sprintf(fmt, as.double(total), attr(total, "units")) |> cat("\n")
+    }
+    # Prints process specifications
+    initTab <- \(nb = 2) {
+        header <- list("Samples", "Window", "Shift", "Steps")
+        values <- list(samples, window, step, e$nsteps)
+        hFmt <- do.call(sprintf, c(list(" %7s |%7s |%6s |%6s "), header))
+        vFmt <- do.call(sprintf, c(list(" %7d  %7d  %6d  %6d "), values))
+        self$InfoDash <- paste(rep("-", nchar(hFmt)), collapse = "")
+        c(self$InfoDash, hFmt, vFmt) |> shift(nb) |> cat(sep = "\n")
+    }
+    # Prints the headers of the step time table
+    stepTab <- \(nb = 2) {
+        header <- c("Step", "Adjacency", "Fragility", "Total")
+        hFmt <- do.call(sprintf, c(list("%5s | %9s | %9s | %5s"), header))
+        len <- nchar(hFmt)
+        self$StepDash <- paste(rep("-", len + 1), collapse = "")
+        subTitle <- paste(rep("-", len - 12), collapse = "")
+        subtext <- "Runtime (sec)"
+        id <- (1 + 0.5 * (nchar(subTitle) - nchar(subtext))) |> ceiling()
+        substr(subTitle, id, id + nchar(subtext)) <- subtext
+        c(self$StepDash, shift(subTitle, 6), hFmt) |> shift(nb) |> cat(sep = "\n")
+    }
+    ProcessInfo <- \() { initTab(); stepTab() }
+    self
 }

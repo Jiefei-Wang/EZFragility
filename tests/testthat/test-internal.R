@@ -19,8 +19,8 @@ test_that("ridge/ridgeR2", {
 
 # ridgesearchlambdadichomotomy -------------------------------------------------
 test_that("ridgesearchlambdadichomotomy", {
-  do.call(ridgesearchlambdadichomotomy, c(ERR[-3L], FALSE)) |> expect_error()
-  do.call(ridgesearchlambdadichomotomy, c(ARGS[-3L], TRUE)) |> expect_no_error()
+  do.call(ridgesearchlambdadichomotomy, c(ERR[-3L])) |> expect_error()
+  do.call(ridgesearchlambdadichomotomy, c(ARGS[-3L])) |> expect_no_error()
 })
 
 

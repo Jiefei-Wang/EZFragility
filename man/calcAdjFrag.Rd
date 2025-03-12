@@ -12,7 +12,7 @@ Nat Neurosci. 2021 Oct;24(10):1465–74
 We have found solutions to fill up missing details in the paper method description
 }
 \usage{
-calcAdjFrag(ieegts, window, step, lambda = NULL, nSearch = 100)
+calcAdjFrag(ieegts, window, step, lambda = NULL, nSearch = 100L)
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
