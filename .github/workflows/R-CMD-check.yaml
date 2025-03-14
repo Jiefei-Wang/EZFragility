@@ -45,6 +45,9 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install Package
+        run: Rscript -e 'install.packages(".", repos = NULL, type = "source")'
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
