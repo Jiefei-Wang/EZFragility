@@ -18,6 +18,7 @@
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @param progress Logical. If TRUE, print progress information
 #'
 #' @return A list containing the normalized ieegts,
 #' adjacency matrices, fragility, and R^2 values
@@ -56,13 +57,14 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L) {
+calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, progress = FALSE) {
+    ## check the input types
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
     stopifnot(is.null(lambda) | is.numeric(lambda))
+
+    ## The input matrix must have at least window rows
     stopifnot(nrow(ieegts) >= window)
-    self <- environment()
-    ConLogger <- ConsoleLogger(self)
     scaling <- 10^floor(log10(max(ieegts)))
     ieegts  <- ieegts / scaling
     # Electrode count and names
@@ -81,13 +83,14 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L) {
     lbd <- rep(0, nsteps) |> setNames(STEPS)
     # Indices of window at time 0
     i0 <- seq_len(window - 1L)
-    ConLogger$ProcessInfo()
+    
+    ConLogger <- ConsoleLogger(progress, window, step, ieegts, nsteps)
     for (iw in STEPS) {
         si   <- i0 + (iw - 1L) * step
         xt   <- ieegts[si, ]
         xtp1 <- ieegts[si + 1L, ]
-        ConLogger$RidgeStart()
-        adjMatrix <- ridgesearchlambdadichomotomy(xt, xtp1, lambda)
+        ConLogger$RidgeStart(iw)
+        adjMatrix <- ridgeSearch(xt, xtp1, lambda)
         A[,, iw]  <- adjMatrix
         R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
         ConLogger$FragStart()
@@ -97,6 +100,9 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L) {
         ConLogger$StepEnd()
     }
     ConLogger$TotalTime()
+
+
+
     Fragility(
         ieegts = ieegts,
         adj = A,
@@ -115,34 +121,36 @@ getTimeSecs <- \(ref) {
 }
 
 # Optional utility which prints info while the above is running.
-ConsoleLogger <- \(e) {
+ConsoleLogger <- \(enable, window, step, ieegts, nsteps) {
     start <- Sys.time()
     stepStart = TimeKeeper = RidgeRun = FragRun <-  NULL;
     InfoDash = TabDash <- NULL
-    window <- e$window;
-    step <- e$step;
-    samples <- nrow(e$ieegts)
+    samples <- nrow(ieegts)
     self <- environment()
     
     # Save time of Ridge (and step) start and print step number (run before ridge)
-    RidgeStart <- \() {
+    RidgeStart <- \(iw) {
+        if(!enable) return()
         self$stepStart <- Sys.time()
         self$TimeKeeper <- self$stepStart
-        sprintf("%7d ", e$iw) |> cat()
+        sprintf("%7d ", iw) |> cat()
     }
     # Save time of Fragility start and print Ridge runtime (run before fragility)
     FragStart <- \() {
+        if(!enable) return()
         self$RidgeRun <- getTimeSecs(self$TimeKeeper)
         self$TimeKeeper <- Sys.time()
         sprintf("%11s ", self$RidgeRun) |> cat()
     }
     # Print runtime for Fragility and for the whole step (run at the end of the step)
     StepEnd <- \() {
+        if(!enable) return()
         sprintf("%11s ", getTimeSecs(self$TimeKeeper)) |> cat()
         sprintf("%7s",   getTimeSecs(self$stepStart))  |> cat("\n")
     }
     # Print the total runtime of the whole process
     TotalTime <- \() {
+        if(!enable) return()
         total <- Sys.time() - start
         fmt <- "  Total Runtime:  %21.2f %s"
         self$StepDash |> shift(2) |> cat("\n")
@@ -150,8 +158,9 @@ ConsoleLogger <- \(e) {
     }
     # Prints process specifications
     initTab <- \(nb = 2) {
+        if(!enable) return()
         header <- list("Samples", "Window", "Shift", "Steps")
-        values <- list(samples, window, step, e$nsteps)
+        values <- list(samples, window, step, nsteps)
         hFmt <- do.call(sprintf, c(list(" %7s |%7s |%6s |%6s "), header))
         vFmt <- do.call(sprintf, c(list(" %7d  %7d  %6d  %6d "), values))
         self$InfoDash <- paste(rep("-", nchar(hFmt)), collapse = "")
@@ -159,6 +168,7 @@ ConsoleLogger <- \(e) {
     }
     # Prints the headers of the step time table
     stepTab <- \(nb = 2) {
+        if(!enable) return()
         header <- c("Step", "Adjacency", "Fragility", "Total")
         hFmt <- do.call(sprintf, c(list("%5s | %9s | %9s | %5s"), header))
         len <- nchar(hFmt)
@@ -169,6 +179,7 @@ ConsoleLogger <- \(e) {
         substr(subTitle, id, id + nchar(subtext)) <- subtext
         c(self$StepDash, shift(subTitle, 6), hFmt) |> shift(nb) |> cat(sep = "\n")
     }
-    ProcessInfo <- \() { initTab(); stepTab() }
+    initTab()
+    stepTab()
     self
 }

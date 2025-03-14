@@ -79,7 +79,7 @@ on the data from patient pt01 from the Fragility data set (data subset
 available in this package) this value does not ensure that A is always
 stable. To tackle this issue, we have implemented a dichotomy to search
 for the lowest stable lambda value rendering the matrix A stable (see R
-function ridgesearchlambdadichomotomy in file ridge.r).
+function ridgeSearch in file ridge.r).
 
 The method to compute the row perturbation is also not clear. To compute
 the fragility row, a minimum 2-induced norm additive row perturbation

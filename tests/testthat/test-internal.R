@@ -17,10 +17,10 @@ test_that("ridge/ridgeR2", {
   do.call(ridgeR2, c(ARGS[-3L], list(A))) |> expect_no_error()
 })
 
-# ridgesearchlambdadichomotomy -------------------------------------------------
-test_that("ridgesearchlambdadichomotomy", {
-  do.call(ridgesearchlambdadichomotomy, c(ERR[-3L])) |> expect_error()
-  do.call(ridgesearchlambdadichomotomy, c(ARGS[-3L])) |> expect_no_error()
+# ridgeSearch -------------------------------------------------
+test_that("ridgeSearch", {
+  do.call(ridgeSearch, c(ERR[-3L])) |> expect_error()
+  do.call(ridgeSearch, c(ARGS[-3L])) |> expect_no_error()
 })
 
 

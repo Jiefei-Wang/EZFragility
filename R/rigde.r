@@ -63,7 +63,7 @@ ridgeR2 <- function(xt, xtp1, A) {
 #' @inheritParams ridge
 #'
 #' @return adjacency matrix Afin with lambda as attribute
-ridgesearchlambdadichomotomy <- function(xt, xtp1, lambda = NULL) {
+ridgeSearch <- function(xt, xtp1, lambda = NULL) {
   if (!identical(dim(xt), dim(xtp1))) stop("Unmatched dimension")
   if (!is.null(lambda)) {
     A <- ridge(xt, xtp1, lambda);
