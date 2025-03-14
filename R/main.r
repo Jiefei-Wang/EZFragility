@@ -18,6 +18,10 @@
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
+#' @param parallel Logical. If TRUE, use parallel computing. 
+#' Users must register a parallel backend with the foreach package
+#' 
 #'
 #' @return A list containing the normalized ieegts,
 #' adjacency matrices, fragility, and R^2 values
@@ -29,19 +33,26 @@
 #' step <- 5
 #' lambda <- 0.1
 #' calcAdjFrag(ieegts = data, window = window,
-#' step = step, lambda = lambda)
+#' step = step, lambda = lambda, progress = TRUE)
 #'
-#' ## A more realistic example, but it will take a while to run
+#' ## A more realistic example with parallel computing
 #' \dontrun{
+#' ## Register a SNOW backend with 4 workers
+#' library(doSNOW)
+#' cl <- makeCluster(4, type="SOCK")
+#' registerDoSNOW(cl)
+#' 
 #' data("pt01Epochm1sp2s")
 #' window <- 250
 #' step <- 125
-#' lambda <- NULL
-#' nSearch <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
-#'   step = step, lambda = lambda,nSearch=nSearch)
+#' calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
+#'   step = step, parallel = TRUE, progress = TRUE)
+#' 
+#' ## stop the parallel backend
+#' stopImplicitCluster()
 #' }
+#' 
 #'
 #'
 #' @details
@@ -56,104 +67,117 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch=100) {
+calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
     ## check the input types
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
+    stopifnot(step > 0)
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
     ## The input matrix must have at least window rows
     stopifnot(nrow(ieegts) >= window)
-
-
-    ## Number of electrodes and time points
-    n_tps <- nrow(ieegts)
-    n_elec <- ncol(ieegts)
-
-    electrodeList <- colnames(ieegts)
-
-    # Number of steps
-    nSteps <- floor((n_tps - window) / step) + 1
-
     scaling <- 10^floor(log10(max(ieegts)))
-    ieegts <- ieegts / scaling
+    ieegts  <- ieegts / scaling
+    # Electrode count and names
+    elCnt <- ncol(ieegts)
+    elNms <- colnames(ieegts)
+    # Number/sequence of steps
+    nsteps  <- floor((nrow(ieegts) - window) / step) + 1L
+    STEPS   <- seq_len(nsteps)
+    # Pre-allocate output
+    dm   <- c(elCnt, elCnt, nsteps)
+    dmn  <- list(Electrode  = elNms, Step = STEPS)
+    dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = STEPS)
+    
+    # Indices of window at time 0
+    i0 <- seq_len(window - 1L)
 
-    ## create adjacency array (array of adj matrices for each time window)
-    ## iw: The index of the window we are going to calculate fragility
-    res <- lapply(seq_len(nSteps), function(iw) {
-        ## Sample indices for the selected window
-        si <- seq_len(window - 1) + (iw - 1) * step
-        ## measurements at time point t
-        xt <- ieegts[si, ]
-        ## measurements at time point t plus 1
-        xtp1 <- ieegts[si + 1, ]
-
-        ## Coefficient matrix A (adjacency matrix)
-        ## each column is coefficients from a linear regression
-        ## formula: xtp1 = xt*A + E
-        if (is.null(lambda)) {
-            Ai <- ridgesearchlambdadichomotomy(xt, xtp1, intercept = FALSE)
-        } else {
-            Ai <- ridge(xt, xtp1, intercept = FALSE, lambda = lambda)
-        }
-
-        R2 <- ridgeR2(xt, xtp1, Ai)
-
-        list(Ai = Ai, R2 = R2)
-    })
-
-    A <- unlist(lapply(res, function(w) {
-        w$Ai
-    }))
-    ## TODO: Why do you want to do this? very error prone
-    dim(A) <- c(n_elec, n_elec, nSteps)
-    dimnames(A) <- list(
-        Electrode1 = electrodeList,
-        Electrode2 = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    R2 <- unlist(lapply(res, function(w) {
-        w$R2
-    }))
-    dim(R2) <- c(n_elec, nSteps)
-    dimnames(R2) <- list(
-        Electrode = electrodeList,
-        Step = seq_len(nSteps)
-    )
-
-    if (is.null(lambda)){
-        lambdas <- sapply(res, function(w) {
-            attr(w$Ai, "lambdaopt")
-        })
-    } else {
-        lambdas <- rep(lambda, length(res))
+    # Pre-allocate output
+    A    <- array(.0, dim = dm,     dimnames = dmnA)
+    R2   <- array(.0, dim = dm[-1], dimnames = dmn)
+    f = fR <- R2
+    lbd <- rep(0, nsteps) |> setNames(STEPS)
+    
+    ## switch between parallel and sequential computing
+    if(parallel){
+        `%run%` <- foreach::`%dopar%`
+    }else{
+        `%run%` <- foreach::`%do%`
     }
 
+    ## initialize the progress bar
+    if (progress){
+        pb <- progress_bar$new(
+        format = "Step = :current/:total [:bar] :percent in :elapsed | eta: :eta",
+        total = nsteps, 
+        width = 60)
+        
+        progress <- function(n){
+            pb$tick()
+        } 
+        opts <- list(progress = progress)
+        on.exit(pb$terminate())
+    }else{
+        opts <- list()
+    }
 
+    ## Initial data for data aggregation
+    init <- list(A = A, R2 = R2, f = f, lbd = lbd)
+    foreach(
+        iw = STEPS, 
+        .combine = .combine, 
+        .init = init, 
+        .inorder = FALSE,
+        .options.snow = opts
+        ) %run% {
+            ## Not necessary, but for clear the R check error
+            iw <- get('iw')
+            
+            si   <- i0 + (iw - 1L) * step
+            xt   <- ieegts[si, , drop = FALSE]
+            xtp1 <- ieegts[si + 1L, , drop = FALSE]
+            
+            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
+            R2Column <- ridgeR2(xt, xtp1, adjMatrix)
+            fColumn  <- fragilityRow(adjMatrix, nSearch)
 
-    # calculate fragility
-    f <- sapply(seq_len(nSteps), function(iw) {
-        fragilityRow(A[, , iw],nSearch=nSearch) # Normalized minimum norm perturbation for Gammai (time window iw)
-    })
-    dimnames(f) <- list(
-        Electrode = electrodeList,
-        Step = seq_len(nSteps)
-    )
+            list(
+                iw = iw, 
+                adjMatrix = adjMatrix, 
+                R2Column = R2Column, 
+                fColumn = fColumn
+            )
+    } -> results
 
-    ## TODO: Is this consistent with the method in the paper?
-    # ranked fragility map
-    f_rank <- matrix(rank(f), nrow(f), ncol(f))
-    attributes(f_rank) <- attributes(f)
-    f_rank <- f_rank / max(f_rank)
+    ## unpack the results
+    A <- results$A
+    R2 <- results$R2
+    f <- results$f
+    lbd <- results$lbd
+    
+    fR <- apply(f, 2, rank) / elCnt
 
     Fragility(
         ieegts = ieegts,
         adj = A,
-        frag = f,
-        frag_ranked = f_rank,
         R2 = R2,
-        lambdas = lambdas
+        frag = f,
+        frag_ranked = fR,
+        lambdas = lbd
     )
-
 }
+
+.combine <- function(results, x){
+    iw <- x$iw
+    adjMatrix <- x$adjMatrix
+    R2Column <- x$R2Column
+    fColumn <- x$fColumn
+
+    results$A[,, iw]  <- adjMatrix
+    results$R2[, iw]  <- R2Column
+    results$f[,  iw]  <- fColumn
+    results$lbd[[iw]] <- attr(adjMatrix, "lambda")
+    results
+}
+
+

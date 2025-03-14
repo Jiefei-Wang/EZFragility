@@ -17,10 +17,10 @@ test_that("ridge/ridgeR2", {
   do.call(ridgeR2, c(ARGS[-3L], list(A))) |> expect_no_error()
 })
 
-# ridgesearchlambdadichomotomy -------------------------------------------------
-test_that("ridgesearchlambdadichomotomy", {
-  do.call(ridgesearchlambdadichomotomy, c(ERR[-3L], FALSE)) |> expect_error()
-  do.call(ridgesearchlambdadichomotomy, c(ARGS[-3L], TRUE)) |> expect_no_error()
+# ridgeSearch -------------------------------------------------
+test_that("ridgeSearch", {
+  do.call(ridgeSearch, c(ERR[-3L])) |> expect_error()
+  do.call(ridgeSearch, c(ARGS[-3L])) |> expect_no_error()
 })
 
 
@@ -32,5 +32,20 @@ test_that("Data consistency across versions", {
   t_step <- 5
   lambda <- 0.1
   frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda)
+  expect_equal(frag, testFrag)
+})
+
+
+test_that("Data consistency across versions for parallel computing", {
+    cl <- parallel::makeCluster(4, type="SOCK")
+    doSNOW::registerDoSNOW(cl)
+    on.exit(parallel::stopCluster(cl))
+
+  set.seed(1)
+  data <- matrix(rnorm(800), nrow = 40)
+  t_window <- 10
+  t_step <- 5
+  lambda <- 0.1
+  frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda, parallel = TRUE)
   expect_equal(frag, testFrag)
 })
