@@ -18,7 +18,10 @@
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
-#' @param progress Logical. If TRUE, print progress information
+#' @param progress Logical. If TRUE, print progress information. 
+#' This option is available only in non-parallel mode (`parallel = FALSE`)
+#' @param parallel Logical. If TRUE, use parallel computing. 
+#' Users must register a parallel backend with the foreach package
 #' 
 #'
 #' @return A list containing the normalized ieegts,
@@ -33,17 +36,23 @@
 #' calcAdjFrag(ieegts = data, window = window,
 #' step = step, lambda = lambda)
 #'
-#' ## A more realistic example, but it will take a while to run
+#' ## A more realistic example with parallel computing
 #' \dontrun{
+#' ## Register a parallel backend with 4 workers
+#' library(doParallel)
+#' registerDoParallel(4)
+#' 
 #' data("pt01Epochm1sp2s")
 #' window <- 250
 #' step <- 125
-#' lambda <- NULL
-#' nSearch <- 100
 #' title <- "PT01 seizure 1"
-#' resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
-#'   step = step, lambda = lambda,nSearch=nSearch)
+#' calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
+#'   step = step, parallel = TRUE)
+#' 
+#' ## stop the parallel backend
+#' stopImplicitCluster()
 #' }
+#' 
 #'
 #'
 #' @details
@@ -62,6 +71,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     ## check the input types
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
+    stopifnot(step > 0)
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
     ## The input matrix must have at least window rows
@@ -81,56 +91,55 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     
     # Indices of window at time 0
     i0 <- seq_len(window - 1L)
+
     # Pre-allocate output
     A    <- array(.0, dim = dm,     dimnames = dmnA)
     R2   <- array(.0, dim = dm[-1], dimnames = dmn)
     f = fR <- R2
     lbd <- rep(0, nsteps) |> setNames(STEPS)
+    
     if(parallel){
-        ## Parallel version
-        ## Initialize the data for data aggregation
-        init <- list(A = A, R2 = R2, f = f, lbd = lbd)
-        foreach(
-            iw = STEPS, 
-            .combine = .combine, 
-            .init = init, 
-            .inorder = FALSE) %dopar% {
-            si   <- i0 + (iw - 1L) * step
-            xt   <- ieegts[si, ]
-            xtp1 <- ieegts[si + 1L, ]
-            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
-            R2Column <- ridgeR2(xt, xtp1, adjMatrix)
-            fColumn  <- fragilityRow(adjMatrix, nSearch)
-            list(
-                iw = iw, 
-                adjMatrix = adjMatrix, 
-                R2Column = R2Column, 
-                fColumn = fColumn
-            )
-        } -> results
-        ## unpack the results
-        A <- results$A
-        R2 <- results$R2
-        f <- results$f
-        lbd <- results$lbd
+        progress <- FALSE
+        `%run%` <- foreach::`%dopar%`
     }else{
-        ## Non-parallel version
-        ConLogger <- ConsoleLogger(progress, window, step, ieegts, nsteps)
-        for (iw in STEPS) {
-            si   <- i0 + (iw - 1L) * step
-            xt   <- ieegts[si, ]
-            xtp1 <- ieegts[si + 1L, ]
-            ConLogger$RidgeStart(iw)
-            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
-            A[,, iw]  <- adjMatrix
-            R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
-            ConLogger$FragStart()
-            f[,  iw]  <- fragilityRow(adjMatrix, nSearch)
-            lbd[[iw]] <- attr(adjMatrix, "lambda")
-            ConLogger$StepEnd()
-        }
-        ConLogger$TotalTime()
+        `%run%` <- foreach::`%do%`
     }
+    
+    ## Non-parallel version
+    ConLogger <- ConsoleLogger(progress, window, step, ieegts, nsteps)
+    
+    ## Initialize the data for data aggregation
+    init <- list(A = A, R2 = R2, f = f, lbd = lbd)
+    foreach(
+        iw = STEPS, 
+        .combine = .combine, 
+        .init = init, 
+        .inorder = FALSE) %run% {
+        si   <- i0 + (iw - 1L) * step
+        xt   <- ieegts[si, , drop = FALSE]
+        xtp1 <- ieegts[si + 1L, , drop = FALSE]
+        
+        ConLogger$RidgeStart(iw)
+        adjMatrix <- ridgeSearch(xt, xtp1, lambda)
+        R2Column <- ridgeR2(xt, xtp1, adjMatrix)
+        ConLogger$FragStart()
+        fColumn  <- fragilityRow(adjMatrix, nSearch)
+        ConLogger$StepEnd()
+
+        list(
+            iw = iw, 
+            adjMatrix = adjMatrix, 
+            R2Column = R2Column, 
+            fColumn = fColumn
+        )
+    } -> results
+    ConLogger$TotalTime()
+
+    ## unpack the results
+    A <- results$A
+    R2 <- results$R2
+    f <- results$f
+    lbd <- results$lbd
     
     fR <- apply(f, 2, rank) / elCnt
 
