@@ -3,6 +3,7 @@
 #' @importFrom rlang .data
 #' @importFrom glue glue
 #' @importFrom foreach foreach %dopar%
+#' @importFrom progress progress_bar
 NULL
 
 pkgData <- new.env()

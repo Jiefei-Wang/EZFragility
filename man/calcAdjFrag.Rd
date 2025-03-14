@@ -36,7 +36,10 @@ ensuring that ensuring that the adjacent matrix is stable (see details)}
 
 \item{nSearch}{Integer. Number of minimization to compute the fragility row}
 
-\item{progress}{Logical. If TRUE, print progress information}
+\item{progress}{Logical. If TRUE, print progress information. If \code{parallel} is TRUE, this option only support the \code{doSNOW} backend.}
+
+\item{parallel}{Logical. If TRUE, use parallel computing.
+Users must register a parallel backend with the foreach package}
 }
 \value{
 A list containing the normalized ieegts,
@@ -64,19 +67,26 @@ window <- 10
 step <- 5
 lambda <- 0.1
 calcAdjFrag(ieegts = data, window = window,
-step = step, lambda = lambda)
+step = step, lambda = lambda, progress = TRUE)
 
-## A more realistic example, but it will take a while to run
+## A more realistic example with parallel computing
 \dontrun{
+## Register a SNOW backend with 4 workers
+library(doSNOW)
+cl <- makeCluster(4, type="SOCK")
+registerDoSNOW(cl)
+
 data("pt01Epochm1sp2s")
 window <- 250
 step <- 125
-lambda <- NULL
-nSearch <- 100
 title <- "PT01 seizure 1"
-resfrag <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
-  step = step, lambda = lambda,nSearch=nSearch)
+calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
+  step = step, parallel = TRUE, progress = TRUE)
+
+## stop the parallel backend
+stopImplicitCluster()
 }
+
 
 
 }

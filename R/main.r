@@ -18,8 +18,7 @@
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
-#' @param progress Logical. If TRUE, print progress information. 
-#' This option is available only in non-parallel mode (`parallel = FALSE`)
+#' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
 #' @param parallel Logical. If TRUE, use parallel computing. 
 #' Users must register a parallel backend with the foreach package
 #' 
@@ -34,20 +33,21 @@
 #' step <- 5
 #' lambda <- 0.1
 #' calcAdjFrag(ieegts = data, window = window,
-#' step = step, lambda = lambda)
+#' step = step, lambda = lambda, progress = TRUE)
 #'
 #' ## A more realistic example with parallel computing
 #' \dontrun{
-#' ## Register a parallel backend with 4 workers
-#' library(doParallel)
-#' registerDoParallel(4)
+#' ## Register a SNOW backend with 4 workers
+#' library(doSNOW)
+#' cl <- makeCluster(4, type="SOCK")
+#' registerDoSNOW(cl)
 #' 
 #' data("pt01Epochm1sp2s")
 #' window <- 250
 #' step <- 125
 #' title <- "PT01 seizure 1"
 #' calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
-#'   step = step, parallel = TRUE)
+#'   step = step, parallel = TRUE, progress = TRUE)
 #' 
 #' ## stop the parallel backend
 #' stopImplicitCluster()
@@ -98,42 +98,56 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     f = fR <- R2
     lbd <- rep(0, nsteps) |> setNames(STEPS)
     
+    ## switch between parallel and sequential computing
     if(parallel){
-        progress <- FALSE
         `%run%` <- foreach::`%dopar%`
     }else{
         `%run%` <- foreach::`%do%`
     }
-    
-    ## Non-parallel version
-    ConLogger <- ConsoleLogger(progress, window, step, ieegts, nsteps)
-    
-    ## Initialize the data for data aggregation
+
+    ## initialize the progress bar
+    if (progress){
+        pb <- progress_bar$new(
+        format = "Step = :current/:total [:bar] :percent in :elapsed | eta: :eta",
+        total = nsteps, 
+        width = 60)
+        
+        progress <- function(n){
+            pb$tick()
+        } 
+        opts <- list(progress = progress)
+        on.exit(pb$terminate())
+    }else{
+        opts <- list()
+    }
+
+    ## Initial data for data aggregation
     init <- list(A = A, R2 = R2, f = f, lbd = lbd)
     foreach(
         iw = STEPS, 
         .combine = .combine, 
         .init = init, 
-        .inorder = FALSE) %run% {
-        si   <- i0 + (iw - 1L) * step
-        xt   <- ieegts[si, , drop = FALSE]
-        xtp1 <- ieegts[si + 1L, , drop = FALSE]
-        
-        ConLogger$RidgeStart(iw)
-        adjMatrix <- ridgeSearch(xt, xtp1, lambda)
-        R2Column <- ridgeR2(xt, xtp1, adjMatrix)
-        ConLogger$FragStart()
-        fColumn  <- fragilityRow(adjMatrix, nSearch)
-        ConLogger$StepEnd()
+        .inorder = FALSE,
+        .options.snow = opts
+        ) %run% {
+            ## Not necessary, but for clear the R check error
+            iw <- get('iw')
+            
+            si   <- i0 + (iw - 1L) * step
+            xt   <- ieegts[si, , drop = FALSE]
+            xtp1 <- ieegts[si + 1L, , drop = FALSE]
+            
+            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
+            R2Column <- ridgeR2(xt, xtp1, adjMatrix)
+            fColumn  <- fragilityRow(adjMatrix, nSearch)
 
-        list(
-            iw = iw, 
-            adjMatrix = adjMatrix, 
-            R2Column = R2Column, 
-            fColumn = fColumn
-        )
+            list(
+                iw = iw, 
+                adjMatrix = adjMatrix, 
+                R2Column = R2Column, 
+                fColumn = fColumn
+            )
     } -> results
-    ConLogger$TotalTime()
 
     ## unpack the results
     A <- results$A
@@ -153,12 +167,6 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     )
 }
 
-## Turn the following value assignment into combined assignment for parallel computing
-# A[,, iw]  <- adjMatrix
-# R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
-# ConLogger$FragStart()
-# f[,  iw]  <- fragilityRow(adjMatrix, nSearch)
-# lbd[[iw]] <- attr(adjMatrix, "lambda")
 .combine <- function(results, x){
     iw <- x$iw
     adjMatrix <- x$adjMatrix
@@ -173,73 +181,3 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
 }
 
 
-
-# Get number of seconds from a reference timestamp in specified format
-getTimeSecs <- \(ref) {
-    difT <- difftime(Sys.time(), ref, units = "secs") |> as.double()
-    sprintf("%.2f", difT)
-}
-
-# Optional utility which prints info while the above is running.
-ConsoleLogger <- \(enable, window, step, ieegts, nsteps) {
-    start <- Sys.time()
-    stepStart = TimeKeeper = RidgeRun = FragRun <-  NULL;
-    InfoDash = TabDash <- NULL
-    samples <- nrow(ieegts)
-    self <- environment()
-    
-    # Save time of Ridge (and step) start and print step number (run before ridge)
-    RidgeStart <- \(iw) {
-        if(!enable) return()
-        self$stepStart <- Sys.time()
-        self$TimeKeeper <- self$stepStart
-        sprintf("%7d ", iw) |> cat()
-    }
-    # Save time of Fragility start and print Ridge runtime (run before fragility)
-    FragStart <- \() {
-        if(!enable) return()
-        self$RidgeRun <- getTimeSecs(self$TimeKeeper)
-        self$TimeKeeper <- Sys.time()
-        sprintf("%11s ", self$RidgeRun) |> cat()
-    }
-    # Print runtime for Fragility and for the whole step (run at the end of the step)
-    StepEnd <- \() {
-        if(!enable) return()
-        sprintf("%11s ", getTimeSecs(self$TimeKeeper)) |> cat()
-        sprintf("%7s",   getTimeSecs(self$stepStart))  |> cat("\n")
-    }
-    # Print the total runtime of the whole process
-    TotalTime <- \() {
-        if(!enable) return()
-        total <- Sys.time() - start
-        fmt <- "  Total Runtime:  %21.2f %s"
-        self$StepDash |> shift(2) |> cat("\n")
-        sprintf(fmt, as.double(total), attr(total, "units")) |> cat("\n")
-    }
-    # Prints process specifications
-    initTab <- \(nb = 2) {
-        if(!enable) return()
-        header <- list("Samples", "Window", "Shift", "Steps")
-        values <- list(samples, window, step, nsteps)
-        hFmt <- do.call(sprintf, c(list(" %7s |%7s |%6s |%6s "), header))
-        vFmt <- do.call(sprintf, c(list(" %7d  %7d  %6d  %6d "), values))
-        self$InfoDash <- paste(rep("-", nchar(hFmt)), collapse = "")
-        c(self$InfoDash, hFmt, vFmt) |> shift(nb) |> cat(sep = "\n")
-    }
-    # Prints the headers of the step time table
-    stepTab <- \(nb = 2) {
-        if(!enable) return()
-        header <- c("Step", "Adjacency", "Fragility", "Total")
-        hFmt <- do.call(sprintf, c(list("%5s | %9s | %9s | %5s"), header))
-        len <- nchar(hFmt)
-        self$StepDash <- paste(rep("-", len + 1), collapse = "")
-        subTitle <- paste(rep("-", len - 12), collapse = "")
-        subtext <- "Runtime (sec)"
-        id <- (1 + 0.5 * (nchar(subTitle) - nchar(subtext))) |> ceiling()
-        substr(subTitle, id, id + nchar(subtext)) <- subtext
-        c(self$StepDash, shift(subTitle, 6), hFmt) |> shift(nb) |> cat(sep = "\n")
-    }
-    initTab()
-    stepTab()
-    self
-}

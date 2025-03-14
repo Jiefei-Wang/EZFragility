@@ -44,18 +44,12 @@ iEEGplot
 
 
 ## Compute Fragility Matrix
-The function `calcAdjFrag` computes the fragility matrix for the given iEEG time series. Computing Fragility Matrix can take a bit while, so we provide a parallel computing option to speed up the computation (see below).
-```{r compute fragility, eval=FALSE}
-window <- 250
-step <- 125
-pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, step = step)
-```
-
-To speed up the computation, you can enable parallel computing by passing `parallel = TRUE` to the function. The parallel feature is provided by the `foreach` package. You need to have a parallel backend registered in your R session beforehand. For example, you can use the `doParallel` package to register a parallel backend.
+The function `calcAdjFrag` computes the fragility matrix for the given iEEG time series. The simplest form is `calcAdjFrag(ieegts, window, step)`. However, computing Fragility Matrix can take a bit while. To speed up the computation, we provided a parallel example below. The parallel feature is built upon the `foreach` package. You need to have a parallel backend registered in your R session beforehand. For example, you can use the `doParallel` package to register a parallel backend.
 ```{r}
-library(doParallel)
-## Register a parallel backend with 4 workers
-registerDoParallel(4)
+## Register a SNOW parallel backend with 4 workers
+library(doSNOW)
+cl <- makeCluster(4, type="SOCK")
+registerDoSNOW(cl)
 
 window <- 250
 step <- 125
@@ -64,8 +58,8 @@ pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, step = 
 # Fragility result
 pt01Fragm1sp2s
 
-# Stop the parallel backend (optional)
-stopImplicitCluster()
+# Stop the parallel backend
+stopCluster(cl) 
 ```
 
 

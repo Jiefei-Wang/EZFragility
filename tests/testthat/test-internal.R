@@ -37,8 +37,9 @@ test_that("Data consistency across versions", {
 
 
 test_that("Data consistency across versions for parallel computing", {
-  doParallel::registerDoParallel(cores = 2)
-  on.exit( doParallel::stopImplicitCluster())
+    cl <- parallel::makeCluster(4, type="SOCK")
+    doSNOW::registerDoSNOW(cl)
+    on.exit(parallel::stopCluster(cl))
 
   set.seed(1)
   data <- matrix(rnorm(800), nrow = 40)
