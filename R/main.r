@@ -19,6 +19,7 @@
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of minimization to compute the fragility row
 #' @param progress Logical. If TRUE, print progress information
+#' 
 #'
 #' @return A list containing the normalized ieegts,
 #' adjacency matrices, fragility, and R^2 values
@@ -57,7 +58,7 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, progress = FALSE) {
+calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
     ## check the input types
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
@@ -77,31 +78,61 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     dm   <- c(elCnt, elCnt, nsteps)
     dmn  <- list(Electrode  = elNms, Step = STEPS)
     dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = STEPS)
+    
+    # Indices of window at time 0
+    i0 <- seq_len(window - 1L)
+    # Pre-allocate output
     A    <- array(.0, dim = dm,     dimnames = dmnA)
     R2   <- array(.0, dim = dm[-1], dimnames = dmn)
     f = fR <- R2
     lbd <- rep(0, nsteps) |> setNames(STEPS)
-    # Indices of window at time 0
-    i0 <- seq_len(window - 1L)
-    
-    ConLogger <- ConsoleLogger(progress, window, step, ieegts, nsteps)
-    for (iw in STEPS) {
-        si   <- i0 + (iw - 1L) * step
-        xt   <- ieegts[si, ]
-        xtp1 <- ieegts[si + 1L, ]
-        ConLogger$RidgeStart(iw)
-        adjMatrix <- ridgeSearch(xt, xtp1, lambda)
-        A[,, iw]  <- adjMatrix
-        R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
-        ConLogger$FragStart()
-        f[,  iw]  <- fragilityRow(adjMatrix, nSearch)
-        fR[, iw]  <- rank(f[, iw]) / elCnt # ranks should probably be here...
-        lbd[[iw]] <- attr(adjMatrix, "lambda")
-        ConLogger$StepEnd()
+    if(parallel){
+        ## Parallel version
+        ## Initialize the data for data aggregation
+        init <- list(A = A, R2 = R2, f = f, lbd = lbd)
+        foreach(
+            iw = STEPS, 
+            .combine = .combine, 
+            .init = init, 
+            .inorder = FALSE) %dopar% {
+            si   <- i0 + (iw - 1L) * step
+            xt   <- ieegts[si, ]
+            xtp1 <- ieegts[si + 1L, ]
+            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
+            R2Column <- ridgeR2(xt, xtp1, adjMatrix)
+            fColumn  <- fragilityRow(adjMatrix, nSearch)
+            list(
+                iw = iw, 
+                adjMatrix = adjMatrix, 
+                R2Column = R2Column, 
+                fColumn = fColumn
+            )
+        } -> results
+        ## unpack the results
+        A <- results$A
+        R2 <- results$R2
+        f <- results$f
+        lbd <- results$lbd
+    }else{
+        ## Non-parallel version
+        ConLogger <- ConsoleLogger(progress, window, step, ieegts, nsteps)
+        for (iw in STEPS) {
+            si   <- i0 + (iw - 1L) * step
+            xt   <- ieegts[si, ]
+            xtp1 <- ieegts[si + 1L, ]
+            ConLogger$RidgeStart(iw)
+            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
+            A[,, iw]  <- adjMatrix
+            R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
+            ConLogger$FragStart()
+            f[,  iw]  <- fragilityRow(adjMatrix, nSearch)
+            lbd[[iw]] <- attr(adjMatrix, "lambda")
+            ConLogger$StepEnd()
+        }
+        ConLogger$TotalTime()
     }
-    ConLogger$TotalTime()
-
-
+    
+    fR <- apply(f, 2, rank) / elCnt
 
     Fragility(
         ieegts = ieegts,
@@ -112,6 +143,26 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
         lambdas = lbd
     )
 }
+
+## Turn the following value assignment into combined assignment for parallel computing
+# A[,, iw]  <- adjMatrix
+# R2[, iw]  <- ridgeR2(xt, xtp1, adjMatrix)
+# ConLogger$FragStart()
+# f[,  iw]  <- fragilityRow(adjMatrix, nSearch)
+# lbd[[iw]] <- attr(adjMatrix, "lambda")
+.combine <- function(results, x){
+    iw <- x$iw
+    adjMatrix <- x$adjMatrix
+    R2Column <- x$R2Column
+    fColumn <- x$fColumn
+
+    results$A[,, iw]  <- adjMatrix
+    results$R2[, iw]  <- R2Column
+    results$f[,  iw]  <- fColumn
+    results$lbd[[iw]] <- attr(adjMatrix, "lambda")
+    results
+}
+
 
 
 # Get number of seconds from a reference timestamp in specified format

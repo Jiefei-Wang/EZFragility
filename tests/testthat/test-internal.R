@@ -34,3 +34,18 @@ test_that("Data consistency across versions", {
   frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda)
   expect_equal(frag, testFrag)
 })
+
+
+test_that("Data consistency across versions for parallel computing", {
+  library(doParallel)
+  registerDoParallel(cores = 2)
+  on.exit(stopImplicitCluster())
+
+  set.seed(1)
+  data <- matrix(rnorm(800), nrow = 40)
+  t_window <- 10
+  t_step <- 5
+  lambda <- 0.1
+  frag <- calcAdjFrag(ieegts = data, window = t_window, step = t_step, lambda = lambda, parallel = TRUE)
+  expect_equal(frag, testFrag)
+})

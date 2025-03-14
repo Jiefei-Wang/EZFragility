@@ -18,7 +18,8 @@ calcAdjFrag(
   step,
   lambda = NULL,
   nSearch = 100L,
-  progress = FALSE
+  progress = FALSE,
+  parallel = FALSE
 )
 }
 \arguments{

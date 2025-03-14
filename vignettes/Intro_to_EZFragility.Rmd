@@ -44,16 +44,30 @@ iEEGplot
 
 
 ## Compute Fragility Matrix
-Do not run if you are not ready to wait for >3 minutes. This is the non-optimized sequential version.
+The function `calcAdjFrag` computes the fragility matrix for the given iEEG time series. Computing Fragility Matrix can take a bit while, so we provide a parallel computing option to speed up the computation (see below).
 ```{r compute fragility, eval=FALSE}
 window <- 250
 step <- 125
-lambda <- NULL
-nSearch <- 10
-pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, step = step, lambda = lambda,nSearch=nSearch)
-# Fragility matrix result
-pt01Fragm1sp2s$frag[1:5, 1:5]
+pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, step = step)
 ```
+
+To speed up the computation, you can enable parallel computing by passing `parallel = TRUE` to the function. The parallel feature is provided by the `foreach` package. You need to have a parallel backend registered in your R session beforehand. For example, you can use the `doParallel` package to register a parallel backend.
+```{r}
+library(doParallel)
+## Register a parallel backend with 4 workers
+registerDoParallel(4)
+
+window <- 250
+step <- 125
+pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, step = step, parallel = TRUE)
+
+# Fragility result
+pt01Fragm1sp2s
+
+# Stop the parallel backend (optional)
+stopImplicitCluster()
+```
+
 
 ## Plot a heatmap of the Fragility results for patient PT01 for soz electrodes and four non soz electrodes
 This plot reproduces Patient 01 results Figure 4 a from Li et al. paper. Time window around seizure onset [-1:2]s
