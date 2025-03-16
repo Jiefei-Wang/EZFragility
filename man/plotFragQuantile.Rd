@@ -27,11 +27,11 @@ Plot Fragility time quantiles for two electrodes group marked as soz non marked 
 \examples{
 
 timeRange <- c(-1,2)
-data("pt01Epochm1sp2s")
-sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
-data("pt01Fragm1sp2s")
+data("pt01Epoch")
+sozIndex<-attr(pt01Epoch,"sozIndex")
+data("pt01Frag")
 # compute fragility statistics evolution with time (mean and standard deviation) for soz and
 # non soz groups
-pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozIndex)
+pt01fragstat <- fragStat(frag=pt01Frag, sozID=sozIndex)
 plotFragQuantile(FragStatObj=pt01fragstat, timeRange=timeRange)
 }

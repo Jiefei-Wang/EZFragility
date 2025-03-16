@@ -29,16 +29,16 @@ This data corresponds to the first seizure of patient PT01 from the Fragility Da
 
 
 ```{r ictal data}
-data("pt01Epochm1sp2s")
+data("pt01Epoch")
 # seizure onset (soz) electrodes indices
-sozIndex <- attr(pt01Epochm1sp2s,"sozIndex")
+sozIndex <- attr(pt01Epoch,"sozIndex")
 # seizure onset electrodes names
-sozNames <- attr(pt01Epochm1sp2s,"sozZames")
+sozNames <- attr(pt01Epoch,"sozZames")
 
 ## Visualize ictal data
 display <- c(sozIndex,77:80)
 timeRange <- c(-1,2)
-iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeRange=timeRange,display=display)
+iEEGplot<-visuIEEGData(ieegts=pt01Epoch,timeRange=timeRange,display=display)
 iEEGplot
 ```
 
@@ -53,10 +53,10 @@ registerDoSNOW(cl)
 
 window <- 250
 step <- 125
-pt01Fragm1sp2s <- calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window, step = step, parallel = TRUE)
+pt01Frag <- calcAdjFrag(ieegts = pt01Epoch, window = window, step = step, parallel = TRUE)
 
 # Fragility result
-pt01Fragm1sp2s
+pt01Frag
 
 # Stop the parallel backend
 stopCluster(cl) 
@@ -68,19 +68,20 @@ This plot reproduces Patient 01 results Figure 4 a from Li et al. paper. Time wi
 - `sozindex` contains the index of the soz electrodes
 - `77:80` are the index of the non soz electrodes
 ```{r}
-data("pt01Epochm1sp2s")
-sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
-data("pt01Fragm1sp2s")
+data("pt01Epoch")
+sozIndex<-attr(pt01Epoch,"sozIndex")
+data("pt01Frag")
 timeRange <- c(-1,2)
 display <- c(sozIndex,77:80)
-fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,timeRange = timeRange,title="PT01 seizure 1",display=display)
+fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,timeRange = timeRange,title="PT01 seizure 1",display=display)
 fragplot
 ```
 
 ## Compute electrodes statistics of fragility map 
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
-fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozIndex)
+## TODO: make this an internal
+fragstat <- fragStat(frag=pt01Frag, sozID=sozIndex)
 fragstat
 ```
 

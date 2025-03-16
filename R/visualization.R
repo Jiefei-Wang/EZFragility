@@ -12,42 +12,45 @@
 #'
 #' @examples
 #'# use integer index for display and soz electrodes
-#'data("pt01Epochm1sp2s")
-#'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
-#'data("pt01Fragm1sp2s")
+#'data("pt01Epoch")
+#'sozIndex<-attr(pt01Epoch,"sozIndex")
+#'data("pt01Frag")
 #'timeRange <- c(-1,2)
 #'display <- c(sozIndex,77:80)
-#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,
+#'fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,
 #'timeRange = timeRange,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #'
 #'# use electrodes name for display and soz electrodes
-#'data("pt01Epochm1sp2s")
-#'sozNames<-attr(pt01Epochm1sp2s,"sozNames")
-#'data("pt01Fragm1sp2s")
+#'data("pt01Epoch")
+#'sozNames<-attr(pt01Epoch,"sozNames")
+#'data("pt01Frag")
 #'timeRange <- c(-1,2)
 #'display <- c(sozNames,"MLT1","MLT2","MLT3","MLT4")
-#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozNames,
+#'fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozNames,
 #'                     timeRange = timeRange,title="PT01 seizure 1",display=display)
 #'fragplot
 #'
 #' # save plot to file with ggplot2
-#'data("pt01Epochm1sp2s")
-#'data("pt01Fragm1sp2s")
-#'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
+#'data("pt01Epoch")
+#'data("pt01Frag")
+#'sozIndex<-attr(pt01Epoch,"sozIndex")
 #'timeRange <- c(-10,10)
 #'display <- c(sozIndex,77:80)
 #'pathplot <- "~"
 #'title <- "PT01sz1"
 #'resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-#'fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,timeRange=timeRange,
+#'fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,timeRange=timeRange,
 #'                      title=title,display=display)
 #'fragplot
 #'ggplot2::ggsave(resfile)
 #' 
 #' @export
 heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure number",display=NULL){
+  
+## TODO: make sozID an optional
+## TODO: add plot support to frag
   titlepng<-title
   if (is(frag, "Fragility")) {
     frag <- frag$frag
@@ -129,11 +132,11 @@ heatmapFrag<-function(frag,sozID,timeRange = NULL,title="Patient name seizure nu
 #' @return plot raw signal
 #'
 #' @examples
-#'data("pt01Epochm1sp2s")
-#'sozIndex <- attr(pt01Epochm1sp2s,"sozIndex")
+#'data("pt01Epoch")
+#'sozIndex <- attr(pt01Epoch,"sozIndex")
 #'display <- c(sozIndex,77:80)
 #'timeRange <- c(-1,2)
-#'iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeRange=timeRange,display=display)
+#'iEEGplot<-visuIEEGData(ieegts=pt01Epoch,timeRange=timeRange,display=display)
 #'iEEGplot
 #' @export
 visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure number", display=NULL){
@@ -199,12 +202,12 @@ visuIEEGData<-function(ieegts, timeRange=NULL, title = "Patient name seizure num
 #' @examples
 #'
 #'timeRange <- c(-1,2)
-#'data("pt01Epochm1sp2s")
-#'sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
-#'data("pt01Fragm1sp2s")
+#'data("pt01Epoch")
+#'sozIndex<-attr(pt01Epoch,"sozIndex")
+#'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozIndex)
+#'pt01fragstat <- fragStat(frag=pt01Frag, sozID=sozIndex)
 #'plotFragQuantile(FragStatObj=pt01fragstat, timeRange=timeRange)
 plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quantiles over time"){
   if(is(FragStatObj, "FragStat")){
@@ -257,14 +260,14 @@ plotFragQuantile<-function(FragStatObj, timeRange = NULL,title="Fragility Quanti
 #' @export
 #'
 #' @examples
-#'data("pt01Epochm1sp2s")
-#'sozindex<-attr(pt01Epochm1sp2s,"sozindex")
+#'data("pt01Epoch")
+#'sozindex<-attr(pt01Epoch,"sozindex")
 #'# Load the precomputed fragility object
 #'timeRange <- c(-10,10)
-#'data("pt01Fragm1sp2s")
+#'data("pt01Frag")
 #'# compute fragility statistics evolution with time (mean and standard deviation) for soz and
 #'# non soz groups
-#'pt01fragstat <- fragStat(frag=pt01Fragm1sp2s, sozID=sozindex)
+#'pt01fragstat <- fragStat(frag=pt01Frag, sozID=sozindex)
 #'# plot the statistical results
 #'pfragstat<-plotFragDistribution(stat=pt01fragstat,timeRange=timeRange)
 #'pfragstat
@@ -304,16 +307,16 @@ plotFragDistribution<-function(
   plotmeanstd$sozcsdm<-sozcsdm
   
   titlepng <- title
-  colors<-c("SOZ +/- sem" = "red", "SOZc +/- sem" = "black")
+  colors<-c("SOZ +/- sd" = "red", "SOZc +/- sd" = "black")
   ggplot2::theme_grey(base_size = 22)
   p<-ggplot2::ggplot(plotmeanstd, ggplot2::aes(x=.data$times, y=.data$meansoz))+ 
    ggplot2::xlab(xlabel)+
    ggplot2::ylab('Fragility')+
    ggplot2::ggtitle(titlepng)+
-   ggplot2::geom_line(ggplot2::aes(y = .data$meansoz,color="SOZ +/- sem"))+  
+   ggplot2::geom_line(ggplot2::aes(y = .data$meansoz,color="SOZ +/- sd"))+  
    ggplot2::geom_line(ggplot2::aes(y = .data$sozsdp),color='red',linetype="dotted")+  
    ggplot2::geom_line(ggplot2::aes(y = .data$sozsdm),color='red',linetype="dotted")+ 
-   ggplot2::geom_line(ggplot2::aes(y = .data$meansozc,color="SOZc +/- sem"))+
+   ggplot2::geom_line(ggplot2::aes(y = .data$meansozc,color="SOZc +/- sd"))+
    ggplot2::geom_line(ggplot2::aes(y = .data$sozcsdp),color='black',linetype="dotted")+  
    ggplot2::geom_line(ggplot2::aes(y = .data$sozcsdm),color='black',linetype="dotted")+
    ggplot2::geom_ribbon(ggplot2::aes(ymin=.data$sozsdm,ymax=.data$sozsdp), fill="red",alpha=0.5)+

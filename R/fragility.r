@@ -41,10 +41,10 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' @export
 #'
 #' @examples
-#' data("pt01Fragm1sp2s")
-#' data("pt01Epochm1sp2s")
-#' sozindex<-attr(pt01Epochm1sp2s,"sozindex")
-#' pt01fragstat<-fragStat(frag=pt01Fragm1sp2s, sozID=sozindex)
+#' data("pt01Frag")
+#' data("pt01Epoch")
+#' sozindex<-attr(pt01Epoch,"sozindex")
+#' pt01fragstat<-fragStat(frag=pt01Frag, sozID=sozindex)
 fragStat <- function(frag, sozID) {
   if (is(frag, "Fragility")) frag <- frag$frag
   if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")

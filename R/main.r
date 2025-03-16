@@ -42,11 +42,11 @@
 #' cl <- makeCluster(4, type="SOCK")
 #' registerDoSNOW(cl)
 #' 
-#' data("pt01Epochm1sp2s")
+#' data("pt01Epoch")
 #' window <- 250
 #' step <- 125
 #' title <- "PT01 seizure 1"
-#' calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
+#' calcAdjFrag(ieegts = pt01Epoch, window = window,
 #'   step = step, parallel = TRUE, progress = TRUE)
 #' 
 #' ## stop the parallel backend
@@ -59,8 +59,10 @@
 #' 1/ For each time window i, a discrete stable Linear time system
 #' (adjacency matrix) is computed named \eqn{A_i}
 #' such that
-#' \eqn{A_i x(t) = x(t+1)}
-#' option Lambda=NULL ensures that the matrix is stable
+#' \eqn{A_i x(t) = x(t+1)}. The 'lambda' option is the regularization parameter
+#' for the ridge regression. 
+#' `lambda=NULL`(default) will find a lambda value that ensures 
+#' the stability of the estimated \eqn{A_i}.
 #'
 #' 2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
 #' for column perturbation is computed.
@@ -76,18 +78,18 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
 
     ## The input matrix must have at least window rows
     stopifnot(nrow(ieegts) >= window)
-    scaling <- 10^floor(log10(max(ieegts)))
+    scaling <- 10^floor(log10(max(abs(ieegts))))
     ieegts  <- ieegts / scaling
     # Electrode count and names
     elCnt <- ncol(ieegts)
     elNms <- colnames(ieegts)
     # Number/sequence of steps
-    nsteps  <- floor((nrow(ieegts) - window) / step) + 1L
-    STEPS   <- seq_len(nsteps)
+    nPartitions  <- floor((nrow(ieegts) - window) / step) + 1L
+    partitions   <- seq_len(nPartitions)
     # Pre-allocate output
-    dm   <- c(elCnt, elCnt, nsteps)
-    dmn  <- list(Electrode  = elNms, Step = STEPS)
-    dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = STEPS)
+    dm   <- c(elCnt, elCnt, nPartitions)
+    dmn  <- list(Electrode  = elNms, Step = partitions)
+    dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = partitions)
     
     # Indices of window at time 0
     i0 <- seq_len(window - 1L)
@@ -96,7 +98,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     A    <- array(.0, dim = dm,     dimnames = dmnA)
     R2   <- array(.0, dim = dm[-1], dimnames = dmn)
     f = fR <- R2
-    lbd <- rep(0, nsteps) |> setNames(STEPS)
+    lbd <- rep(0, nPartitions) |> setNames(partitions)
     
     ## switch between parallel and sequential computing
     if(parallel){
@@ -109,7 +111,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     if (progress){
         pb <- progress_bar$new(
         format = "Step = :current/:total [:bar] :percent in :elapsed | eta: :eta",
-        total = nsteps, 
+        total = nPartitions, 
         width = 60)
         
         progress <- function(n){
@@ -124,7 +126,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     ## Initial data for data aggregation
     init <- list(A = A, R2 = R2, f = f, lbd = lbd)
     foreach(
-        iw = STEPS, 
+        iw = partitions, 
         .combine = .combine, 
         .init = init, 
         .inorder = FALSE,

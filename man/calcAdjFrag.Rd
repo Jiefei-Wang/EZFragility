@@ -53,8 +53,10 @@ from an adjacency matrix in each time window
 1/ For each time window i, a discrete stable Linear time system
 (adjacency matrix) is computed named \eqn{A_i}
 such that
-\eqn{A_i x(t) = x(t+1)}
-option Lambda=NULL ensures that the matrix is stable
+\eqn{A_i x(t) = x(t+1)}. The 'lambda' option is the regularization parameter
+for the ridge regression.
+\code{lambda=NULL}(default) will find a lambda value that ensures
+the stability of the estimated \eqn{A_i}.
 
 2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
 for column perturbation is computed.
@@ -76,11 +78,11 @@ library(doSNOW)
 cl <- makeCluster(4, type="SOCK")
 registerDoSNOW(cl)
 
-data("pt01Epochm1sp2s")
+data("pt01Epoch")
 window <- 250
 step <- 125
 title <- "PT01 seizure 1"
-calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
+calcAdjFrag(ieegts = pt01Epoch, window = window,
   step = step, parallel = TRUE, progress = TRUE)
 
 ## stop the parallel backend

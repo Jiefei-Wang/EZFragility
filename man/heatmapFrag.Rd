@@ -31,36 +31,36 @@ plot fragility heatmaps with electrodes marked as soz colored
 }
 \examples{
 # use integer index for display and soz electrodes
-data("pt01Epochm1sp2s")
-sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
-data("pt01Fragm1sp2s")
+data("pt01Epoch")
+sozIndex<-attr(pt01Epoch,"sozIndex")
+data("pt01Frag")
 timeRange <- c(-1,2)
 display <- c(sozIndex,77:80)
-fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,
+fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,
 timeRange = timeRange,title="PT01 seizure 1",display=display)
 fragplot
 
 
 # use electrodes name for display and soz electrodes
-data("pt01Epochm1sp2s")
-sozNames<-attr(pt01Epochm1sp2s,"sozNames")
-data("pt01Fragm1sp2s")
+data("pt01Epoch")
+sozNames<-attr(pt01Epoch,"sozNames")
+data("pt01Frag")
 timeRange <- c(-1,2)
 display <- c(sozNames,"MLT1","MLT2","MLT3","MLT4")
-fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozNames,
+fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozNames,
                     timeRange = timeRange,title="PT01 seizure 1",display=display)
 fragplot
 
 # save plot to file with ggplot2
-data("pt01Epochm1sp2s")
-data("pt01Fragm1sp2s")
-sozIndex<-attr(pt01Epochm1sp2s,"sozIndex")
+data("pt01Epoch")
+data("pt01Frag")
+sozIndex<-attr(pt01Epoch,"sozIndex")
 timeRange <- c(-10,10)
 display <- c(sozIndex,77:80)
 pathplot <- "~"
 title <- "PT01sz1"
 resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-fragplot<-heatmapFrag(frag=pt01Fragm1sp2s,sozID=sozIndex,timeRange=timeRange,
+fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,timeRange=timeRange,
                      title=title,display=display)
 fragplot
 ggplot2::ggsave(resfile)

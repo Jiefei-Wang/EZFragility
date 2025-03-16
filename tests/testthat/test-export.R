@@ -89,13 +89,13 @@ def <- \(x) {
     }
 }
 
-data(pt01Epochm1sp2s)
-data(pt01Fragm1sp2s)
-fg <- pt01Fragm1sp2s
+data(pt01Epoch)
+data(pt01Frag)
+fg <- pt01Frag
 displayIndex <- 77:84
 displayIndexNumeric <- as.numeric(displayIndex)
 displayIndexOutOfRange <- 77:85
-str <- colnames(pt01Epochm1sp2s)[displayIndex]
+str <- colnames(pt01Epoch)[displayIndex]
 strError <- c(str, "Whatever")
 soz <- 53:56
 
@@ -120,7 +120,7 @@ test_that("heatmapFrag", {
 })
 
 test_that("visuIEEGData", {
-    dargs <- list(ieegts = pt01Epochm1sp2s, timeRange = c(-1, 2), title = "")
+    dargs <- list(ieegts = pt01Epoch, timeRange = c(-1, 2), title = "")
     vL <- def(dargs)
     do.call(visuIEEGData, dargs) |> expect_no_error()
     do.call(visuIEEGData, vL(display = displayIndex)) |> expect_no_error()

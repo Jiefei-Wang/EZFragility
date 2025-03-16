@@ -12,19 +12,19 @@
 #'
 #' @usage 
 #' ## EEG data
-#' data(pt01Epochm1sp2s)
+#' data(pt01Epoch)
 #' 
 #' @format 
-#' pt01Epochm1sp2s: A Matrix with 3000 rows (time points) and 84 columns (electrodes)
+#' pt01Epoch: A Matrix with 3000 rows (time points) and 84 columns (electrodes)
 #' 
-#' pt01Fragm1sp2s: A fragility object results of applying the main function \code{calcAdjFrag}
-#' to pt01Epochm1sp2s
+#' pt01Frag: A fragility object results of applying the main function \code{calcAdjFrag}
+#' to pt01Epoch
 #'
 #' @keywords datasets
 #'
 #' @source Fragility Multi-Center Retrospective Study
 #' (\href{https://openneuro.org/datasets/ds003029/versions/1.0.0}{OpenNeuro})
 #' 
-#' @aliases pt01Epochm1sp2s pt01Fragm1sp2s
-"pt01Epochm1sp2s"
+#' @aliases pt01Epoch pt01Frag
+"pt01Epoch"
 

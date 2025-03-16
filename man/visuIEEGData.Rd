@@ -29,10 +29,10 @@ plot raw signal
 Visualization of ictal iEEG
 }
 \examples{
-data("pt01Epochm1sp2s")
-sozIndex <- attr(pt01Epochm1sp2s,"sozIndex")
+data("pt01Epoch")
+sozIndex <- attr(pt01Epoch,"sozIndex")
 display <- c(sozIndex,77:80)
 timeRange <- c(-1,2)
-iEEGplot<-visuIEEGData(ieegts=pt01Epochm1sp2s,timeRange=timeRange,display=display)
+iEEGplot<-visuIEEGData(ieegts=pt01Epoch,timeRange=timeRange,display=display)
 iEEGplot
 }
