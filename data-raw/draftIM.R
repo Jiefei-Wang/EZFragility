@@ -1,3 +1,27 @@
+fragIdObj <- \(ieegts, mframe, period, origin = 0) {
+  self <- environment()
+  n = nrow(ieegts)
+  endTime <- n * 1e-3 + origin
+  mapStep2Row <- \(s) mframe + period * (s - 1L)
+  mapRow2Step <- \(i) (i - 1L) %/% period + 1 * (i < mframe / 2)
+  init <- \(t0 = origin) {
+    self$origin <- t0
+    self$endTime <- n * 1e-3 + origin
+    self$mapTime2Row <- \(x) (round(x, 3) - origin) * 1e3
+    self$getIds <- \(x = origin, y = endTime) {
+      if (length(x) == 2L) {y <- x[2L]; x <- x[1L]}
+      stopifnot(x < y, origin <= x, y <= endTime)
+      a <- mapTime2Row(x) + 1
+      z <- mapTime2Row(y)
+      list(rows = a:z, steps = mapRow2Step(a):mapRow2Step(z))
+    }
+    invisible(self)
+  }
+  setOrigin <- \(newOrigin) init(newOrigin)
+  init()
+}
+
+
 ## We will use data from -1s to 2s around the seizure onset
 
 #
