@@ -55,7 +55,8 @@ Imports:
     glue,
     rlang,
     foreach,
-    progress
+    progress,
+    ramify
 Suggests: 
     knitr,
     rmarkdown,

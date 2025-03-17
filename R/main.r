@@ -11,7 +11,7 @@
 #' We have found solutions to fill up missing details in the paper method description
 #'
 #' @param ieegts Numeric. A matrix of iEEG time series x(t),
-#' with time points as rows and electrodes names as columns
+#' with time points as rows and electrodes names as columns, or an Epoch object
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression.
@@ -38,6 +38,7 @@
 #' ## A more realistic example with parallel computing
 #' \dontrun{
 #' ## Register a SNOW backend with 4 workers
+#' library(parallel)
 #' library(doSNOW)
 #' cl <- makeCluster(4, type="SOCK")
 #' registerDoSNOW(cl)
@@ -50,7 +51,7 @@
 #'   step = step, parallel = TRUE, progress = TRUE)
 #' 
 #' ## stop the parallel backend
-#' stopImplicitCluster()
+#' stopCluster(cl)
 #' }
 #' 
 #'
@@ -71,10 +72,19 @@
 #' @export
 calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
     ## check the input types
+    stopifnot(is.matrix(ieegts) | is(ieegts, "Epoch"))
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
     stopifnot(step > 0)
     stopifnot(is.null(lambda) | is.numeric(lambda))
+
+
+    if (is(ieegts, "Epoch")) {
+        epoch <- ieegts
+        ieegts <- ieegts$matrix
+    }else {
+        epoch <- Epoch(ieegts)
+    }
 
     ## The input matrix must have at least window rows
     stopifnot(nrow(ieegts) >= window)
@@ -84,10 +94,10 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     elCnt <- ncol(ieegts)
     elNms <- colnames(ieegts)
     # Number/sequence of steps
-    nPartitions  <- floor((nrow(ieegts) - window) / step) + 1L
-    partitions   <- seq_len(nPartitions)
+    nParts  <- floor((nrow(ieegts) - window) / step) + 1L
+    partitions   <- seq_len(nParts)
     # Pre-allocate output
-    dm   <- c(elCnt, elCnt, nPartitions)
+    dm   <- c(elCnt, elCnt, nParts)
     dmn  <- list(Electrode  = elNms, Step = partitions)
     dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = partitions)
     
@@ -98,7 +108,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     A    <- array(.0, dim = dm,     dimnames = dmnA)
     R2   <- array(.0, dim = dm[-1], dimnames = dmn)
     f = fR <- R2
-    lbd <- rep(0, nPartitions) |> setNames(partitions)
+    lbd <- rep(0, nParts) |> setNames(partitions)
     
     ## switch between parallel and sequential computing
     if(parallel){
@@ -111,7 +121,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     if (progress){
         pb <- progress_bar$new(
         format = "Step = :current/:total [:bar] :percent in :elapsed | eta: :eta",
-        total = nPartitions, 
+        total = nParts, 
         width = 60)
         
         progress <- function(n){
@@ -121,6 +131,10 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
         on.exit(pb$terminate())
     }else{
         opts <- list()
+        
+        progress <- function(n){
+            NULL
+        } 
     }
 
     ## Initial data for data aggregation
@@ -132,6 +146,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
         .inorder = FALSE,
         .options.snow = opts
         ) %run% {
+            progress(iw)
             ## Not necessary, but for clear the R check error
             iw <- get('iw')
             
@@ -157,15 +172,26 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     f <- results$f
     lbd <- results$lbd
     
+    ## column rank of fragility matrix
     fR <- apply(f, 2, rank) / elCnt
 
+    ## start time point/indices for each partition
+    startTimes <- (seq_len(nParts) - 1L) * window + 1L
+    if (!is.null(epoch$times)) {
+        startTimes <- epoch$times[startTimes]
+    }
+    
+    ## TODO: why the row of frag is the electrode names? not the column of frag?
+    ## This does not match the input data
     Fragility(
         ieegts = ieegts,
         adj = A,
         R2 = R2,
         frag = f,
         frag_ranked = fR,
-        lambdas = lbd
+        lambdas = lbd,
+        startTimes = startTimes,
+        electrodes = epoch$electrodes
     )
 }
 
@@ -182,4 +208,39 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     results
 }
 
+#' Find Serzure Onset Zone
+#' 
+#' @param x Fragility object
+#' @param method Character. The method to use to find the onset zone.
+#' Must be one of 'max', 'min', or "mean"
+#' @param proportion Numeric. The proportion of electrodes to consider as the onset zone. 
+#' The electrode number will be rounded to the nearest integer.
+#' @param ... Additional arguments
+#' 
+#' @return A vector of electrode names, or indices if the electrode names are NULL
+#' @export 
+findOnset <- function(x, method = c("mean","max", "min"), proportion = 0.1, ...) {
+    method <- match.arg(method)
 
+    stopifnot(is(x, "Fragility"))
+
+    frag <- x$frag
+    elCnt <- nrow(frag)
+    nSOZ <- round(elCnt * proportion)
+    stopifnot(nSOZ > 0 & nSOZ <= elCnt)
+
+    if (method == "max") {
+        stat <- apply(frag, 2, max)
+    } else if (method == "min") {
+        stat <- apply(frag, 2, min)
+    } else if (method == "mean") {
+        stat <- apply(frag, 2, mean)
+    }
+
+    sozIndex <- order(stat, decreasing = TRUE)[seq_len(nSOZ)]
+    if(!is.null(frag)){
+        sozIndex <- rownames(frag)[sozIndex]
+    }
+
+    sozIndex
+}

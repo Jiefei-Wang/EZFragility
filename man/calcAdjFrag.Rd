@@ -24,7 +24,7 @@ calcAdjFrag(
 }
 \arguments{
 \item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns}
+with time points as rows and electrodes names as columns, or an Epoch object}
 
 \item{window}{Integer. The number of time points to use in each window}
 
@@ -74,6 +74,7 @@ step = step, lambda = lambda, progress = TRUE)
 ## A more realistic example with parallel computing
 \dontrun{
 ## Register a SNOW backend with 4 workers
+library(parallel)
 library(doSNOW)
 cl <- makeCluster(4, type="SOCK")
 registerDoSNOW(cl)
@@ -86,7 +87,7 @@ calcAdjFrag(ieegts = pt01Epoch, window = window,
   step = step, parallel = TRUE, progress = TRUE)
 
 ## stop the parallel backend
-stopImplicitCluster()
+stopCluster(cl)
 }
 
 

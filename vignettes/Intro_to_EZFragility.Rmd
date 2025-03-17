@@ -44,7 +44,7 @@ iEEGplot
 
 
 ## Compute Fragility Matrix
-The function `calcAdjFrag` computes the fragility matrix for the given iEEG time series. The simplest form is `calcAdjFrag(ieegts, window, step)`. However, computing Fragility Matrix can take a bit while. To speed up the computation, we provided a parallel example below. The parallel feature is built upon the `foreach` package. You need to have a parallel backend registered in your R session beforehand. For example, you can use the `doParallel` package to register a parallel backend.
+The function `calcAdjFrag` computes the fragility matrix for the given iEEG time series. The simplest form is `calcAdjFrag(ieegts, window, step)`. However, computing Fragility Matrix can take a bit while. To speed up the computation, we provided a parallel example below. The parallel feature is built upon the `foreach` package. You need to have a parallel backend registered in your R session beforehand. For example, you can use the `doSNOW` package to register a parallel backend.
 ```{r}
 ## Register a SNOW parallel backend with 4 workers
 library(doSNOW)

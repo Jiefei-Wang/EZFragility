@@ -38,7 +38,6 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #'
 #'
 #' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
-#' @export
 #'
 #' @examples
 #' data("pt01Frag")

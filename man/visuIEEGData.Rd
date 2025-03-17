@@ -16,8 +16,6 @@ visuIEEGData(
 series x(t), with time points as rows and electrodes names as columns,
 or a Fragility object from \code{calcAdjFrag}}
 
-\item{timeRange}{Numeric Vector of length 2. The time window to display at the x-axis}
-
 \item{title}{String. Figure title}
 
 \item{display}{Integer or string. Vector electrodes to display}
@@ -30,9 +28,9 @@ Visualization of ictal iEEG
 }
 \examples{
 data("pt01Epoch")
-sozIndex <- attr(pt01Epoch,"sozIndex")
-display <- c(sozIndex,77:80)
-timeRange <- c(-1,2)
-iEEGplot<-visuIEEGData(ieegts=pt01Epoch,timeRange=timeRange,display=display)
+sozIndex <- attr(pt01Epoch, "sozIndex")
+display <- c(sozIndex, 77:80)
+timeRange <- c(-1, 2)
+iEEGplot <- visuIEEGData(ieegts = pt01Epoch, timeRange = timeRange, display = display)
 iEEGplot
 }

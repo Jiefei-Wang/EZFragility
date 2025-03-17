@@ -4,20 +4,12 @@
 \alias{heatmapFrag}
 \title{Visualization functions (raw signal, fragility matrix)}
 \usage{
-heatmapFrag(
-  frag,
-  sozID,
-  timeRange = NULL,
-  title = "Patient name seizure number",
-  display = NULL
-)
+heatmapFrag(frag, sozIndex = NULL, title = NULL)
 }
 \arguments{
-\item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}
+\item{frag}{Fragility object from \code{calcAdjFrag}}
 
-\item{sozID}{Integer or string. Vector soz electrodes}
-
-\item{timeRange}{Numeric Vector of length 2. The time window to display at the x-axis}
+\item{sozIndex}{Integer or string. A group of electrodes to mark as in the Seizure Onset Zone (SOZ)}
 
 \item{title}{String. Figure title}
 
@@ -32,36 +24,42 @@ plot fragility heatmaps with electrodes marked as soz colored
 \examples{
 # use integer index for display and soz electrodes
 data("pt01Epoch")
-sozIndex<-attr(pt01Epoch,"sozIndex")
+sozIndex <- attr(pt01Epoch, "sozIndex")
 data("pt01Frag")
-timeRange <- c(-1,2)
-display <- c(sozIndex,77:80)
-fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,
-timeRange = timeRange,title="PT01 seizure 1",display=display)
+timeRange <- c(-1, 2)
+display <- c(sozIndex, 77:80)
+fragplot <- heatmapFrag(
+    frag = pt01Frag, sozID = sozIndex,
+    timeRange = timeRange, title = "PT01 seizure 1", display = display
+)
 fragplot
 
 
 # use electrodes name for display and soz electrodes
 data("pt01Epoch")
-sozNames<-attr(pt01Epoch,"sozNames")
+sozNames <- attr(pt01Epoch, "sozNames")
 data("pt01Frag")
-timeRange <- c(-1,2)
-display <- c(sozNames,"MLT1","MLT2","MLT3","MLT4")
-fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozNames,
-                    timeRange = timeRange,title="PT01 seizure 1",display=display)
+timeRange <- c(-1, 2)
+display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
+fragplot <- heatmapFrag(
+    frag = pt01Frag, sozID = sozNames,
+    timeRange = timeRange, title = "PT01 seizure 1", display = display
+)
 fragplot
 
 # save plot to file with ggplot2
 data("pt01Epoch")
 data("pt01Frag")
-sozIndex<-attr(pt01Epoch,"sozIndex")
-timeRange <- c(-10,10)
-display <- c(sozIndex,77:80)
+sozIndex <- attr(pt01Epoch, "sozIndex")
+timeRange <- c(-10, 10)
+display <- c(sozIndex, 77:80)
 pathplot <- "~"
 title <- "PT01sz1"
-resfile <- paste(pathplot,'/FragilityHeatMap',title,'.png',sep="")
-fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,timeRange=timeRange,
-                     title=title,display=display)
+resfile <- paste(pathplot, "/FragilityHeatMap", title, ".png", sep = "")
+fragplot <- heatmapFrag(
+    frag = pt01Frag, sozID = sozIndex, timeRange = timeRange,
+    title = title, display = display
+)
 fragplot
 ggplot2::ggsave(resfile)
 
