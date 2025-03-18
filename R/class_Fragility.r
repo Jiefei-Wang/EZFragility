@@ -54,6 +54,12 @@ setMethod("show", "Fragility", function(object) {
     invisible(object)
 })
 
+#' Subset a Fragility object
+#' 
+#' @param x A Fragility object
+#' @param i A logical vector or a numeric vector of indices to subset the electrodes
+#' @param j A logical vector or a numeric vector of indices to subset the time windows
+#' 
 #' @rdname subset-Fragility-method
 setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
     if (missing(i)) i <- TRUE

@@ -2,9 +2,9 @@
 % Please edit documentation in R/utils.r
 \name{checkIndex}
 \alias{checkIndex}
-\title{Check and filter display index}
+\title{Check and keep valid index only}
 \usage{
-checkIndex(display, elecNames)
+checkIndex(indices, names)
 }
 \arguments{
 \item{display}{Numeric or character. Display index}
@@ -12,5 +12,5 @@ checkIndex(display, elecNames)
 \item{elecNames}{Character. All electrode names}
 }
 \description{
-Check and filter display index
+Check and keep valid index only
 }

@@ -4,7 +4,7 @@
 \alias{heatmapFrag}
 \title{Visualization functions (raw signal, fragility matrix)}
 \usage{
-heatmapFrag(frag, sozIndex = NULL, title = NULL)
+heatmapFrag(frag, sozIndex = NULL)
 }
 \arguments{
 \item{frag}{Fragility object from \code{calcAdjFrag}}

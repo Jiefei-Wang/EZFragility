@@ -68,8 +68,8 @@ heatmapFrag <- function(
     group1 <- sozIndex
     group2 <- setdiff(seq_len(nElec), sozIndex)
 
-    elecColor <- rep("black", nElec)
-    elecColor[seq_along(group1)] <- "blue"
+    elecColor <- rep("blue", nElec)
+    elecColor[seq_along(group2)] <- "black"
 
     startTime <- frag$startTimes
     if (is.null(startTime)) {
@@ -79,6 +79,9 @@ heatmapFrag <- function(
         xlabel <- "Time (s)"
         stimes <- startTime
     }
+
+    ## evenly select 10 values from stimes
+
 
     ## prepare the data.frame for visualization
     allIndex <- c(group1, group2)
@@ -92,21 +95,26 @@ heatmapFrag <- function(
     df_long <- as.data.frame(as.table(fragMatReorderd))
     colnames(df_long) <- c("Electrode", "Time", "Value")
 
-    p <- ggplot2::ggplot(df_long, ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = .data$Value)) +
-        ggplot2::geom_tile() +
+    ## sort df_long by rownames(fragMatReorderd)
+    df_long$Electrode <- factor(df_long$Electrode, levels = rev(rownames(fragMatReorderd)))
+    df_long$Time <- factor(df_long$Time, levels = stimes)
+
+    ## show 10 time points on x-axis at most
+    step <- ceiling(nTimes / 10)
+    breaksIdx <- seq(1, length(stimes), by = step)
+    breaks <- stimes[breaksIdx]
+    xLabels <- stimes[breaksIdx]
+
+    ggplot2::ggplot(df_long) +
+        ggplot2::geom_tile(ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = .data$Value))+ 
+        ggplot2::scale_x_discrete(labels = xLabels, breaks = breaks) +
         ggplot2::theme(plot.title = ggtext::element_markdown(hjust = 0.5)) +
         ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
         viridis::scale_fill_viridis(option = "turbo") +
-        ggplot2::geom_vline(
-            xintercept = 0,
-            color = "black", linetype = "dashed", linewidth = 1
-        ) +
         ggplot2::theme_minimal() +
         ggplot2::theme(
             axis.text.y = ggtext::element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
         )
-
-    return(p)
 }
 
 #' Visualization of ictal iEEG

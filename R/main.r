@@ -154,9 +154,9 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
             xt   <- ieegts[si, , drop = FALSE]
             xtp1 <- ieegts[si + 1L, , drop = FALSE]
             
-            adjMatrix <- ridgeSearch(xt, xtp1, lambda)
-            R2Column <- ridgeR2(xt, xtp1, adjMatrix)
-            fColumn  <- fragilityRow(adjMatrix, nSearch)
+            adjMatrix <- EZFragility:::ridgeSearch(xt, xtp1, lambda)
+            R2Column <- EZFragility:::ridgeR2(xt, xtp1, adjMatrix)
+            fColumn  <- EZFragility:::fragilityRow(adjMatrix, nSearch)
 
             list(
                 iw = iw, 
@@ -176,7 +176,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     fR <- apply(f, 2, rank) / elCnt
 
     ## start time point/indices for each partition
-    startTimes <- (seq_len(nParts) - 1L) * window + 1L
+    startTimes <- (seq_len(nParts) - 1L) * step + 1L
     if (!is.null(epoch$times)) {
         startTimes <- epoch$times[startTimes]
     }
