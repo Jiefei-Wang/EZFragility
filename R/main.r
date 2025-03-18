@@ -11,7 +11,7 @@
 #' We have found solutions to fill up missing details in the paper method description
 #'
 #' @param ieegts Numeric. A matrix of iEEG time series x(t),
-#' with time points as rows and electrodes names as columns, or an Epoch object
+#' with electrodes names as rows and time points as columns, or an Epoch object
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression.
@@ -72,45 +72,45 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
+calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
     ## check the input types
-    stopifnot(is.matrix(ieegts) | is(ieegts, "Epoch"))
+    stopifnot(is.matrix(epoch) | is(epoch, "Epoch"))
     stopifnot(isWholeNumber(window))
     stopifnot(isWholeNumber(step))
     stopifnot(step > 0)
     stopifnot(is.null(lambda) | is.numeric(lambda))
 
 
-    if (is(ieegts, "Epoch")) {
-        epoch <- ieegts
-        ieegts <- ieegts$matrix
-    } else {
-        epoch <- Epoch(ieegts)
+    if (!is(epoch, "Epoch")) {
+        epoch <- Epoch(epoch)
     }
+    elecNum <- nrow(epoch)
+    timeNum <- ncol(epoch)
+    elecNames <- epoch$electrodes
+    timePoints <- epoch$times
+    dataMat <- epoch$data
 
     ## The input matrix must have at least window rows
-    stopifnot(nrow(ieegts) >= window)
-    scaling <- 10^floor(log10(max(abs(ieegts))))
-    ieegts <- ieegts / scaling
-    # Electrode count and names
-    elCnt <- ncol(ieegts)
-    elNms <- colnames(ieegts)
+    stopifnot(timeNum >= window)
+    
+    dataMat <- standardizeIEEG(dataMat)
     # Number/sequence of steps
-    nParts <- floor((nrow(ieegts) - window) / step) + 1L
-    partitions <- seq_len(nParts)
+    nWindows <- floor((timeNum - window) / step) + 1L
+    windows <- seq_len(nWindows)
     # Pre-allocate output
-    dm <- c(elCnt, elCnt, nParts)
-    dmn <- list(Electrode = elNms, Step = partitions)
-    dmnA <- list(Electrode1 = elNms, Electrode2 = elNms, Step = partitions)
 
-    # Indices of window at time 0
-    i0 <- seq_len(window - 1L)
+    # dimension
+    dm <- c(elecNum, elecNum, nWindows)
+    # dimension names
+    dmn <- list(Electrode = elecNames, Step = windows)
+    # dimension names for adjacency matrix
+    dmnA <- list(Electrode1 = elecNames, Electrode2 = elecNames, Step = windows)
 
     # Pre-allocate output
     A <- array(.0, dim = dm, dimnames = dmnA)
     R2 <- array(.0, dim = dm[-1], dimnames = dmn)
     f <- fR <- R2
-    lbd <- rep(0, nParts) |> setNames(partitions)
+    lbd <- rep(0, nWindows) |> setNames(windows)
 
     ## switch between parallel and sequential computing
     if (parallel) {
@@ -123,7 +123,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     if (progress) {
         pb <- progress_bar$new(
             format = "Step = :current/:total [:bar] :percent in :elapsed | eta: :eta",
-            total = nParts,
+            total = nWindows,
             width = 60
         )
 
@@ -143,23 +143,27 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     ## Initial data for data aggregation
     init <- list(A = A, R2 = R2, f = f, lbd = lbd)
     foreach(
-        iw = partitions,
+        iw = windows,
         .combine = .combine,
         .init = init,
         .inorder = FALSE,
         .options.snow = opts
     ) %run% {
         progress(iw)
-        ## Not necessary, but for clear the R check error
+        ## Those are necessary to clear R check issue
         iw <- get("iw")
+        .ridgeSearch <- getFromNamespace("ridgeSearch", "EZFragility")
+        .ridgeR2 <- getFromNamespace("ridgeR2", "EZFragility")
+        .fragilityRow <- getFromNamespace("fragilityRow", "EZFragility")
 
-        si <- i0 + (iw - 1L) * step
-        xt <- ieegts[si, , drop = FALSE]
-        xtp1 <- ieegts[si + 1L, , drop = FALSE]
+        ## slice indices
+        si <- (iw - 1L) * step + seq_len(window - 1L)
+        xt <- t(dataMat[, si, drop = FALSE])
+        xtp1 <- t(dataMat[, si + 1L, drop = FALSE])
 
-        adjMatrix <- EZFragility:::ridgeSearch(xt, xtp1, lambda)
-        R2Column <- EZFragility:::ridgeR2(xt, xtp1, adjMatrix)
-        fColumn <- EZFragility:::fragilityRow(adjMatrix, nSearch)
+        adjMatrix <- .ridgeSearch(xt, xtp1, lambda)
+        R2Column <- .ridgeR2(xt, xtp1, adjMatrix)
+        fColumn <- .fragilityRow(adjMatrix, nSearch)
 
         list(
             iw = iw,
@@ -176,10 +180,10 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     lbd <- results$lbd
 
     ## column rank of fragility matrix
-    fR <- apply(f, 2, rank) / elCnt
+    fR <- apply(f, 2, rank) / elecNum
 
     ## start time point/indices for each partition
-    startTimes <- (seq_len(nParts) - 1L) * step + 1L
+    startTimes <- (seq_len(nWindows) - 1L) * step + 1L
     if (!is.null(epoch$times)) {
         startTimes <- epoch$times[startTimes]
     }
@@ -187,7 +191,7 @@ calcAdjFrag <- function(ieegts, window, step, lambda = NULL, nSearch = 100L, pro
     ## TODO: why the row of frag is the electrode names? not the column of frag?
     ## This does not match the input data
     Fragility(
-        ieegts = ieegts,
+        ieegts = dataMat,
         adj = A,
         R2 = R2,
         frag = f,
@@ -246,4 +250,10 @@ findOnset <- function(x, method = c("mean", "max", "min"), proportion = 0.1, ...
     }
 
     sozIndex
+}
+
+
+standardizeIEEG <- function(data) {
+    scaling <- 10^floor(log10(max(data)))
+    plotData <- data / scaling
 }

@@ -4,12 +4,7 @@
 \alias{visuIEEGData}
 \title{Visualization of ictal iEEG}
 \usage{
-visuIEEGData(
-  ieegts,
-  timeRange = NULL,
-  title = "Patient name seizure number",
-  display = NULL
-)
+visuIEEGData(epoch)
 }
 \arguments{
 \item{ieegts}{Matrix or Fragility object. Either a matrix of iEEG time

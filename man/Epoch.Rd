@@ -7,7 +7,7 @@
 Epoch(data, electrodes = NULL, timeRanges = NULL, times = NULL)
 }
 \arguments{
-\item{data}{Matrix containing epoch data (rows=time points, columns=electrodes)}
+\item{data}{Matrix containing epoch data (rows=electrodes, columns=time points)}
 
 \item{electrodes}{Optional character vector for electrode names, if not provided, column names of data are used. If both are NULL, electrodes are named E1, E2, ...}
 

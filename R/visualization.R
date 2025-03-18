@@ -58,23 +58,22 @@ heatmapFrag <- function(
     ## TODO: make sozID an optional
     ## TODO: add plot support to frag
     fragMat <- frag$frag
+    elecNum <- nrow(fragMat)
+    windowNum <- ncol(fragMat)
 
-    elecNames <- rownames(fragMat)
+    elecNames <- frag$electrodes
     sozIndex <- checkIndex(sozIndex, elecNames)
 
-    nElec <- nrow(fragMat)
-    nTimes <- ncol(fragMat)
-    elecNames <- rownames(fragMat)
     group1 <- sozIndex
-    group2 <- setdiff(seq_len(nElec), sozIndex)
+    group2 <- setdiff(seq_len(elecNum), sozIndex)
 
-    elecColor <- rep("blue", nElec)
+    elecColor <- rep("blue", elecNum)
     elecColor[seq_along(group2)] <- "black"
 
     startTime <- frag$startTimes
     if (is.null(startTime)) {
         xlabel <- "Time Index"
-        stimes <- seq_len(nTimes)
+        stimes <- seq_len(windowNum)
     } else {
         xlabel <- "Time (s)"
         stimes <- startTime
@@ -100,7 +99,7 @@ heatmapFrag <- function(
     df_long$Time <- factor(df_long$Time, levels = stimes)
 
     ## show 10 time points on x-axis at most
-    step <- ceiling(nTimes / 10)
+    step <- ceiling(windowNum / 10)
     breaksIdx <- seq(1, length(stimes), by = step)
     breaks <- stimes[breaksIdx]
     xLabels <- stimes[breaksIdx]
@@ -135,28 +134,26 @@ heatmapFrag <- function(
 #' iEEGplot <- visuIEEGData(ieegts = pt01Epoch, timeRange = timeRange, display = display)
 #' iEEGplot
 #' @export
-visuIEEGData <- function(ieegts, timeRange = NULL, title = "Patient name seizure number", display = NULL) {
-    titlepng <- title
-    if (is.null(display)) {
-        display <- seq_len(ncol(ieegts))
-    }
-
-    elecNames <- colnames(ieegts)
-    displayid <- checkIndex(display, elecNames)
-
-    scaling <- 10^floor(log10(max(ieegts)))
-    plotData <- ieegts[, displayid] / scaling
+visuIEEGData <- function(epoch) {
     gaps <- 2
-    displayNames <- colnames(ieegts)[displayid]
-    nElec <- length(displayid)
-    nt <- nrow(plotData)
-    if (is.null(timeRange)) {
+
+    elecNames <- epoch$electrodes
+    data <- epoch$data
+    elecNum <- nrow(data)
+    timesNum <- ncol(data)
+
+    plotData <- standardizeIEEG(data)
+    
+    times <- epoch$times
+    if (is.null(times)) {
         xlabel <- "Time Index"
-        stimes <- seq_len(nt)
+        timeTicks <- seq_len(timesNum)
     } else {
         xlabel <- "Time (s)"
-        stimes <- seq(timeRange[1], timeRange[2], length.out = nt)
+        timeTicks <- times
     }
+
+    plotData <- apply(plotData, 2, function(x) x - mean(x) + seq_len(elecNum) * gaps)
 
 
     for (i in 1:ncol(plotData)) {

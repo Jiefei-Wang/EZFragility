@@ -13,7 +13,7 @@ We have found solutions to fill up missing details in the paper method descripti
 }
 \usage{
 calcAdjFrag(
-  ieegts,
+  epoch,
   window,
   step,
   lambda = NULL,
@@ -23,9 +23,6 @@ calcAdjFrag(
 )
 }
 \arguments{
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns, or an Epoch object}
-
 \item{window}{Integer. The number of time points to use in each window}
 
 \item{step}{Integer. The number of time points to move the window each time}
@@ -40,6 +37,9 @@ ensuring that ensuring that the adjacent matrix is stable (see details)}
 
 \item{parallel}{Logical. If TRUE, use parallel computing.
 Users must register a parallel backend with the foreach package}
+
+\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+with electrodes names as rows and time points as columns, or an Epoch object}
 }
 \value{
 A list containing the normalized ieegts,
@@ -68,28 +68,30 @@ data <- matrix(rnorm(100), nrow = 10)
 window <- 10
 step <- 5
 lambda <- 0.1
-calcAdjFrag(ieegts = data, window = window,
-step = step, lambda = lambda, progress = TRUE)
+calcAdjFrag(
+    ieegts = data, window = window,
+    step = step, lambda = lambda, progress = TRUE
+)
 
 ## A more realistic example with parallel computing
 \dontrun{
 ## Register a SNOW backend with 4 workers
 library(parallel)
 library(doSNOW)
-cl <- makeCluster(4, type="SOCK")
+cl <- makeCluster(4, type = "SOCK")
 registerDoSNOW(cl)
 
 data("pt01Epoch")
 window <- 250
 step <- 125
 title <- "PT01 seizure 1"
-calcAdjFrag(ieegts = pt01Epoch, window = window,
-  step = step, parallel = TRUE, progress = TRUE)
+calcAdjFrag(
+    ieegts = pt01Epoch, window = window,
+    step = step, parallel = TRUE, progress = TRUE
+)
 
 ## stop the parallel backend
 stopCluster(cl)
 }
-
-
 
 }

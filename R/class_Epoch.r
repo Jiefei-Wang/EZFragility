@@ -13,7 +13,7 @@
 
 
 #' Constructor for Epoch class
-#' @param data Matrix containing epoch data (rows=time points, columns=electrodes)
+#' @param data Matrix containing epoch data (rows=electrodes, columns=time points)
 #' @param electrodes Optional character vector for electrode names, if not provided, column names of data are used. If both are NULL, electrodes are named E1, E2, ...
 #' @param timeRanges Optional numeric vector of 2 containing start and end time points.
 #' Only one of times or timeRanges can be non-null
@@ -38,9 +38,9 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
     # set default time points if not provided
     if (is.null(times)) {
         if (is.null(timeRanges)) {
-            ## check if data has rownames as time points
-            if (!is.null(rownames(data))) {
-                times <- tryToNum(rownames(data))
+            ## check if data has colnames as time points
+            if (!is.null(colnames(data))) {
+                times <- tryToNum(colnames(data))
             }
         } else {
             times <- seq(timeRanges[1], timeRanges[2], length.out = nrow(data))
@@ -52,15 +52,15 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
 
     # Set default electrode names if not provided
     if (is.null(electrodes)) {
-        electrodes <- if (!is.null(colnames(data))) {
-            colnames(data)
+        electrodes <- if (!is.null(rownames(data))) {
+            rownames(data)
         } else {
             paste0("E", seq_len(ncol(data)))
         }
     }
 
-    colnames(data) <- electrodes
-    rownames(data) <- NULL
+    rownames(data) <- electrodes
+    colnames(data) <- NULL
 
     # Create new Epoch object
     .Epoch(
@@ -69,93 +69,46 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
     )
 }
 
-
-
-setMethod("show", "Epoch", function(object) {
-    dt <- object@data
-    pprint(dt, rowdots = 4, coldots = 4, digits = 3)
-    if (!is.null(object@times)) {
-        timeRange <- range(object@times)
-        cat(glue("Time range: {timeRange[1]} to {timeRange[2]}"))
-        cat("\n")
-    }
-    cat("Use $ to access its methods. see \"?`Epoch-method`\"\n")
-    invisible(object)
-})
-
-
-#' Epoch Methods
-#'
-#' @description `truncateTime`: Truncating time range
-#'
-#' @param x Epoch object
-#' @param from Numeric value specifying start of new time range
-#' @param to Numeric value specifying end of new time range
-#' @return truncateTime: Truncated object
-#' @rdname Epoch-method
-#' @export
-setGeneric("truncateTime", function(x, from, to) standardGeneric("truncateTime"))
-
-#' @rdname Epoch-method
-#' @export
-setMethod("truncateTime", "Epoch", function(x, from, to) {
-    if (is.null(x@times)) {
-        stop("Time points is not defined for this Epoch object")
-    }
-
-
-    # current time points
-    times <- x@times
-
-    # Find indices within new time range
-    indices <- which(times >= from & times <= to)
-    newData <- x@data[indices, , drop = FALSE]
-    newTimes <- times[indices]
-
-    # Create new Epoch object with truncated data
-    Epoch(
-        data = newData,
-        times = newTimes
-    )
-})
-
-
-
 ###############################
 ## getter and setter
 ###############################
 
+#' Epoch Methods
+#'
+#' 
 #' @description
-#' `$`: get Epoch object properties, must be one of 'electrodes',
-#' 'times', 'timeRange', 'matrix'
-#'
-#'
-#' `$<-`: set Epoch properties, must be one of 'electrodes',
-#' 'times', 'timeRange', 'matrix'
-#'
-#'
+#' `$electrodes`: Get or set electrode names
+#' `$times`: Get or set time points
+#' `$timeRange`: Get time range if time points are defined
+#' `$data`: Get or set data matrix
 #'
 #' @param x Epoch object
-#' @param name a value name, must be one of 'electrodes', 'times', 'timeRange', 'matrix'
+#' @param name a value name, must be one of 'electrodes', 'times', 
+#' 'timeRange', 'data'
 #' @param value Value to set
 #' @rdname Epoch-method
 #' @export
 setMethod("$", "Epoch", function(x, name) {
+    if (!name %in% names(x)) {
+        stop(glue("Invalid field name: {name}, must be one of {paste0(names(x), collapse = ', ')}"))
+    }
     switch(name,
-        electrodes = colnames(x@data),
+        electrodes = rownames(x@data),
         times = x@times,
         timeRange = if (!is.null(x@times)) range(x@times) else NULL,
-        matrix = x@data,
-        stop("Invalid field name")
+        data = x@data,
+        stop(glue("Unexpected field name {name}"))
     )
 })
 
 
 #' @rdname Epoch-method
 setMethod("$<-", "Epoch", function(x, name, value) {
-    stopifnot(name %in% c("electrodes", "times", "matrix", "timeRange"))
+    if (!name %in% names(x)) {
+        stop(glue("Invalid field name: {name}, must be one of {paste0(names(x), collapse = ', ')}"))
+    }
     if (name == "electrodes") {
-        colnames(x@data) <- value
+        rownames(x@data) <- value
     }
 
     if (name == "times") {
@@ -169,12 +122,12 @@ setMethod("$<-", "Epoch", function(x, name, value) {
         x@times <- seq(value[1], value[2], length.out = nrow(x@data))
     }
 
-    if (name == "matrix") {
-        colNms <- colnames(value)
-        rowNms <- rownames(value)
+    if (name == "data") {
+        colNms <- rownames(value)
+        rowNms <- colnames(value)
 
-        colnames(value) <- x$electrodes
-        rownames(value) <- x$times
+        rownames(value) <- x$electrodes
+        colnames(value) <- x$times
 
         x <- Epoch(value, electrodes = colNms, times = rowNms)
     }
@@ -186,8 +139,8 @@ setMethod("$<-", "Epoch", function(x, name, value) {
 
 #' @description `[`: Subset an Epoch object using matrix indexing syntax
 #'
-#' @param i Row (time) indices
-#' @param j Column (electrode) indices
+#' @param i Row (electrode) indices
+#' @param j Column (time) indices
 #' @rdname Epoch-method
 #' @export
 setMethod("[", "Epoch", function(x, i, j) {
@@ -227,13 +180,13 @@ setMethod("ncol", "Epoch", function(x) {
 #' @return colnames: electrode names of the data
 #' @export
 setMethod("colnames", "Epoch", function(x) {
-    x$electrodes
+    x$times
 })
 
 #' @rdname Epoch-method
 #' @export
 setMethod("colnames<-", "Epoch", function(x, value) {
-    x$electrodes <- value
+    x$times <- value
     x
 })
 
@@ -241,29 +194,29 @@ setMethod("colnames<-", "Epoch", function(x, value) {
 #' @return rownames: time points of the data
 #' @export
 setMethod("rownames", "Epoch", function(x) {
-    x$times
-})
-
-#' @rdname Epoch-method
-#' @export
-setMethod("rownames<-", "Epoch", function(x, value) {
-    x$times <- value
-    x
-})
-
-
-#' @rdname Epoch-method
-#' @return names: electrode names of the data
-#' @export
-setMethod("names", "Epoch", function(x) {
     x$electrodes
 })
 
 #' @rdname Epoch-method
 #' @export
-setMethod("names<-", "Epoch", function(x, value) {
+setMethod("rownames<-", "Epoch", function(x, value) {
     x$electrodes <- value
     x
+})
+
+
+#' @rdname Epoch-method
+#' @return names: Return all available properties for an Epoch object
+#' @export
+setMethod("names", "Epoch", function(x) {
+    c("electrodes", "times", "data", "timeRange")
+})
+
+#' @rdname Epoch-method
+#' @export
+setMethod("names<-", "Epoch", function(x, value) {
+    stop("Cannot set names for Epoch object")
+    invisible(x)
 })
 
 
@@ -274,7 +227,7 @@ setMethod("names<-", "Epoch", function(x, value) {
 #' @export
 setMethod("as.matrix", "Epoch", function(x) {
     dt <- x@data
-    rownames(dt) <- x$times
+    colnames(dt) <- x$times
     dt
 })
 
@@ -283,4 +236,60 @@ setMethod("as.matrix", "Epoch", function(x) {
 #' @export
 setMethod("as.data.frame", "Epoch", function(x, ...) {
     as.data.frame(as.matrix(x), ...)
+})
+
+
+
+
+###############################
+## other Methods
+###############################
+#' @description `truncateTime`: Truncating time range
+#'
+#' @param from Numeric value specifying start of new time range
+#' @param to Numeric value specifying end of new time range
+#' @return truncateTime: Truncated object
+#' @rdname Epoch-method
+#' @export
+setGeneric("truncateTime", function(x, from, to) standardGeneric("truncateTime"))
+
+#' @rdname Epoch-method
+#' @export
+setMethod("truncateTime", "Epoch", function(x, from, to) {
+    if (is.null(x$times)) {
+        if (!isWholeNumber(from) || !isWholeNumber(to)){
+            stop("Time points is not defined for this Epoch object, from and to must be whole numbers")
+        }
+        indices <- seq(from, to)
+        newTimes <- NULL
+    }else{
+        # current time points
+        times <- x$times
+        # Find indices within new time range
+        indices <- which(times >= from & times <= to)
+        newTimes <- times[indices]
+    }
+
+    newData <- x$data[, indices, drop = FALSE]
+
+    # Create new Epoch object with truncated data
+    Epoch(
+        data = newData,
+        times = newTimes
+    )
+})
+
+
+
+setMethod("show", "Epoch", function(object) {
+    dt <- object$data
+    pprint(dt, rowdots = 4, coldots = 4, digits = 3)
+    cat("\n")
+    if (!is.null(object$times)) {
+        timeRange <- range(object$times)
+        cat(glue("Time range: {timeRange[1]} to {timeRange[2]}"))
+        cat("\n")
+    }
+    cat("Use $ to access its methods. see \"?`Epoch-method`\"\n")
+    invisible(object)
 })

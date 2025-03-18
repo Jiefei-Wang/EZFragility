@@ -20,9 +20,8 @@ times <- seq(-10, 10, length.out=ncol(pt01EpochRaw))
 times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
 colnames(pt01EpochRaw)<-times_with_sign
 
-pt01EpochRaw <- t(pt01EpochRaw)
 
-pt01Epoch<-pt01EpochRaw[9001:12000,]
+pt01Epoch<-pt01EpochRaw[,9001:12000]
 attr(pt01Epoch, "sozIndex") <- sozIndex
 attr(pt01Epoch, "sozNames") <- sozNames
 usethis::use_data(pt01Epoch, overwrite = TRUE)
