@@ -89,38 +89,38 @@ def <- \(x) {
     }
 }
 
-data(pt01Epochm1sp2s)
-data(pt01Fragm1sp2s)
-fg <- pt01Fragm1sp2s
+data(pt01EcoG)
+data(pt01Frag)
+fg <- pt01Frag
 displayIndex <- 77:84
 displayIndexNumeric <- as.numeric(displayIndex)
 displayIndexOutOfRange <- 77:85
-str <- colnames(pt01Epochm1sp2s)[displayIndex]
+str <- colnames(pt01EcoG)[displayIndex]
 strError <- c(str, "Whatever")
 soz <- 53:56
 
 
-test_that("heatmapFrag", {
+test_that("plotFragHeatmap", {
     dargs <- list(frag = fg, sozID = soz, timeRange = c(-1, 2), title = "")
     vL <- def(dargs)
-    do.call(heatmapFrag, dargs) |> expect_no_error()
-    do.call(heatmapFrag, vL(timeRange = NULL)) |> expect_no_error()
+    do.call(plotFragHeatmap, dargs) |> expect_no_error()
+    do.call(plotFragHeatmap, vL(timeRange = NULL)) |> expect_no_error()
 
-    do.call(heatmapFrag, vL(display = displayIndex)) |> expect_no_error()
-    do.call(heatmapFrag, vL(display = displayIndexOutOfRange)) |> expect_warning()
+    do.call(plotFragHeatmap, vL(display = displayIndex)) |> expect_no_error()
+    do.call(plotFragHeatmap, vL(display = displayIndexOutOfRange)) |> expect_warning()
 
-    do.call(heatmapFrag, vL(display = str)) |> expect_no_error()
-    do.call(heatmapFrag, vL(display = strError)) |> expect_warning()
+    do.call(plotFragHeatmap, vL(display = str)) |> expect_no_error()
+    do.call(plotFragHeatmap, vL(display = strError)) |> expect_warning()
 
-    do.call(heatmapFrag, vL(sozID = displayIndex)) |> expect_no_error()
-    do.call(heatmapFrag, vL(sozID = displayIndexOutOfRange)) |> expect_warning()
+    do.call(plotFragHeatmap, vL(sozID = displayIndex)) |> expect_no_error()
+    do.call(plotFragHeatmap, vL(sozID = displayIndexOutOfRange)) |> expect_warning()
 
-    do.call(heatmapFrag, vL(sozID = str)) |> expect_no_error()
-    do.call(heatmapFrag, vL(sozID = strError)) |> expect_warning()
+    do.call(plotFragHeatmap, vL(sozID = str)) |> expect_no_error()
+    do.call(plotFragHeatmap, vL(sozID = strError)) |> expect_warning()
 })
 
 test_that("visuIEEGData", {
-    dargs <- list(ieegts = pt01Epochm1sp2s, timeRange = c(-1, 2), title = "")
+    dargs <- list(ieegts = pt01EcoG, timeRange = c(-1, 2), title = "")
     vL <- def(dargs)
     do.call(visuIEEGData, dargs) |> expect_no_error()
     do.call(visuIEEGData, vL(display = displayIndex)) |> expect_no_error()

@@ -8,10 +8,10 @@ ridge(xt, xtp1, lambda)
 }
 \arguments{
 \item{xt}{matrix. iEEG time series for a given window,
-with time points as rows and electrodes names as columns}
+with electrodes names as rows and time points as columns}
 
 \item{xtp1}{matrix. the iEEG time serie at the next time point,
-with time points as rows and electrodes names as columns}
+with electrodes names as rows and time points as columns}
 
 \item{lambda}{Numeric Vector. A user supplied lambda sequence.}
 }

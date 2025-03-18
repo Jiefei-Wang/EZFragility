@@ -10,17 +10,17 @@ printSlotValue <- function(object, slotName, k = 3) {
     } else if (is.matrix(val) || is.array(val)) {
         truncated <- if (length(as.vector(val)) > k) "..." else ""
         msg <- glue::glue(
-                "{slotName} ({paste(dim(val), collapse=' x ')}): ",
-                "{paste(head(as.vector(val), k), collapse=', ')}{truncated}"
-            )
+            "{slotName} ({paste(dim(val), collapse=' x ')}): ",
+            "{paste(head(as.vector(val), k), collapse=', ')}{truncated}"
+        )
     } else if (is.numeric(val)) {
-        if(length(val)>k){
+        if (length(val) > k) {
             msg <- glue::glue(
-                    "{slotName} ({length(val)}): ",
-                    "{paste(head(val, k), collapse=', ')}..."
-                )
-        }else{
-            msg <- 
+                "{slotName} ({length(val)}): ",
+                "{paste(head(val, k), collapse=', ')}..."
+            )
+        } else {
+            msg <-
                 glue::glue(
                     "{slotName}: ",
                     "{paste(val, collapse=', ')}"
@@ -42,12 +42,15 @@ jn <- \(..., j = "", s = "") {
 
 # extract properties of the object's members
 slotSpecs <- \(x, k = 3, dm = dim(x), vec = is.null(dm), len = length(x)) {
-    val = x[seq_len(min(k, len))]
-    if (is.null(x)) return(c(cl = "NULL", d = "[NULL]:", v = " NULL"))
+    val <- x[seq_len(min(k, len))]
+    if (is.null(x)) {
+        return(c(cl = "NULL", d = "[NULL]:", v = " NULL"))
+    }
     if (is.double(x)) val <- sprintf("%7.4f", val)
-    c(cl = class(x)[1L],
-      d = jn("[", if (vec) len else dm, "]", j = ','),
-      v = jn(val, if (len > k) "...", j = ", ")
+    c(
+        cl = class(x)[1L],
+        d = jn("[", if (vec) len else dm, "]", j = ","),
+        v = jn(val, if (len > k) "...", j = ", ")
     )
 }
 
@@ -63,10 +66,14 @@ printSlots <- \(object, nb = 1, slots = NULL) {
         for (i in seq_along(maxL)) maxL[i] <- max(nchar(x[[i]]), maxL[[i]])
         meta[[n]][names(x)] <- x
     }
-    fmt = list(fmt = sapply(maxL, ftb) |> jn(j = " | "))
+    fmt <- list(fmt = sapply(maxL, ftb) |> jn(j = " | "))
     header <- do.call(sprintf, c(fmt, colN)) |> shift(nb)
-    dash   <- rep("-", nchar(header) + nb) |> jn()
+    dash <- rep("-", nchar(header) + nb) |> jn()
     cat(dash, header, dash, sep = "\n")
-    for (x in meta) do.call(sprintf, c(fmt, x)) |> shift(nb) |> cat("\n")
+    for (x in meta) {
+        do.call(sprintf, c(fmt, x)) |>
+            shift(nb) |>
+            cat("\n")
+    }
     dash |> cat("\n")
 }

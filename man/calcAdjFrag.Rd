@@ -13,7 +13,7 @@ We have found solutions to fill up missing details in the paper method descripti
 }
 \usage{
 calcAdjFrag(
-  ieegts,
+  epoch,
   window,
   step,
   lambda = NULL,
@@ -23,9 +23,6 @@ calcAdjFrag(
 )
 }
 \arguments{
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with time points as rows and electrodes names as columns}
-
 \item{window}{Integer. The number of time points to use in each window}
 
 \item{step}{Integer. The number of time points to move the window each time}
@@ -34,16 +31,18 @@ with time points as rows and electrodes names as columns}
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
-\item{nSearch}{Integer. Number of minimization to compute the fragility row}
+\item{nSearch}{Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL}
 
 \item{progress}{Logical. If TRUE, print progress information. If \code{parallel} is TRUE, this option only support the \code{doSNOW} backend.}
 
 \item{parallel}{Logical. If TRUE, use parallel computing.
 Users must register a parallel backend with the foreach package}
+
+\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
+with electrodes names as rows and time points as columns, or an Epoch object}
 }
 \value{
-A list containing the normalized ieegts,
-adjacency matrices, fragility, and R^2 values
+A Fragility object
 }
 \description{
 The function calculates the neural fragility column
@@ -53,40 +52,48 @@ from an adjacency matrix in each time window
 1/ For each time window i, a discrete stable Linear time system
 (adjacency matrix) is computed named \eqn{A_i}
 such that
-\eqn{A_i x(t) = x(t+1)}
-option Lambda=NULL ensures that the matrix is stable
+\eqn{A_i x(t) = x(t+1)}. The 'lambda' option is the regularization parameter
+for the ridge regression.
+\code{lambda=NULL}(default) will find a lambda value that ensures
+the stability of the estimated \eqn{A_i}.
 
 2/For each stable estimated \eqn{A_i}, the minimum norm perturbation \eqn{\Gamma_{ik}} (k index of the electrodes)
 for column perturbation is computed.
 Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 }
 \examples{
-## A simple example
-data <- matrix(rnorm(100), nrow = 10)
-window <- 10
+## A dummy example with 5 electrodes and 20 time points
+data <- matrix(rnorm(100), nrow = 5)
+## create an Epoch object
+epoch <- Epoch(data)
+windowNum <- 10
 step <- 5
 lambda <- 0.1
-calcAdjFrag(ieegts = data, window = window,
-step = step, lambda = lambda, progress = TRUE)
+calcAdjFrag(
+    epoch = epoch, window = windowNum,
+    step = step, lambda = lambda, progress = TRUE
+)
 
 ## A more realistic example with parallel computing
 \dontrun{
 ## Register a SNOW backend with 4 workers
+library(parallel)
 library(doSNOW)
-cl <- makeCluster(4, type="SOCK")
+cl <- makeCluster(4, type = "SOCK")
 registerDoSNOW(cl)
 
-data("pt01Epochm1sp2s")
+data("pt01EcoG")
+epoch <- Epoch(pt01EcoG)
 window <- 250
 step <- 125
 title <- "PT01 seizure 1"
-calcAdjFrag(ieegts = pt01Epochm1sp2s, window = window,
-  step = step, parallel = TRUE, progress = TRUE)
+calcAdjFrag(
+    epoch = epoch, window = window,
+    step = step, parallel = TRUE, progress = TRUE
+)
 
 ## stop the parallel backend
-stopImplicitCluster()
+stopCluster(cl)
 }
-
-
 
 }
