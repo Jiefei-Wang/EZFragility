@@ -12,7 +12,7 @@ FragStat <- setClass(
 
 
 #' Getters and Setters for S4 object
-#' 
+#'
 #' @param x S4 object
 #' @param name Slot name
 #' @param value Value to set

@@ -66,23 +66,23 @@ ridgeR2 <- function(xt, xtp1, A) {
 ridgeSearch <- function(xt, xtp1, lambda = NULL) {
   if (!identical(dim(xt), dim(xtp1))) stop("Unmatched dimension")
   if (!is.null(lambda)) {
-    A <- ridge(xt, xtp1, lambda);
+    A <- ridge(xt, xtp1, lambda)
     return(structure(A, lambda = lambda))
   }
-  low = lambda <- 1e-4
+  low <- lambda <- 1e-4
   high <- 10
-  A <- ridge(xt, xtp1, lambda);
+  A <- ridge(xt, xtp1, lambda)
   if (!attr(A, "stable")) {
     for (i in seq_len(20L)) {
       l <- (low + high) * .5
       A_tmp <- ridge(xt, xtp1, l)
       if (attr(A_tmp, "stable")) {
-        high = lambda <- l
+        high <- lambda <- l
         A <- A_tmp
+      } else {
+        low <- l
       }
-      else low <- l
     }
   }
   structure(A, lambda = lambda)
 }
-

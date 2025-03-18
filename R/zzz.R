@@ -10,10 +10,10 @@ NULL
 pkgData <- new.env()
 pkgData$debug <- FALSE
 
-debug <- function(){
+debug <- function() {
     pkgData$debug <- TRUE
 }
 
-undebug <- function(){
+undebug <- function() {
     pkgData$debug <- FALSE
 }

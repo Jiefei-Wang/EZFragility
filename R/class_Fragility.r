@@ -13,7 +13,7 @@
 )
 
 Fragility <- function(ieegts, adj, frag, frag_ranked, R2, lambdas, startTimes, electrodes) {
-    if (!pkgData$debug){
+    if (!pkgData$debug) {
         ieegts <- NULL
         adj <- NULL
     }
@@ -44,9 +44,9 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 ## Define the print method
 setMethod("show", "Fragility", function(object) {
     cat("\nFragility object\n")
-    if(pkgData$debug){
+    if (pkgData$debug) {
         slots <- c("ieegts", "adj", "frag", "frag_ranked", "R2", "lambdas")
-    }else{
+    } else {
         slots <- c("frag", "R2", "lambdas", "startTimes", "electrodes")
     }
     printSlots(object, slots = slots)
@@ -55,11 +55,11 @@ setMethod("show", "Fragility", function(object) {
 })
 
 #' Subset a Fragility object
-#' 
+#'
 #' @param x A Fragility object
 #' @param i A logical vector or a numeric vector of indices to subset the electrodes
 #' @param j A logical vector or a numeric vector of indices to subset the time windows
-#' 
+#'
 #' @rdname subset-Fragility-method
 setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
     if (missing(i)) i <- TRUE

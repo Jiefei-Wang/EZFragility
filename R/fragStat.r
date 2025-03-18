@@ -9,7 +9,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
   b <- matrix(c(0, -1), 2L)
   fragNorm <- rep(0L, nel)
   omvec <- seq(0L, 1L, length.out = nSearch + 1L)[-1L]
-  lambdas  <- sqrt(1 - omvec^2) + omvec * 1i
+  lambdas <- sqrt(1 - omvec^2) + omvec * 1i
   ## (A - (sigma + j * omega)*I)^-1
   iMats <- lapply(lambdas, \(L) t(solve(A - L * ek)))
   for (i in seq_len(nel)) {
@@ -25,7 +25,9 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
     }
     fragNorm[i] <- minNorm
   }
-  if (!normalize) return(fragNorm)
+  if (!normalize) {
+    return(fragNorm)
+  }
   maxf <- max(fragNorm)
   (maxf - fragNorm) / maxf
 }
@@ -42,22 +44,22 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' @examples
 #' data("pt01Frag")
 #' data("pt01Epoch")
-#' sozindex<-attr(pt01Epoch,"sozindex")
-#' pt01fragstat<-fragStat(frag=pt01Frag, sozID=sozindex)
+#' sozindex <- attr(pt01Epoch, "sozindex")
+#' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
 fragStat <- function(frag, sozID) {
   if (is(frag, "Fragility")) frag <- frag$frag
   if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
   steps <- ncol(frag)
   sozCID <- which(!(seq_len(nrow(frag)) %in% sozID))
-  hmapSOZ  <- frag[sozID,  , drop = FALSE]
+  hmapSOZ <- frag[sozID, , drop = FALSE]
   hmapSOZC <- frag[sozCID, , drop = FALSE]
-  muSOZ  <- colMeans(hmapSOZ)
+  muSOZ <- colMeans(hmapSOZ)
   muSOZC <- colMeans(hmapSOZC)
-  sdSOZ  <- apply(hmapSOZ,  2L, sd)
+  sdSOZ <- apply(hmapSOZ, 2L, sd)
   sdSOZC <- apply(hmapSOZC, 2L, sd)
   Q <- seq(.1, 1, by = .1)
   qmatrix <- rbind(
-    apply(hmapSOZ,  2, quantile, Q),
+    apply(hmapSOZ, 2, quantile, Q),
     apply(hmapSOZC, 2, quantile, Q)
   )
   rowPrefix <- rep(c("SOZ", "SOZC"), each = 10)
@@ -77,11 +79,11 @@ fragStat <- function(frag, sozID) {
 
 
 predictRidge <- function(xt, A) {
-    ## the data matrix
-    if (nrow(A) == ncol(A) + 1) {
-        x <- cbind(1, as.matrix(xt))
-    } else {
-        x <- as.matrix(xt)
-    }
-    x %*% A
+  ## the data matrix
+  if (nrow(A) == ncol(A) + 1) {
+    x <- cbind(1, as.matrix(xt))
+  } else {
+    x <- as.matrix(xt)
+  }
+  x %*% A
 }

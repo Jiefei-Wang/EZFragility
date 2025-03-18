@@ -12,9 +12,9 @@ library(EZFragility)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.align='center',
-  fig.width=6,
-  fig.height=4
+  fig.align = "center",
+  fig.width = 6,
+  fig.height = 4
 )
 ```
 
@@ -31,14 +31,14 @@ This data corresponds to the first seizure of patient PT01 from the Fragility Da
 ```{r ictal data}
 data("pt01Epoch")
 # seizure onset (soz) electrodes indices
-sozIndex <- attr(pt01Epoch,"sozIndex")
+sozIndex <- attr(pt01Epoch, "sozIndex")
 # seizure onset electrodes names
-sozNames <- attr(pt01Epoch,"sozZames")
+sozNames <- attr(pt01Epoch, "sozZames")
 
 ## Visualize ictal data
-display <- c(sozIndex,77:80)
-timeRange <- c(-1,2)
-iEEGplot<-visuIEEGData(ieegts=pt01Epoch,timeRange=timeRange,display=display)
+display <- c(sozIndex, 77:80)
+timeRange <- c(-1, 2)
+iEEGplot <- visuIEEGData(ieegts = pt01Epoch, timeRange = timeRange, display = display)
 iEEGplot
 ```
 
@@ -48,7 +48,7 @@ The function `calcAdjFrag` computes the fragility matrix for the given iEEG time
 ```{r}
 ## Register a SNOW parallel backend with 4 workers
 library(doSNOW)
-cl <- makeCluster(4, type="SOCK")
+cl <- makeCluster(4, type = "SOCK")
 registerDoSNOW(cl)
 
 window <- 250
@@ -59,7 +59,7 @@ pt01Frag <- calcAdjFrag(ieegts = pt01Epoch, window = window, step = step, parall
 pt01Frag
 
 # Stop the parallel backend
-stopCluster(cl) 
+stopCluster(cl)
 ```
 
 
@@ -69,11 +69,11 @@ This plot reproduces Patient 01 results Figure 4 a from Li et al. paper. Time wi
 - `77:80` are the index of the non soz electrodes
 ```{r}
 data("pt01Epoch")
-sozIndex<-attr(pt01Epoch,"sozIndex")
+sozIndex <- attr(pt01Epoch, "sozIndex")
 data("pt01Frag")
-timeRange <- c(-1,2)
-display <- c(sozIndex,77:80)
-fragplot<-heatmapFrag(frag=pt01Frag,sozID=sozIndex,timeRange = timeRange,title="PT01 seizure 1",display=display)
+timeRange <- c(-1, 2)
+display <- c(sozIndex, 77:80)
+fragplot <- heatmapFrag(frag = pt01Frag, sozID = sozIndex, timeRange = timeRange, title = "PT01 seizure 1", display = display)
 fragplot
 ```
 
@@ -81,7 +81,7 @@ fragplot
 Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
 ```{r compute_frag_stat, eval=TRUE}
 ## TODO: make this an internal
-fragstat <- fragStat(frag=pt01Frag, sozID=sozIndex)
+fragstat <- fragStat(frag = pt01Frag, sozID = sozIndex)
 fragstat
 ```
 
@@ -89,13 +89,13 @@ fragstat
 Plot fragility distribution for two electrodes group marked as soz non marked as soz
 ```{r visualize_frag_auantile,out.width="100%"}
 # plot the statistical results
-pfragstat<-plotFragDistribution(stat =fragstat,timeRange=timeRange)
+pfragstat <- plotFragDistribution(stat = fragstat, timeRange = timeRange)
 pfragstat
 ```
 
 ## Plot fragility quantile
 Plot Fragility quantiles for two electrodes group marked as soz non marked as soz
 ```{r visualize_frag_quantiles,out.width="100%"}
-qfragplot<-plotFragQuantile(FragStatObj=fragstat, timeRange=timeRange)
+qfragplot <- plotFragQuantile(FragStatObj = fragstat, timeRange = timeRange)
 qfragplot
 ```

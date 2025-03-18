@@ -53,7 +53,7 @@
 #'
 #' @export
 heatmapFrag <- function(
-    frag, 
+    frag,
     sozIndex = NULL) {
     ## TODO: make sozID an optional
     ## TODO: add plot support to frag
@@ -106,7 +106,7 @@ heatmapFrag <- function(
     xLabels <- stimes[breaksIdx]
 
     ggplot2::ggplot(df_long) +
-        ggplot2::geom_tile(ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = .data$Value))+ 
+        ggplot2::geom_tile(ggplot2::aes(x = .data$Time, y = .data$Electrode, fill = .data$Value)) +
         ggplot2::scale_x_discrete(labels = xLabels, breaks = breaks) +
         ggplot2::theme(plot.title = ggtext::element_markdown(hjust = 0.5)) +
         ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +

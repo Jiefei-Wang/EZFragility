@@ -15,14 +15,14 @@
 #' Constructor for Epoch class
 #' @param data Matrix containing epoch data (rows=time points, columns=electrodes)
 #' @param electrodes Optional character vector for electrode names, if not provided, column names of data are used. If both are NULL, electrodes are named E1, E2, ...
-#' @param timeRanges Optional numeric vector of 2 containing start and end time points. 
+#' @param timeRanges Optional numeric vector of 2 containing start and end time points.
 #' Only one of times or timeRanges can be non-null
-#' @param times Optional numeric vector of time points. Only one of times or 
+#' @param times Optional numeric vector of time points. Only one of times or
 #' timeRanges can be non-null
 #' @export
 #' @return An Epoch object
 Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
-    if(!is.null(times) && !is.null(timeRanges)) {
+    if (!is.null(times) && !is.null(timeRanges)) {
         stop("Only one of times or timeRanges can be non-null")
     }
     if (!is.null(timeRanges) && length(timeRanges) != 2) {
@@ -36,7 +36,7 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
     }
 
     # set default time points if not provided
-    if (is.null(times)){
+    if (is.null(times)) {
         if (is.null(timeRanges)) {
             ## check if data has rownames as time points
             if (!is.null(rownames(data))) {
@@ -45,10 +45,10 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
         } else {
             times <- seq(timeRanges[1], timeRanges[2], length.out = nrow(data))
         }
-    }else{
+    } else {
         times <- as.numeric(times)
     }
-    
+
 
     # Set default electrode names if not provided
     if (is.null(electrodes)) {
@@ -85,9 +85,9 @@ setMethod("show", "Epoch", function(object) {
 
 
 #' Epoch Methods
-#' 
+#'
 #' @description `truncateTime`: Truncating time range
-#' 
+#'
 #' @param x Epoch object
 #' @param from Numeric value specifying start of new time range
 #' @param to Numeric value specifying end of new time range
@@ -125,16 +125,16 @@ setMethod("truncateTime", "Epoch", function(x, from, to) {
 ## getter and setter
 ###############################
 
-#' @description 
-#' `$`: get Epoch object properties, must be one of 'electrodes', 
+#' @description
+#' `$`: get Epoch object properties, must be one of 'electrodes',
 #' 'times', 'timeRange', 'matrix'
-#' 
-#' 
-#' `$<-`: set Epoch properties, must be one of 'electrodes', 
+#'
+#'
+#' `$<-`: set Epoch properties, must be one of 'electrodes',
 #' 'times', 'timeRange', 'matrix'
-#' 
-#' 
-#' 
+#'
+#'
+#'
 #' @param x Epoch object
 #' @param name a value name, must be one of 'electrodes', 'times', 'timeRange', 'matrix'
 #' @param value Value to set
@@ -185,7 +185,7 @@ setMethod("$<-", "Epoch", function(x, name, value) {
 
 
 #' @description `[`: Subset an Epoch object using matrix indexing syntax
-#' 
+#'
 #' @param i Row (time) indices
 #' @param j Column (electrode) indices
 #' @rdname Epoch-method
@@ -284,4 +284,3 @@ setMethod("as.matrix", "Epoch", function(x) {
 setMethod("as.data.frame", "Epoch", function(x, ...) {
     as.data.frame(as.matrix(x), ...)
 })
-
