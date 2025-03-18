@@ -4,32 +4,32 @@
 #' @param nSearch Integer. Number of eigenvalues tried to find the minimum norm vector
 #' @param normalize Logical. If TRUE, the fragility row is normalized
 fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
-  elecNum <- nrow(A)
-  ek <- diag(elecNum)
-  b <- matrix(c(0, -1), 2L)
-  fragNorm <- rep(0L, elecNum)
-  omvec <- seq(0L, 1L, length.out = nSearch + 1L)[-1L]
-  lambdas <- sqrt(1 - omvec^2) + omvec * 1i
-  ## (A - (sigma + j * omega)*I)^-1
-  iMats <- lapply(lambdas, \(L) solve(A - L * ek))
-  for (i in seq_len(elecNum)) {
-    minNorm <- 100000
-    item <- ek[i, , drop = FALSE]
-    for (k in seq_len(nSearch)) {
-      argument <- item %*% iMats[[k]]
-      B <- rbind(Im(argument), Re(argument))
-      ## B^T * (B * B^T)^-1 * b
-      prov <- t(B) %*% solve(B %*% t(B)) %*% b
-      provNorm <- norm(prov, type = "2")
-      if (provNorm < minNorm) minNorm <- provNorm
+    elecNum <- nrow(A)
+    ek <- diag(elecNum)
+    b <- matrix(c(0, -1), 2L)
+    fragNorm <- rep(0L, elecNum)
+    omvec <- seq(0L, 1L, length.out = nSearch + 1L)[-1L]
+    lambdas <- sqrt(1 - omvec^2) + omvec * 1i
+    ## (A - (sigma + j * omega)*I)^-1
+    iMats <- lapply(lambdas, \(L) solve(A - L * ek))
+    for (i in seq_len(elecNum)) {
+        minNorm <- 100000
+        item <- ek[i, , drop = FALSE]
+        for (k in seq_len(nSearch)) {
+            argument <- item %*% iMats[[k]]
+            B <- rbind(Im(argument), Re(argument))
+            ## B^T * (B * B^T)^-1 * b
+            prov <- t(B) %*% solve(B %*% t(B)) %*% b
+            provNorm <- norm(prov, type = "2")
+            if (provNorm < minNorm) minNorm <- provNorm
+        }
+        fragNorm[i] <- minNorm
     }
-    fragNorm[i] <- minNorm
-  }
-  if (!normalize) {
-    return(fragNorm)
-  }
-  maxf <- max(fragNorm)
-  (maxf - fragNorm) / maxf
+    if (!normalize) {
+        return(fragNorm)
+    }
+    maxf <- max(fragNorm)
+    (maxf - fragNorm) / maxf
 }
 
 #' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
@@ -47,40 +47,40 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' sozindex <- attr(pt01Epoch, "sozindex")
 #' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
 fragStat <- function(frag, sozID) {
-  if (is(frag, "Fragility")) frag <- frag$frag
-  if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
-  steps <- ncol(frag)
-  sozCID <- which(!(seq_len(nrow(frag)) %in% sozID))
-  hmapSOZ <- frag[sozID, , drop = FALSE]
-  hmapSOZC <- frag[sozCID, , drop = FALSE]
-  muSOZ <- colMeans(hmapSOZ)
-  muSOZC <- colMeans(hmapSOZC)
-  sdSOZ <- apply(hmapSOZ, 2L, sd)
-  sdSOZC <- apply(hmapSOZC, 2L, sd)
-  Q <- seq(.1, 1, by = .1)
-  qmatrix <- rbind(
-    apply(hmapSOZ, 2, quantile, Q),
-    apply(hmapSOZC, 2, quantile, Q)
-  )
-  rowPrefix <- rep(c("SOZ", "SOZC"), each = 10)
-  dimN <- dimnames(qmatrix)
-  dimnames(qmatrix) <- list(
-    Quantiles = paste0(rowPrefix, dimN[[1L]]),
-    Step      = dimN[[2L]]
-  )
-  FragStat(
-    qmatrix   = qmatrix,
-    cmeansoz  = muSOZ,
-    cmeansozc = muSOZC,
-    csdsoz    = sdSOZ,
-    csdsozc   = sdSOZC
-  )
+    if (is(frag, "Fragility")) frag <- frag$frag
+    if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
+    steps <- ncol(frag)
+    sozCID <- which(!(seq_len(nrow(frag)) %in% sozID))
+    hmapSOZ <- frag[sozID, , drop = FALSE]
+    hmapSOZC <- frag[sozCID, , drop = FALSE]
+    muSOZ <- colMeans(hmapSOZ)
+    muSOZC <- colMeans(hmapSOZC)
+    sdSOZ <- apply(hmapSOZ, 2L, sd)
+    sdSOZC <- apply(hmapSOZC, 2L, sd)
+    Q <- seq(.1, 1, by = .1)
+    qmatrix <- rbind(
+        apply(hmapSOZ, 2, quantile, Q),
+        apply(hmapSOZC, 2, quantile, Q)
+    )
+    rowPrefix <- rep(c("SOZ", "SOZC"), each = 10)
+    dimN <- dimnames(qmatrix)
+    dimnames(qmatrix) <- list(
+        Quantiles = paste0(rowPrefix, dimN[[1L]]),
+        Step      = dimN[[2L]]
+    )
+    FragStat(
+        qmatrix   = qmatrix,
+        cmeansoz  = muSOZ,
+        cmeansozc = muSOZC,
+        csdsoz    = sdSOZ,
+        csdsozc   = sdSOZC
+    )
 }
 
 
 predictRidge <- function(xt, A) {
-  if (!is.matrix(xt)) {
-    xt <- matrix(xt, nrow = 1)
-  }
-  A %*% xt
+    if (!is.matrix(xt)) {
+        xt <- matrix(xt, nrow = 1)
+    }
+    A %*% xt
 }

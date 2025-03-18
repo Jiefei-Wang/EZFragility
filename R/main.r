@@ -92,7 +92,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
     ## The input matrix must have at least window rows
     stopifnot(timeNum >= window)
-    
+
     dataMat <- standardizeIEEG(dataMat)
     # Number/sequence of steps
     nWindows <- floor((timeNum - window) / step) + 1L

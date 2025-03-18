@@ -10,11 +10,11 @@ vignette: >
 ```{r setup, include = FALSE}
 library(EZFragility)
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.align = "center",
-  fig.width = 6,
-  fig.height = 4
+    collapse = TRUE,
+    comment = "#>",
+    fig.align = "center",
+    fig.width = 6,
+    fig.height = 4
 )
 ```
 

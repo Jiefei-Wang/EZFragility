@@ -75,7 +75,7 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
 
 #' Epoch Methods
 #'
-#' 
+#'
 #' @description
 #' `$electrodes`: Get or set electrode names
 #' `$times`: Get or set time points
@@ -83,7 +83,7 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
 #' `$data`: Get or set data matrix
 #'
 #' @param x Epoch object
-#' @param name a value name, must be one of 'electrodes', 'times', 
+#' @param name a value name, must be one of 'electrodes', 'times',
 #' 'timeRange', 'data'
 #' @param value Value to set
 #' @rdname Epoch-method
@@ -257,12 +257,12 @@ setGeneric("truncateTime", function(x, from, to) standardGeneric("truncateTime")
 #' @export
 setMethod("truncateTime", "Epoch", function(x, from, to) {
     if (is.null(x$times)) {
-        if (!isWholeNumber(from) || !isWholeNumber(to)){
+        if (!isWholeNumber(from) || !isWholeNumber(to)) {
             stop("Time points is not defined for this Epoch object, from and to must be whole numbers")
         }
         indices <- seq(from, to)
         newTimes <- NULL
-    }else{
+    } else {
         # current time points
         times <- x$times
         # Find indices within new time range

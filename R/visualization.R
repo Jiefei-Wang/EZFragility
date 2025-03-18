@@ -143,7 +143,7 @@ visuIEEGData <- function(epoch) {
     timesNum <- ncol(data)
 
     plotData <- standardizeIEEG(data)
-    
+
     times <- epoch$times
     if (is.null(times)) {
         xlabel <- "Time Index"

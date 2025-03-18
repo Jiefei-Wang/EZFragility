@@ -1,7 +1,7 @@
 # setup ------------------------------------------------------------------------
 set.seed(123L)
 mat <- matrix(rnorm(1e3L), ncol = 10L)
-ARGS = ERR <- list(xt = mat[1L:4L, ], xtp1 = mat[1L:4L + 1L, ], 0.1)
+ARGS <- ERR <- list(xt = mat[1L:4L, ], xtp1 = mat[1L:4L + 1L, ], 0.1)
 ERR$xtp1 <- ERR$xtp1[, -1L]
 
 # fragilityRow -------------------------------------------------------
@@ -12,7 +12,7 @@ test_that("fragilityRow", {
 
 # ridge ------------------------------------------------------------------------
 test_that("ridge/ridgeR2", {
-    do.call(ridge, ERR)  |> expect_error()
+    do.call(ridge, ERR) |> expect_error()
     A <- do.call(ridge, ARGS) |> expect_no_error()
     do.call(ridgeR2, c(ARGS[-3L], list(A))) |> expect_no_error()
 })
@@ -37,7 +37,7 @@ test_that("Data consistency across versions", {
 
 
 test_that("Data consistency across versions for parallel computing", {
-    cl <- parallel::makeCluster(4, type="SOCK")
+    cl <- parallel::makeCluster(4, type = "SOCK")
     doSNOW::registerDoSNOW(cl)
     on.exit(parallel::stopCluster(cl))
 
