@@ -2,7 +2,7 @@
 
 export(Epoch)
 export(calcAdjFrag)
-export(findOnset)
+export(estimateSOZ)
 export(heatmapFrag)
 export(plotFragDistribution)
 export(plotFragQuantile)

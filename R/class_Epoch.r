@@ -28,11 +28,11 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
     if (!is.null(timeRanges) && length(timeRanges) != 2) {
         stop("timeRanges must be a numeric vector of length 2")
     }
-    if (!is.null(times) && length(times) != nrow(data)) {
-        stop("Length of times must be equal to number of rows in data")
+    if (!is.null(times) && length(times) != ncol(data)) {
+        stop("Length of times must be equal to number of columns in data")
     }
-    if (!is.null(electrodes) && ncol(data) != length(electrodes)) {
-        stop("Number of columns in data must be equal to length of electrodes")
+    if (!is.null(electrodes) && nrow(data) != length(electrodes)) {
+        stop("Length of electrodes must be equal to number of rows in data")
     }
 
     # set default time points if not provided
@@ -146,10 +146,10 @@ setMethod("$<-", "Epoch", function(x, name, value) {
 setMethod("[", "Epoch", function(x, i, j) {
     new_data <- x@data[i, j, drop = FALSE]
 
-    newTimes <- if (!is.null(x@times) && !missing(i)) {
-        x@times[i]
+    if (missing(j)) {
+        newTimes <- x@times
     } else {
-        x@times
+        newTimes <- x@times[j]
     }
 
     Epoch(

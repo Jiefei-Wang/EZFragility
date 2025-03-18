@@ -56,7 +56,8 @@ Imports:
     rlang,
     foreach,
     progress,
-    ramify
+    ramify,
+    reshape2 
 Suggests: 
     knitr,
     rmarkdown,

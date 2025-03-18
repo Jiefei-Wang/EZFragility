@@ -92,3 +92,12 @@ ridgeSearch <- function(xt, xtp1, lambda = NULL) {
     }
     structure(A, lambda = lambda)
 }
+
+
+
+predictRidge <- function(xt, A) {
+    if (!is.matrix(xt)) {
+        xt <- matrix(xt, nrow = 1)
+    }
+    A %*% xt
+}

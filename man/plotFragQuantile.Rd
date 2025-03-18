@@ -4,13 +4,13 @@
 \alias{plotFragQuantile}
 \title{Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz}
 \usage{
-plotFragQuantile(
-  FragStatObj,
-  timeRange = NULL,
-  title = "Fragility Quantiles over time"
-)
+plotFragQuantile(frag, sozIndex = NULL)
 }
 \arguments{
+\item{frag}{Fragility object from \code{calcAdjFrag}}
+
+\item{sozIndex}{Integer or string. A group of electrodes to mark as in the Seizure Onset Zone (SOZ)}
+
 \item{FragStatObj}{Matrix or FragStat object, either a quantile matrix
 for the two groups or a FragStat object from \code{fragStat}}
 

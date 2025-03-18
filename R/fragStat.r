@@ -52,17 +52,17 @@ fragStat <- function(frag, sozID) {
     steps <- ncol(frag)
     sozCID <- which(!(seq_len(nrow(frag)) %in% sozID))
     hmapSOZ <- frag[sozID, , drop = FALSE]
-    hmapSOZC <- frag[sozCID, , drop = FALSE]
-    muSOZ <- colMeans(hmapSOZ)
-    muSOZC <- colMeans(hmapSOZC)
+    hmapREF <- frag[sozCID, , drop = FALSE]
+    meanSOZ <- colMeans(hmapSOZ)
+    meanRef <- colMeans(hmapREF)
     sdSOZ <- apply(hmapSOZ, 2L, sd)
-    sdSOZC <- apply(hmapSOZC, 2L, sd)
+    sdRef <- apply(hmapREF, 2L, sd)
     Q <- seq(.1, 1, by = .1)
     qmatrix <- rbind(
         apply(hmapSOZ, 2, quantile, Q),
-        apply(hmapSOZC, 2, quantile, Q)
+        apply(hmapREF, 2, quantile, Q)
     )
-    rowPrefix <- rep(c("SOZ", "SOZC"), each = 10)
+    rowPrefix <- rep(c("SOZ", "REF"), each = 10)
     dimN <- dimnames(qmatrix)
     dimnames(qmatrix) <- list(
         Quantiles = paste0(rowPrefix, dimN[[1L]]),
@@ -70,17 +70,10 @@ fragStat <- function(frag, sozID) {
     )
     FragStat(
         qmatrix   = qmatrix,
-        cmeansoz  = muSOZ,
-        cmeansozc = muSOZC,
-        csdsoz    = sdSOZ,
-        csdsozc   = sdSOZC
+        meanSOZ  = meanSOZ,
+        meanRef = meanRef,
+        sdSOZ    = sdSOZ,
+        sdRef   = sdRef
     )
 }
 
-
-predictRidge <- function(xt, A) {
-    if (!is.matrix(xt)) {
-        xt <- matrix(xt, nrow = 1)
-    }
-    A %*% xt
-}

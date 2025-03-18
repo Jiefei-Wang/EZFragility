@@ -84,3 +84,16 @@ setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
         electrodes = electrodes_subset
     )
 })
+
+#' Get the number of rows or columns of a Fragility object
+#'
+#' @param x A Fragility object
+#'
+#' @rdname dim-Fragility-method
+setMethod("nrow", "Fragility", function(x) {
+    nrow(x@frag)
+})
+
+setMethod("ncol", "Fragility", function(x) {
+    ncol(x@frag)
+})

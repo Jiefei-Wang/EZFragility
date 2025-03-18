@@ -4,13 +4,13 @@
 \alias{plotFragDistribution}
 \title{Plot Fragility time distribution for two electrodes group marked and non-marked as soz}
 \usage{
-plotFragDistribution(
-  stat = NULL,
-  timeRange = NULL,
-  title = "Average Fragility over time"
-)
+plotFragDistribution(frag, sozIndex = NULL)
 }
 \arguments{
+\item{frag}{Fragility object from \code{calcAdjFrag}}
+
+\item{sozIndex}{Integer or string. A group of electrodes to mark as in the Seizure Onset Zone (SOZ)}
+
 \item{stat}{FragStat object, a FragStat object from \code{fragStat}}
 
 \item{title}{String. Figure title}

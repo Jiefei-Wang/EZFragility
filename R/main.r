@@ -226,27 +226,27 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 #'
 #' @return A vector of electrode names, or indices if the electrode names are NULL
 #' @export
-findOnset <- function(x, method = c("mean", "max", "min"), proportion = 0.1, ...) {
+estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, ...) {
     method <- match.arg(method)
 
     stopifnot(is(x, "Fragility"))
 
-    frag <- x$frag
-    elCnt <- nrow(frag)
-    nSOZ <- round(elCnt * proportion)
+    fragMat <- x$frag
+    elCnt <- nrow(fragMat)
+    nSOZ <- ceiling(elCnt * proportion)
     stopifnot(nSOZ > 0 & nSOZ <= elCnt)
 
     if (method == "max") {
-        stat <- apply(frag, 2, max)
+        stat <- apply(fragMat, 1, max)
     } else if (method == "min") {
-        stat <- apply(frag, 2, min)
+        stat <- apply(fragMat, 1, min)
     } else if (method == "mean") {
-        stat <- apply(frag, 2, mean)
+        stat <- apply(fragMat, 1, mean)
     }
 
     sozIndex <- order(stat, decreasing = TRUE)[seq_len(nSOZ)]
-    if (!is.null(frag)) {
-        sozIndex <- rownames(frag)[sozIndex]
+    if (!is.null(x$electrodes)) {
+        sozIndex <- x$electrodes[sozIndex]
     }
 
     sozIndex
