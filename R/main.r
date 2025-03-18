@@ -158,8 +158,8 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
         ## slice indices
         si <- (iw - 1L) * step + seq_len(window - 1L)
-        xt <- t(dataMat[, si, drop = FALSE])
-        xtp1 <- t(dataMat[, si + 1L, drop = FALSE])
+        xt <- dataMat[, si, drop = FALSE]
+        xtp1 <- dataMat[, si + 1L, drop = FALSE]
 
         adjMatrix <- .ridgeSearch(xt, xtp1, lambda)
         R2Column <- .ridgeR2(xt, xtp1, adjMatrix)

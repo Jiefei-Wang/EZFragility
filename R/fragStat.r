@@ -4,15 +4,15 @@
 #' @param nSearch Integer. Number of eigenvalues tried to find the minimum norm vector
 #' @param normalize Logical. If TRUE, the fragility row is normalized
 fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
-  nel <- ncol(A)
-  ek <- diag(nel)
+  elecNum <- nrow(A)
+  ek <- diag(elecNum)
   b <- matrix(c(0, -1), 2L)
-  fragNorm <- rep(0L, nel)
+  fragNorm <- rep(0L, elecNum)
   omvec <- seq(0L, 1L, length.out = nSearch + 1L)[-1L]
   lambdas <- sqrt(1 - omvec^2) + omvec * 1i
   ## (A - (sigma + j * omega)*I)^-1
-  iMats <- lapply(lambdas, \(L) t(solve(A - L * ek)))
-  for (i in seq_len(nel)) {
+  iMats <- lapply(lambdas, \(L) solve(A - L * ek))
+  for (i in seq_len(elecNum)) {
     minNorm <- 100000
     item <- ek[i, , drop = FALSE]
     for (k in seq_len(nSearch)) {
@@ -79,11 +79,8 @@ fragStat <- function(frag, sozID) {
 
 
 predictRidge <- function(xt, A) {
-  ## the data matrix
-  if (nrow(A) == ncol(A) + 1) {
-    x <- cbind(1, as.matrix(xt))
-  } else {
-    x <- as.matrix(xt)
+  if (!is.matrix(xt)) {
+    xt <- matrix(xt, nrow = 1)
   }
-  x %*% A
+  A %*% xt
 }
