@@ -28,14 +28,14 @@ usethis::use_data(pt01Epoch, overwrite = TRUE)
 
 
 ## load fragility matrix
-library(doSNOW)
-library(EZFragility)
-cl <- makeCluster(8, type = "SOCK")
-registerDoSNOW(cl)
+# library(doSNOW)
+# library(EZFragility)
+# cl <- makeCluster(8, type = "SOCK")
+# registerDoSNOW(cl)
 t_window <- 250
 t_step <- 125
-pt01Frag <- calcAdjFrag(ieegts = pt01Epoch, window = t_window, step = t_step, parallel = TRUE, progress = TRUE)
-stopCluster(cl)
+pt01Frag <- calcAdjFrag(epoch = pt01Epoch, window = t_window, step = t_step, parallel = FALSE, progress = TRUE)
+# stopCluster(cl)
 usethis::use_data(pt01Frag, overwrite = TRUE)
 
 

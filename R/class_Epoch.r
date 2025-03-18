@@ -55,7 +55,7 @@ Epoch <- function(data, electrodes = NULL, timeRanges = NULL, times = NULL) {
         electrodes <- if (!is.null(rownames(data))) {
             rownames(data)
         } else {
-            paste0("E", seq_len(ncol(data)))
+            paste0("E", seq_len(nrow(data)))
         }
     }
 
