@@ -1,5 +1,5 @@
 # A plot function that takes a data frame and returns a heatmap plot
-makeHeatMap <- function(df, xLabels, yLabels, xTicksNum = 10){
+makeHeatMap <- function(df, xTicksNum = 10){
     xLabels <- colnames(df)
     yLabels <- rownames(df)
 
@@ -10,7 +10,7 @@ makeHeatMap <- function(df, xLabels, yLabels, xTicksNum = 10){
         yLabels <- seq_len(nrow(df))
     }
 
-    df$y <- rownames(df)
+    df$y <- yLabels
     df_long <- reshape2::melt(df, id.vars = "y", variable.name = "x", value.name = "value")
     colnames(df_long) <- c("y", "x", "value")
 
@@ -37,21 +37,18 @@ makeHeatMap <- function(df, xLabels, yLabels, xTicksNum = 10){
 
 #' Visualization of ictal iEEG
 #'
-#' @inheritParams heatmapFrag
-#' @param ieegts Matrix or Fragility object. Either a matrix of iEEG time
-#' series x(t), with time points as rows and electrodes names as columns,
-#' or a Fragility object from \code{calcAdjFrag}
-#' @param title String. Figure title
-#' @param display Integer or string. Vector electrodes to display
-#' @return plot raw signal
+#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points
+#' @return A ggplot object
 #'
 #' @examples
-#' data("pt01Epoch")
-#' sozIndex <- attr(pt01Epoch, "sozIndex")
+#' data("pt01EcoG")
+#' 
+#' ## Visualize a subject of electrodes
+#' sozIndex <- attr(pt01EcoG, "sozIndex")
 #' display <- c(sozIndex, 77:80)
-#' timeRange <- c(-1, 2)
-#' iEEGplot <- visuIEEGData(ieegts = pt01Epoch, timeRange = timeRange, display = display)
-#' iEEGplot
+#' 
+#' epoch <- Epoch(pt01EcoG)
+#' visuIEEGData(epoch = epoch[display, ])
 #' @export
 visuIEEGData <- function(epoch) {
     if (is(epoch, "matrix")){
@@ -105,59 +102,32 @@ visuIEEGData <- function(epoch) {
 
 #' Visualization functions (raw signal, fragility matrix)
 #'
-#' plot fragility heatmaps with electrodes marked as soz colored
+#' @description `plotFragHeatmap`: plot fragility heatmaps with electrodes marked as soz colored
 #'
 #' @param frag Fragility object from \code{calcAdjFrag}
 #' @param sozIndex Integer or string. A group of electrodes to mark as in the Seizure Onset Zone (SOZ)
-#' @param title String. Figure title
-#' @param display Integer or string. Vector electrodes to display
-#'
-#' @return Heatmap plot of the fragility matrix with soz electrodes in blue in the bottom
+#' 
+#' @return A ggplot object
 #'
 #' @examples
-#' # use integer index for display and soz electrodes
-#' data("pt01Epoch")
-#' sozIndex <- attr(pt01Epoch, "sozIndex")
-#' data("pt01Frag")
-#' timeRange <- c(-1, 2)
+#' 
+#' data("pt01EcoG")
+#' 
+#' ## sozIndex is the index of the electrodes we assume are in the SOZ
+#' sozIndex <- attr(pt01EcoG, "sozIndex")
+#' 
+#' ## index of the electrodes to display
 #' display <- c(sozIndex, 77:80)
-#' fragplot <- heatmapFrag(
-#'     frag = pt01Frag, sozID = sozIndex,
-#'     timeRange = timeRange, title = "PT01 seizure 1", display = display
-#' )
-#' fragplot
-#'
-#'
-#' # use electrodes name for display and soz electrodes
-#' data("pt01Epoch")
-#' sozNames <- attr(pt01Epoch, "sozNames")
+#' 
+#' ## precomputed fragility object
 #' data("pt01Frag")
-#' timeRange <- c(-1, 2)
-#' display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-#' fragplot <- heatmapFrag(
-#'     frag = pt01Frag, sozID = sozNames,
-#'     timeRange = timeRange, title = "PT01 seizure 1", display = display
-#' )
-#' fragplot
-#'
-#' # save plot to file with ggplot2
-#' data("pt01Epoch")
-#' data("pt01Frag")
-#' sozIndex <- attr(pt01Epoch, "sozIndex")
-#' timeRange <- c(-10, 10)
-#' display <- c(sozIndex, 77:80)
-#' pathplot <- "~"
-#' title <- "PT01sz1"
-#' resfile <- paste(pathplot, "/FragilityHeatMap", title, ".png", sep = "")
-#' fragplot <- heatmapFrag(
-#'     frag = pt01Frag, sozID = sozIndex, timeRange = timeRange,
-#'     title = title, display = display
-#' )
-#' fragplot
-#' ggplot2::ggsave(resfile)
-#'
+#' 
+#' ## plot the fragility heatmap
+#' plotFragHeatmap(frag = pt01Frag[display, ], sozIndex = sozIndex)
+#' 
+#' @rdname plotFragHeatmap
 #' @export
-heatmapFrag <- function(
+plotFragHeatmap <- function(
     frag,
     sozIndex = NULL) {
     ## TODO: make sozID an optional
@@ -189,25 +159,9 @@ heatmapFrag <- function(
 
     ## prepare the data.frame for visualization
     allIndex <- c(group1, group2)
-    df <- fragMat[allIndex, ]
+    df <- as.data.frame(fragMat[allIndex, ])
 
 
-    ## make fragDf a long format data.frame
-    ## three columns: Electrode, Time, Value
-    df_long <- as.data.frame(as.table(fragMatReorderd))
-    colnames(df_long) <- c("Electrode", "Time", "Value")
-
-    ## sort df_long by rownames(fragMatReorderd)
-    df_long$Electrode <- factor(df_long$Electrode, levels = rev(rownames(fragMatReorderd)))
-    df_long$Time <- factor(df_long$Time, levels = stimes)
-
-    ## show 10 time points on x-axis at most
-    step <- ceiling(windowNum / 10)
-    breaksIdx <- seq(1, length(stimes), by = step)
-    breaks <- stimes[breaksIdx]
-    xLabels <- stimes[breaksIdx]
-
-    
 
     makeHeatMap(df) +
         ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
@@ -217,26 +171,14 @@ heatmapFrag <- function(
 }
 
 
-#' Plot Fragility time quantiles for two electrodes group marked as soz non marked as soz
-#'
-#' @inheritParams heatmapFrag
-#' @param FragStatObj Matrix or FragStat object, either a quantile matrix
-#' for the two groups or a FragStat object from \code{fragStat}
-#' @param title String. Figure title
-#'
-#' @return Quantile plot
-#' @export
-#'
+#' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes group marked as SOZ and reference
+#' 
+#' @rdname plotFragHeatmap
 #' @examples
-#'
-#' timeRange <- c(-1, 2)
-#' data("pt01Epoch")
-#' sozIndex <- attr(pt01Epoch, "sozIndex")
-#' data("pt01Frag")
-#' # compute fragility statistics evolution with time (mean and standard deviation) for soz and
-#' # non soz groups
-#' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozIndex)
-#' plotFragQuantile(FragStatObj = pt01fragstat, timeRange = timeRange)
+#' ## plot the fragility quantiles
+#' plotFragQuantile(frag = pt01Frag[display, ], sozIndex = sozIndex)
+#' 
+#' @export
 plotFragQuantile <- function(frag, sozIndex = NULL) {
     if (is.null(sozIndex)) {
         sozIndex <- estimateSOZ(frag)
@@ -265,27 +207,14 @@ plotFragQuantile <- function(frag, sozIndex = NULL) {
 }
 
 
-#'  Plot Fragility time distribution for two electrodes group marked and non-marked as soz
-#'
-#' @inheritParams heatmapFrag
-#' @param stat FragStat object, a FragStat object from \code{fragStat}
-#' @param title String. Figure title
-#'
-#' @return plot fragility distribution
-#' @export
-#'
+#' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes group marked as SOZ and reference
+#' 
+#' @rdname plotFragHeatmap
 #' @examples
-#' data("pt01Epoch")
-#' sozindex <- attr(pt01Epoch, "sozindex")
-#' # Load the precomputed fragility object
-#' timeRange <- c(-10, 10)
-#' data("pt01Frag")
-#' # compute fragility statistics evolution with time (mean and standard deviation) for soz and
-#' # non soz groups
-#' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
-#' # plot the statistical results
-#' pfragstat <- plotFragDistribution(stat = pt01fragstat, timeRange = timeRange)
-#' pfragstat
+#' ## plot the fragility distribution
+#' plotFragDistribution(frag = pt01Frag[display, ], sozIndex = sozIndex)
+#' 
+#' @export
 plotFragDistribution <- function(frag, sozIndex = NULL) {
     if (is.null(sozIndex)) {
         sozIndex <- estimateSOZ(frag)
@@ -301,7 +230,7 @@ plotFragDistribution <- function(frag, sozIndex = NULL) {
     
     meanSOZ <- apply(fragMat, 2, mean, na.rm = TRUE)
     semSOZ <- apply(fragMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
-    
+
     meanRef <- apply(RefMat, 2, mean, na.rm = TRUE)
     semRef <- apply(RefMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 

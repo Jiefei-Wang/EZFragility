@@ -17,23 +17,24 @@
 #' @param lambda Numeric. The lambda value to use in the ridge regression.
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
-#' @param nSearch Integer. Number of minimization to compute the fragility row
+#' @param nSearch Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL
 #' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
 #' @param parallel Logical. If TRUE, use parallel computing.
 #' Users must register a parallel backend with the foreach package
 #'
 #'
-#' @return A list containing the normalized ieegts,
-#' adjacency matrices, fragility, and R^2 values
+#' @return A Fragility object
 #'
 #' @examples
-#' ## A simple example
-#' data <- matrix(rnorm(100), nrow = 10)
-#' window <- 10
+#' ## A dummy example with 5 electrodes and 20 time points
+#' data <- matrix(rnorm(100), nrow = 5)
+#' ## create an Epoch object
+#' epoch <- Epoch(data)
+#' windowNum <- 10
 #' step <- 5
 #' lambda <- 0.1
 #' calcAdjFrag(
-#'     ieegts = data, window = window,
+#'     epoch = epoch, window = windowNum,
 #'     step = step, lambda = lambda, progress = TRUE
 #' )
 #'
@@ -45,12 +46,13 @@
 #' cl <- makeCluster(4, type = "SOCK")
 #' registerDoSNOW(cl)
 #'
-#' data("pt01Epoch")
+#' data("pt01EcoG")
+#' epoch <- Epoch(pt01EcoG)
 #' window <- 250
 #' step <- 125
 #' title <- "PT01 seizure 1"
 #' calcAdjFrag(
-#'     ieegts = pt01Epoch, window = window,
+#'     epoch = epoch, window = window,
 #'     step = step, parallel = TRUE, progress = TRUE
 #' )
 #'
@@ -216,6 +218,8 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 }
 
 #' Find Serzure Onset Zone
+#' 
+#' The function estimates the seizure onset zone (SOZ). For each row, it calculates the maximum, minimum, or mean of row. The rows with the highest values are considered as the SOZ.
 #'
 #' @param x Fragility object
 #' @param method Character. The method to use to find the onset zone.

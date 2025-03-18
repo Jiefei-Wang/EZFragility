@@ -3,9 +3,9 @@
 #' A x(t) = x(t+1)
 #'
 #' @param xt matrix. iEEG time series for a given window,
-#' with time points as rows and electrodes names as columns
+#' with electrodes names as rows and time points as columns 
 #' @param xtp1 matrix. the iEEG time serie at the next time point,
-#' with time points as rows and electrodes names as columns
+#' with electrodes names as rows and time points as columns 
 #' @param lambda Numeric Vector. A user supplied lambda sequence.
 #' @return adjacency matrix A
 ridge <- function(xt, xtp1, lambda) {

@@ -62,10 +62,15 @@ setMethod("show", "Fragility", function(object) {
 #'
 #' @rdname subset-Fragility-method
 setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
-    if (missing(i)) i <- TRUE
-    if (missing(j)) j <- TRUE
-
-    i <- checkIndex(i, x@electrodes)
+    
+    if (!missing(i)){
+        i <- checkIndex(i, x$electrodes)
+    }else{
+        i <- TRUE
+    }
+    if(missing(j)){
+        j <- TRUE
+    }
 
     frag_subset <- x@frag[i, j, drop = FALSE]
     frag_ranked_subset <- x@frag_ranked[i, j, drop = FALSE]

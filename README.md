@@ -50,7 +50,7 @@ devtools::load_all()
 The package contains an example data. To see it, type
 
 ``` r
-pt01Epoch
+pt01EcoG
 ```
 
 The package contains an example results. To see it, type

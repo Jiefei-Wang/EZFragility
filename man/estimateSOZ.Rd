@@ -21,5 +21,5 @@ The electrode number will be rounded to the nearest integer.}
 A vector of electrode names, or indices if the electrode names are NULL
 }
 \description{
-Find Serzure Onset Zone
+The function estimates the seizure onset zone (SOZ). For each row, it calculates the maximum, minimum, or mean of row. The rows with the highest values are considered as the SOZ.
 }

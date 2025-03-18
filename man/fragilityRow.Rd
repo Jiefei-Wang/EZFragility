@@ -14,5 +14,5 @@ fragilityRow(A, nSearch = 100, normalize = TRUE)
 \item{normalize}{Logical. If TRUE, the fragility row is normalized}
 }
 \description{
-Compute the normalized fragility row for adjacency matrix A
+The matrix A is used for the regression: A * x(t) = x(t+1)
 }

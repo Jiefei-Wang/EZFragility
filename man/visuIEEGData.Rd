@@ -7,25 +7,21 @@
 visuIEEGData(epoch)
 }
 \arguments{
-\item{ieegts}{Matrix or Fragility object. Either a matrix of iEEG time
-series x(t), with time points as rows and electrodes names as columns,
-or a Fragility object from \code{calcAdjFrag}}
-
-\item{title}{String. Figure title}
-
-\item{display}{Integer or string. Vector electrodes to display}
+\item{epoch}{Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points}
 }
 \value{
-plot raw signal
+A ggplot object
 }
 \description{
 Visualization of ictal iEEG
 }
 \examples{
-data("pt01Epoch")
-sozIndex <- attr(pt01Epoch, "sozIndex")
+data("pt01EcoG")
+
+## Visualize a subject of electrodes
+sozIndex <- attr(pt01EcoG, "sozIndex")
 display <- c(sozIndex, 77:80)
-timeRange <- c(-1, 2)
-iEEGplot <- visuIEEGData(ieegts = pt01Epoch, timeRange = timeRange, display = display)
-iEEGplot
+
+epoch <- Epoch(pt01EcoG)
+visuIEEGData(epoch = epoch[display, ])
 }

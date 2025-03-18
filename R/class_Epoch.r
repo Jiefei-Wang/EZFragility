@@ -1,6 +1,6 @@
 #' @title Epoch Class
 #' @description S4 class to handle epoch data with electrodes and time points
-#' @slot data a tibble containing epoch data (rows=time points, columns=electrodes)
+#' @slot data a tibble containing epoch data (columns=time points, rows=electrodes)
 #' @slot times Numeric vector containing time range
 .Epoch <- setClass("Epoch",
     slots = list(
@@ -11,12 +11,11 @@
 
 
 
-
 #' Constructor for Epoch class
 #' @param data Matrix containing epoch data (rows=electrodes, columns=time points)
 #' @param electrodes Optional character vector for electrode names, if not provided, column names of data are used. If both are NULL, electrodes are named E1, E2, ...
-#' @param timeRanges Optional numeric vector of 2 containing start and end time points.
-#' Only one of times or timeRanges can be non-null
+#' @param timeRanges Optional numeric vector of 2 containing start 
+#' and end time points. Only one of times or timeRanges can be non-null
 #' @param times Optional numeric vector of time points. Only one of times or
 #' timeRanges can be non-null
 #' @export
@@ -144,6 +143,10 @@ setMethod("$<-", "Epoch", function(x, name, value) {
 #' @rdname Epoch-method
 #' @export
 setMethod("[", "Epoch", function(x, i, j) {
+    if (!missing(i)){
+        i <- checkIndex(i, x$electrodes)
+    }
+    
     new_data <- x@data[i, j, drop = FALSE]
 
     if (missing(j)) {
@@ -280,7 +283,9 @@ setMethod("truncateTime", "Epoch", function(x, from, to) {
 })
 
 
-
+#' @param object Epoch object
+#' @rdname Epoch-method
+#' @export
 setMethod("show", "Epoch", function(object) {
     dt <- object$data
     pprint(dt, rowdots = 4, coldots = 4, digits = 3)

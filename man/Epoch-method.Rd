@@ -16,6 +16,7 @@
 \alias{as.data.frame,Epoch-method}
 \alias{truncateTime}
 \alias{truncateTime,Epoch-method}
+\alias{show,Epoch-method}
 \title{Epoch Methods}
 \usage{
 \S4method{$}{Epoch}(x, name)
@@ -47,6 +48,8 @@
 truncateTime(x, from, to)
 
 \S4method{truncateTime}{Epoch}(x, from, to)
+
+\S4method{show}{Epoch}(object)
 }
 \arguments{
 \item{x}{Epoch object}
@@ -65,6 +68,8 @@ truncateTime(x, from, to)
 \item{from}{Numeric value specifying start of new time range}
 
 \item{to}{Numeric value specifying end of new time range}
+
+\item{object}{Epoch object}
 }
 \value{
 nrow: Number of rows in the data

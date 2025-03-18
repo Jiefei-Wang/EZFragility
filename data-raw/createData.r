@@ -21,10 +21,10 @@ times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
 colnames(pt01EpochRaw)<-times_with_sign
 
 
-pt01Epoch<-pt01EpochRaw[,9001:12000]
-attr(pt01Epoch, "sozIndex") <- sozIndex
-attr(pt01Epoch, "sozNames") <- sozNames
-usethis::use_data(pt01Epoch, overwrite = TRUE)
+pt01EcoG<-pt01EpochRaw[,9001:12000]
+attr(pt01EcoG, "sozIndex") <- sozIndex
+attr(pt01EcoG, "sozNames") <- sozNames
+usethis::use_data(pt01EcoG, overwrite = TRUE)
 
 
 ## load fragility matrix
@@ -34,7 +34,7 @@ usethis::use_data(pt01Epoch, overwrite = TRUE)
 # registerDoSNOW(cl)
 t_window <- 250
 t_step <- 125
-pt01Frag <- calcAdjFrag(epoch = pt01Epoch, window = t_window, step = t_step, parallel = FALSE, progress = TRUE)
+pt01Frag <- calcAdjFrag(epoch = pt01EcoG, window = t_window, step = t_step, parallel = FALSE, progress = TRUE)
 # stopCluster(cl)
 usethis::use_data(pt01Frag, overwrite = TRUE)
 

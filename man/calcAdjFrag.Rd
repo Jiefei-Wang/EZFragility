@@ -31,7 +31,7 @@ calcAdjFrag(
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
-\item{nSearch}{Integer. Number of minimization to compute the fragility row}
+\item{nSearch}{Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL}
 
 \item{progress}{Logical. If TRUE, print progress information. If \code{parallel} is TRUE, this option only support the \code{doSNOW} backend.}
 
@@ -42,8 +42,7 @@ Users must register a parallel backend with the foreach package}
 with electrodes names as rows and time points as columns, or an Epoch object}
 }
 \value{
-A list containing the normalized ieegts,
-adjacency matrices, fragility, and R^2 values
+A Fragility object
 }
 \description{
 The function calculates the neural fragility column
@@ -63,13 +62,15 @@ for column perturbation is computed.
 Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 }
 \examples{
-## A simple example
-data <- matrix(rnorm(100), nrow = 10)
-window <- 10
+## A dummy example with 5 electrodes and 20 time points
+data <- matrix(rnorm(100), nrow = 5)
+## create an Epoch object
+epoch <- Epoch(data)
+windowNum <- 10
 step <- 5
 lambda <- 0.1
 calcAdjFrag(
-    ieegts = data, window = window,
+    epoch = epoch, window = windowNum,
     step = step, lambda = lambda, progress = TRUE
 )
 
@@ -81,12 +82,13 @@ library(doSNOW)
 cl <- makeCluster(4, type = "SOCK")
 registerDoSNOW(cl)
 
-data("pt01Epoch")
+data("pt01EcoG")
+epoch <- Epoch(pt01EcoG)
 window <- 250
 step <- 125
 title <- "PT01 seizure 1"
 calcAdjFrag(
-    ieegts = pt01Epoch, window = window,
+    epoch = epoch, window = window,
     step = step, parallel = TRUE, progress = TRUE
 )
 

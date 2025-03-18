@@ -11,7 +11,7 @@ S4 class to handle epoch data with electrodes and time points
 \section{Slots}{
 
 \describe{
-\item{\code{data}}{a tibble containing epoch data (rows=time points, columns=electrodes)}
+\item{\code{data}}{a tibble containing epoch data (columns=time points, rows=electrodes)}
 
 \item{\code{times}}{Numeric vector containing time range}
 }}

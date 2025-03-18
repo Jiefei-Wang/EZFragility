@@ -1,4 +1,6 @@
 #' Compute the normalized fragility row for adjacency matrix A
+#' 
+#' The matrix A is used for the regression: A * x(t) = x(t+1)
 #'
 #' @param A Numeric. Adjacency Matrix
 #' @param nSearch Integer. Number of eigenvalues tried to find the minimum norm vector
@@ -43,8 +45,8 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #'
 #' @examples
 #' data("pt01Frag")
-#' data("pt01Epoch")
-#' sozindex <- attr(pt01Epoch, "sozindex")
+#' data("pt01EcoG")
+#' sozindex <- attr(pt01EcoG, "sozindex")
 #' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
 fragStat <- function(frag, sozID) {
     if (is(frag, "Fragility")) frag <- frag$frag

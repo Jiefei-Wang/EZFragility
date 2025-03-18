@@ -11,8 +11,8 @@ Epoch(data, electrodes = NULL, timeRanges = NULL, times = NULL)
 
 \item{electrodes}{Optional character vector for electrode names, if not provided, column names of data are used. If both are NULL, electrodes are named E1, E2, ...}
 
-\item{timeRanges}{Optional numeric vector of 2 containing start and end time points.
-Only one of times or timeRanges can be non-null}
+\item{timeRanges}{Optional numeric vector of 2 containing start
+and end time points. Only one of times or timeRanges can be non-null}
 
 \item{times}{Optional numeric vector of time points. Only one of times or
 timeRanges can be non-null}
