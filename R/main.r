@@ -10,7 +10,7 @@
 #' (\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
 #' We have found solutions to fill up missing details in the paper method description
 #'
-#' @param ieegts Numeric. A matrix of iEEG time series x(t),
+#' @param epoch `Epoch` object. It contains matrix of iEEG time series x(t),
 #' with electrodes names as rows and time points as columns, or an Epoch object
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
@@ -19,8 +19,7 @@
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
 #' @param nSearch Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL
 #' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
-#' @param parallel Logical. If TRUE, use parallel computing.
-#' Users must register a parallel backend with the foreach package
+#' @param nthread Integer (Default = 1). Number of threads to be used for parallel computing
 #'
 #'
 #' @return A Fragility object
@@ -30,34 +29,15 @@
 #' data <- matrix(rnorm(100), nrow = 5)
 #' ## create an Epoch object
 #' epoch <- Epoch(data)
-#' windowNum <- 10
-#' step <- 5
-#' lambda <- 0.1
-#' calcAdjFrag(
-#'     epoch = epoch, window = windowNum,
-#'     step = step, lambda = lambda, progress = TRUE
-#' )
+#' calcAdjFrag(epoch = epoch, window = 10, step = 5, lambda = 0.1)
 #'
 #' ## A more realistic example with parallel computing
 #' \dontrun{
-#' ## Register a SNOW backend with 4 workers
 #' library(parallel)
 #' library(doSNOW)
-#' cl <- makeCluster(4, type = "SOCK")
-#' registerDoSNOW(cl)
-#'
 #' data("pt01EcoG")
 #' epoch <- Epoch(pt01EcoG)
-#' window <- 250
-#' step <- 125
-#' title <- "PT01 seizure 1"
-#' calcAdjFrag(
-#'     epoch = epoch, window = window,
-#'     step = step, parallel = TRUE, progress = TRUE
-#' )
-#'
-#' ## stop the parallel backend
-#' stopCluster(cl)
+#' calcAdjFrag(epoch = epoch, window = 250, step = 125, nthread = 4)
 #' }
 #'
 #' @details
@@ -74,7 +54,7 @@
 #' Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}}
 #'
 #' @export
-calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, progress = FALSE, parallel = FALSE) {
+calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, progress = TRUE, nthread = 1) {
     ## check the input types
     stopifnot(is.matrix(epoch) | is(epoch, "Epoch"))
     stopifnot(isWholeNumber(window))
@@ -115,11 +95,14 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
     lbd <- rep(0, nWindows) |> setNames(windows)
 
     ## switch between parallel and sequential computing
-    if (parallel) {
-        `%run%` <- foreach::`%dopar%`
-    } else {
-        `%run%` <- foreach::`%do%`
+    if (nthread > 1) {
+      `%run%` <- foreach::`%dopar%`
+      ncores <- min(nthread, parallel::detectCores() - 1)
+      cl <- snow::makeCluster(ncores, type = "SOCK")
+      doSNOW::registerDoSNOW(cl)
+      on.exit(snow::stopCluster(cl), add = TRUE)
     }
+    else `%run%` <- foreach::`%do%`
 
     ## initialize the progress bar
     if (progress) {
@@ -144,36 +127,14 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
     ## Initial data for data aggregation
     init <- list(A = A, R2 = R2, f = f, lbd = lbd)
+    .IterFun <- .IterFunInit(environment())
     foreach(
         iw = windows,
         .combine = .combine,
         .init = init,
         .inorder = FALSE,
         .options.snow = opts
-    ) %run% {
-        progress(iw)
-        ## Those are necessary to clear R check issue
-        iw <- get("iw")
-        .ridgeSearch <- getFromNamespace("ridgeSearch", "EZFragility")
-        .ridgeR2 <- getFromNamespace("ridgeR2", "EZFragility")
-        .fragilityRow <- getFromNamespace("fragilityRow", "EZFragility")
-
-        ## slice indices
-        si <- (iw - 1L) * step + seq_len(window - 1L)
-        xt <- dataMat[, si, drop = FALSE]
-        xtp1 <- dataMat[, si + 1L, drop = FALSE]
-
-        adjMatrix <- .ridgeSearch(xt, xtp1, lambda)
-        R2Column <- .ridgeR2(xt, xtp1, adjMatrix)
-        fColumn <- .fragilityRow(adjMatrix, nSearch)
-
-        list(
-            iw = iw,
-            adjMatrix = adjMatrix,
-            R2Column = R2Column,
-            fColumn = fColumn
-        )
-    } -> results
+    ) %run% .IterFun(iw = get("iw")) -> results
 
     ## unpack the results
     A <- results$A
@@ -260,4 +221,34 @@ estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, .
 standardizeIEEG <- function(data) {
     scaling <- 10^floor(log10(max(data)))
     plotData <- data / scaling
+}
+
+.IterFunInit <- \(e) {
+  window    <- e$window
+  step      <- e$step
+  lambda    <- e$lambda
+  nSearch   <- e$nSearch
+  dataMat   <- e$dataMat
+  .progress <- e$progress
+  .ridgeSearch  <- utils::getFromNamespace("ridgeSearch",  "EZFragility")
+  .ridgeR2      <- utils::getFromNamespace("ridgeR2",      "EZFragility")
+  .fragilityRow <- utils::getFromNamespace("fragilityRow", "EZFragility")
+  
+  \(iw) {
+    .progress(iw)
+    si   <- (iw - 1L) * step + seq_len(window - 1L)
+    xt   <- dataMat[, si, drop = FALSE]
+    xtp1 <- dataMat[, si + 1L, drop = FALSE]
+    
+    adjMatrix <- .ridgeSearch(xt, xtp1, lambda)
+    R2Column  <- .ridgeR2(xt, xtp1, adjMatrix)
+    fColumn   <- .fragilityRow(adjMatrix, nSearch)
+    
+    list(
+      iw = iw,
+      adjMatrix = adjMatrix,
+      R2Column = R2Column,
+      fColumn = fColumn
+    )
+  }
 }
