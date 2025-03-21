@@ -4,7 +4,7 @@
 \alias{fragStat}
 \title{Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz}
 \usage{
-fragStat(frag, sozID)
+fragStat(frag, sozIndex)
 }
 \arguments{
 \item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}

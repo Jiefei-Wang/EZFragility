@@ -23,6 +23,11 @@ It calculates the neural fragility heatmap based on intracranial electrocorticog
 The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
 <a href="https://ieeexplore.ieee.org/document/7963378" style="color:blue; text-decoration:none;"> Fragility Method</a>
 
+## Key definition
+
+TODO: Cecile -- tells the complicated definition of fragility matrix
+
+
 ## Load small ictal ieeg data for patient PT01
 
 This example data corresponds to the first seizure of patient PT01 from the Fragility Data Set. `pt01EcoG` is a matrix with 300 rows (time points) and 84 columns (electrodes). The rows names are the electrodes names. The column names is the time relative to seizure onset in (s). For more information about the data, you can use the `?pt01EcoG` command.
@@ -30,6 +35,7 @@ This example data corresponds to the first seizure of patient PT01 from the Frag
 The patient underwent a surgical treatment and was seizure-free after the surgery. The electrodes located in the surgically removed area are marked in `sozIndex` attribute.
 ```{r ictal data}
 data("pt01EcoG")
+
 ## create an epoch object
 epoch <- Epoch(pt01EcoG)
 epoch
@@ -48,6 +54,7 @@ sozNames <- attr(pt01EcoG, "sozNames")
 ## Show the electrodes that are marked as SOZ and additional 4 electrodes
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
 visuIEEGData(epoch  = epoch[display])
+
 ## Equivalent to: 
 ## visuIEEGData(epoch  = epoch[display, ])
 
@@ -81,6 +88,16 @@ pt01Frag
 stopCluster(cl)
 ```
 
+## Predict the SOZ (need description!)
+
+```{r}
+soz <- estimateSOZ(pt01Frag[,pt01Frag$startTimes<0])
+```
+
+## Fragility Statistics (need description!)
+```{r}
+stats <- fragStat(pt01Frag, soz)
+```
 
 ## Plot functions for Fragility Matrix
 The function `plotFragHeatmap` can reproduce Patient 01 results Figure 4 a from Li et al. paper. Time window around seizure onset [-1:2]s, which includes the following electrodes: 

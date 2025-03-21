@@ -3,6 +3,7 @@
 export(Epoch)
 export(calcAdjFrag)
 export(estimateSOZ)
+export(fragStat)
 export(plotFragDistribution)
 export(plotFragHeatmap)
 export(plotFragQuantile)
