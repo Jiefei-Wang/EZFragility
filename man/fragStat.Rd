@@ -9,7 +9,7 @@ fragStat(frag, sozIndex)
 \arguments{
 \item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}
 
-\item{sozID}{Integer.  Vector soz electrodes (for good electrodes)}
+\item{sozIndex}{Integer.  Vector soz electrodes (for good electrodes)}
 }
 \value{
 list of 5 items with quantile matrix, mean and sdv from both electrodes groups
@@ -21,5 +21,5 @@ Compute quantiles, mean and standard deviation for two electrodes group marked a
 data("pt01Frag")
 data("pt01EcoG")
 sozindex <- attr(pt01EcoG, "sozindex")
-pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
+pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozindex)
 }

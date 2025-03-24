@@ -154,9 +154,9 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
         progress(iw)
         ## Those are necessary to clear R check issue
         iw <- get("iw")
-        .ridgeSearch <- getFromNamespace("ridgeSearch", "EZFragility")
-        .ridgeR2 <- getFromNamespace("ridgeR2", "EZFragility")
-        .fragilityRow <- getFromNamespace("fragilityRow", "EZFragility")
+        .ridgeSearch <- utils::getFromNamespace("ridgeSearch", "EZFragility")
+        .ridgeR2 <- utils::getFromNamespace("ridgeR2", "EZFragility")
+        .fragilityRow <- utils::getFromNamespace("fragilityRow", "EZFragility")
 
         ## slice indices
         si <- (iw - 1L) * step + seq_len(window - 1L)
