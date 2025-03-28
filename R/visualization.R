@@ -180,6 +180,7 @@ plotFragHeatmap <- function(
 #' 
 #' @export
 plotFragQuantile <- function(frag, sozIndex = NULL) {
+    sozIndex <- checkIndex(sozIndex, frag$electrodes)
     if (is.null(sozIndex)) {
         sozIndex <- estimateSOZ(frag)
     }

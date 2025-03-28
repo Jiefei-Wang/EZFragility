@@ -37,7 +37,7 @@ test_that("Data consistency across versions", {
 
 
 test_that("Data consistency across versions for parallel computing", {
-    cl <- parallel::makeCluster(4, type = "SOCK")
+    cl <- parallel::makeCluster(2, type = "SOCK")
     doSNOW::registerDoSNOW(cl)
     on.exit(parallel::stopCluster(cl))
 

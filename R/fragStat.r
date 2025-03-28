@@ -41,7 +41,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #'
 #' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}
 
-#' @param sozID Integer.  Vector soz electrodes (for good electrodes)
+#' @param sozIndex Integer.  Vector soz electrodes (for good electrodes)
 #'
 #'
 #' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
@@ -50,7 +50,7 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' data("pt01Frag")
 #' data("pt01EcoG")
 #' sozindex <- attr(pt01EcoG, "sozindex")
-#' pt01fragstat <- fragStat(frag = pt01Frag, sozID = sozindex)
+#' pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozindex)
 #' @export 
 fragStat <- function(frag, sozIndex) {
 ## TODO: support grouped and ungrouped fragility statistics (Not now, but for the future)

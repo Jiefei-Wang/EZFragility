@@ -161,7 +161,9 @@ setMethod("[", "Epoch", function(x, i, j) {
     )
 })
 
-
+for (x in c('nrow', 'ncol', 'colnames', 'rownames', 'colnames<-', 'rownames<-'))
+    setGeneric(x)
+rm(x)
 
 #' @description `nrow`, `ncol`, `colnames`, `rownames`, `names`: Getting the data properties,
 #'  similar to base R functions.
