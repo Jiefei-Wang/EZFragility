@@ -229,8 +229,8 @@ plotFragDistribution <- function(frag, sozIndex = NULL) {
     SOZMat <- fragMat[sozIndex, , drop = FALSE]
     RefMat <- fragMat[-sozIndex, , drop = FALSE]
     
-    meanSOZ <- apply(fragMat, 2, mean, na.rm = TRUE)
-    semSOZ <- apply(fragMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
+    meanSOZ <- apply(SOZMat, 2, mean, na.rm = TRUE)
+    semSOZ <- apply(SOZMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 
     meanRef <- apply(RefMat, 2, mean, na.rm = TRUE)
     semRef <- apply(RefMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))

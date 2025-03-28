@@ -108,14 +108,14 @@ The function `plotFragHeatmap` can reproduce Patient 01 results Figure 4 a from 
 The parameter `sozIndex` accepts either electrode names or their indices in the fragility matrix. If `sozIndex` is provided, the function will display the `sozIndex` electrodes in the top rows of the heatmap. If `sozIndex` is not provided, the function will simply generate a heatmap of the fragility matrix.
 ```{r}
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
 ```
 
 `plotFragDistribution` and `plotFragQuantile` are similar to the `plotFragHeatmap` function. They plot the fragility distribution and quantiles, respectively.
 ```{r, out.width="100%"}
-plotFragDistribution(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragDistribution(frag = pt01Frag, sozIndex = sozNames)
 ```
 
 ```{r, out.width="100%"}
-plotFragQuantile(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragQuantile(frag = pt01Frag, sozIndex = sozNames)
 ```
