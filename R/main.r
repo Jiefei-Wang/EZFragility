@@ -10,8 +10,7 @@
 #' (\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
 #' We have found solutions to fill up missing details in the paper method description
 #'
-#' @param ieegts Numeric. A matrix of iEEG time series x(t),
-#' with electrodes names as rows and time points as columns, or an Epoch object
+#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value to use in the ridge regression.

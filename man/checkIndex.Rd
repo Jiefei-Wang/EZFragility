@@ -7,9 +7,9 @@
 checkIndex(indices, names)
 }
 \arguments{
-\item{display}{Numeric or character. Display index}
+\item{indices}{Numeric or character index to check}
 
-\item{elecNames}{Character. All electrode names}
+\item{names}{Character. All names corresponding to the indices}
 }
 \description{
 Check and keep valid index only

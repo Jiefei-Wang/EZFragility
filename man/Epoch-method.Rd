@@ -63,6 +63,10 @@ truncateTime(x, from, to)
 
 \item{j}{Column (time) indices}
 
+\item{row.names}{\code{NULL} or a character vector giving the row names for the data frame. Missing values are not allowed. See \code{base::data.frame} for more details.}
+
+\item{optional}{Logical. If \code{TRUE}, setting row names is optional. See \code{base::data.frame} for more details.}
+
 \item{...}{additional arguments}
 
 \item{from}{Numeric value specifying start of new time range}

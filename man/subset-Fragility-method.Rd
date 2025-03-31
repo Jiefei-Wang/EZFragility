@@ -12,6 +12,10 @@
 \item{i}{A logical vector or a numeric vector of indices to subset the electrodes}
 
 \item{j}{A logical vector or a numeric vector of indices to subset the time windows}
+
+\item{...}{Additional arguments (not used)}
+
+\item{drop}{Additional arguments (not used)}
 }
 \description{
 Subset a Fragility object

@@ -2,9 +2,12 @@
 % Please edit documentation in R/class_Fragility.r
 \name{nrow,Fragility-method}
 \alias{nrow,Fragility-method}
+\alias{ncol,Fragility-method}
 \title{Get the number of rows or columns of a Fragility object}
 \usage{
 \S4method{nrow}{Fragility}(x)
+
+\S4method{ncol}{Fragility}(x)
 }
 \arguments{
 \item{x}{A Fragility object}

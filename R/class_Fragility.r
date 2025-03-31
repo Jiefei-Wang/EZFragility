@@ -41,7 +41,10 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 })
 
 
-## Define the print method
+#' Print the Fragility object
+#' @param object A Fragility object
+#' @rdname show-Fragility-method
+#' @export
 setMethod("show", "Fragility", function(object) {
     cat("\nFragility object\n")
     if (pkgData$debug) {
@@ -59,7 +62,9 @@ setMethod("show", "Fragility", function(object) {
 #' @param x A Fragility object
 #' @param i A logical vector or a numeric vector of indices to subset the electrodes
 #' @param j A logical vector or a numeric vector of indices to subset the time windows
-#'
+#' @param ... Additional arguments (not used)
+#' @param drop Additional arguments (not used)
+#' 
 #' @rdname subset-Fragility-method
 setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
     
@@ -99,6 +104,7 @@ setMethod("nrow", "Fragility", function(x) {
     nrow(x@frag)
 })
 
+#' @rdname dim-Fragility-method
 setMethod("ncol", "Fragility", function(x) {
     ncol(x@frag)
 })

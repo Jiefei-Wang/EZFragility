@@ -23,6 +23,8 @@ calcAdjFrag(
 )
 }
 \arguments{
+\item{epoch}{Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points}
+
 \item{window}{Integer. The number of time points to use in each window}
 
 \item{step}{Integer. The number of time points to move the window each time}
@@ -37,9 +39,6 @@ ensuring that ensuring that the adjacent matrix is stable (see details)}
 
 \item{parallel}{Logical. If TRUE, use parallel computing.
 Users must register a parallel backend with the foreach package}
-
-\item{ieegts}{Numeric. A matrix of iEEG time series x(t),
-with electrodes names as rows and time points as columns, or an Epoch object}
 }
 \value{
 A Fragility object

@@ -37,7 +37,7 @@ makeHeatMap <- function(df, xTicksNum = 10){
 
 #' Visualization of ictal iEEG
 #'
-#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points
+#' @inheritParams calcAdjFrag
 #' @return A ggplot object
 #'
 #' @examples

@@ -11,8 +11,8 @@ shift <- \(strL, nBlanks = 0) {
 
 #' Check and keep valid index only
 #'
-#' @param display Numeric or character. Display index
-#' @param elecNames Character. All electrode names
+#' @param indices Numeric or character index to check
+#' @param names Character. All names corresponding to the indices
 checkIndex <- function(indices, names) {
     if (length(names) == 0) {
         return()

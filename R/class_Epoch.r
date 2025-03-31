@@ -237,6 +237,8 @@ setMethod("as.matrix", "Epoch", function(x) {
 })
 
 #' @rdname Epoch-method
+#' @param row.names `NULL` or a character vector giving the row names for the data frame. Missing values are not allowed. See `base::data.frame` for more details.
+#' @param optional Logical. If `TRUE`, setting row names is optional. See `base::data.frame` for more details.
 #' @param ... additional arguments
 #' @export
 setMethod("as.data.frame", "Epoch", function(x, ...) {
