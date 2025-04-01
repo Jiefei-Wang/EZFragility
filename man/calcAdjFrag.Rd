@@ -29,11 +29,11 @@ calcAdjFrag(
 
 \item{step}{Integer. The number of time points to move the window each time}
 
-\item{lambda}{Numeric. The lambda value to use in the ridge regression.
+\item{lambda}{Numeric. The lambda value for regularization to use in the ridge regression.
 If NULL, the lambda will be chosen automatically
 ensuring that ensuring that the adjacent matrix is stable (see details)}
 
-\item{nSearch}{Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL}
+\item{nSearch}{Integer. Number of instable eigenvalues with norm=1 to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL}
 
 \item{progress}{Logical. If TRUE, print progress information. If \code{parallel} is TRUE, this option only support the \code{doSNOW} backend.}
 

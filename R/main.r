@@ -13,10 +13,10 @@
 #' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
-#' @param lambda Numeric. The lambda value to use in the ridge regression.
+#' @param lambda Numeric. The lambda value for regularization to use in the ridge regression.
 #' If NULL, the lambda will be chosen automatically
 #' ensuring that ensuring that the adjacent matrix is stable (see details)
-#' @param nSearch Integer. Number of lambda values to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL
+#' @param nSearch Integer. Number of instable eigenvalues with norm=1 to search for the minimum norm perturbation. This parameter is used only when the lambda is NULL
 #' @param progress Logical. If TRUE, print progress information. If `parallel` is TRUE, this option only support the `doSNOW` backend.
 #' @param parallel Logical. If TRUE, use parallel computing.
 #' Users must register a parallel backend with the foreach package
