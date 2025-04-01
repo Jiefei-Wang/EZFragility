@@ -49,8 +49,8 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' @examples
 #' data("pt01Frag")
 #' data("pt01EcoG")
-#' sozindex <- attr(pt01EcoG, "sozindex")
-#' pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozindex)
+#' sozIndex <- attr(pt01EcoG, "sozIndex")
+#' pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozIndex)
 #' @export 
 fragStat <- function(frag, sozIndex) {
 ## TODO: support grouped and ungrouped fragility statistics (Not now, but for the future)

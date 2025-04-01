@@ -20,6 +20,6 @@ Compute quantiles, mean and standard deviation for two electrodes group marked a
 \examples{
 data("pt01Frag")
 data("pt01EcoG")
-sozindex <- attr(pt01EcoG, "sozindex")
-pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozindex)
+sozIndex <- attr(pt01EcoG, "sozIndex")
+pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozIndex)
 }
