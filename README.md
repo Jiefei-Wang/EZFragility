@@ -47,10 +47,11 @@ If you are working with the source code, you can load the package with
 devtools::load_all()
 ```
 
-The package contains an example data. To see it, type
+The package contains an example data. To see the first 5 rows and
+columns of the data, type
 
 ``` r
-pt01EcoG
+pt01EcoG[1:5, 1:5]
 ```
 
 The package contains an example results. To see it, type
@@ -69,9 +70,9 @@ vignette("Intro_to_EZFragility", package = "EZFragility")
 
 The method is based on building a discrete time linear system computing
 a stable adjacency matrix A for the evolution of x(t).  
-$`x(t+1)=A x(t)`$ with $`x_i(t)`$ the iEEG signal at time $`t`$ for
-electrode $`i`$. A is computed for a series of time windows to derive
-the fragility row.  
+$x(t+1)=A x(t)$ with $x_i(t)$ the iEEG signal at time $t$ for electrode
+$i$. A is computed for a series of time windows to derive the fragility
+row.  
 In this package, we are applying a ridge regression to solve the matrix
 A. In (Li et al. 2017, 2021), a regularization parameter value of 1e-4
 is recommended, however testing on the data from patient pt01 from the
@@ -83,13 +84,12 @@ ridge.r).
 
 The method to compute the row perturbation is also not clear. To compute
 the fragility row, a minimum 2-induced norm additive row perturbation
-$`\Delta`$ is computed to destabilize the linear network placing an
-eigenvalue of $`A+\Delta`$ at $`\lambda=\sigma+j\omega`$. The minimum
-norm is a function of $`\lambda`$ given in (Li et al. 2017) (see
-function fragilityRow in the scrip fragility.r), however the paper does
-not describe how to choose $`\lambda`$ with $`|\lambda|=1`$. To tackle
-this issue, we search for the value that minimize the norm of
-$`\Delta`$.
+$\Delta$ is computed to destabilize the linear network placing an
+eigenvalue of $A+\Delta$ at $\lambda=\sigma+j\omega$. The minimum norm
+is a function of $\lambda$ given in (Li et al. 2017) (see function
+fragilityRow in the scrip fragility.r), however the paper does not
+describe how to choose $\lambda$ with $|\lambda|=1$. To tackle this
+issue, we search for the value that minimize the norm of $\Delta$.
 
 ## References
 

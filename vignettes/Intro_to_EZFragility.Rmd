@@ -93,21 +93,23 @@ stopCluster(cl)
 
 
 ## Predict the SOZ 
-High value of the fragility correlate with the SOZ. Here, we get a threshold estimation of the SOZ from the fragility results.
+High value of the fragility correlate with the SOZ. The function `estimateSOZ` estimates the SOZ from the fragility matrix. By default, it will return the electrode names that are in the top 10% of the fragility values. In this example, `pt01Frag$startTimes > 0` corresponds to the time windows that are after the seizure onset. This is not required. However, we found that this usually improves the results. 
 ```{r}
-soz <- estimateSOZ(pt01Frag[,pt01Frag$startTimes<0])
+soz <- estimateSOZ(pt01Frag[ ,pt01Frag$startTimes > 0])
+soz
 ```
 
 ## Fragility Statistics 
 The function `fragStat` computes quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz to check that the high value of fragilities. The significant higher distribution of the fragility in the electrode group marked as soz can be used as a prediction of seizure-freedom after resection of these electrodes. The quantile results can be used in a multi-patient study with a machine learning model to detect automatically the SOZ Li et al. (2017) <doi: 10.23919/ACC.2017.7963378>.
 ```{r}
 stats <- fragStat(pt01Frag, soz)
+stats
 ```
 
 ## Plot functions for Fragility Matrix
 The function `plotFragHeatmap` produce a heatmap of the fragility and allows to visually check the correlation between the SOZ and sustained high fragility value. Time window around seizure onset [-1:2]s, which includes the following electrodes: 
 
-- Electrodes within the surgery region: `sozName`
+- Electrodes within the surgery region: `sozNames`
 - Electrodes outside of the surgery region: "MLT1", "MLT2", "MLT3", "MLT4" 
 
 The parameter `sozIndex` accepts either electrode names or their indices in the fragility matrix. If `sozIndex` is provided, the function will display the `sozIndex` electrodes in blue in the top rows of the heatmap. If `sozIndex` is not provided, the function will simply generate a heatmap of the fragility matrix.
