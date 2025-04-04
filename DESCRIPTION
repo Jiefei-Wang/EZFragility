@@ -1,6 +1,6 @@
 Package: EZFragility
 Title: Compute neural fragility for ictal iEEG time series
-Version: 0.99.0
+Version: 1.0.0
 Authors@R: 
     c(person(
     given = "Jiefei", 
