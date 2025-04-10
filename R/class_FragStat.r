@@ -31,6 +31,7 @@ setMethod("$<-", "FragStat", function(x, name, value) {
 #' Print the FragStat object
 #' @param object A FragStat object
 #' @rdname show-FragStat-method
+#' @return the object itself
 #' @export
 setMethod("show", "FragStat", function(object) {
     cat("\nFragStat object (Summary Statistics by Step)\n")

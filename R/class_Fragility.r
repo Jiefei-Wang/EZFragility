@@ -44,6 +44,7 @@ setMethod("$<-", "Fragility", function(x, name, value) {
 #' Print the Fragility object
 #' @param object A Fragility object
 #' @rdname show-Fragility-method
+#' @return the object itself
 #' @export
 setMethod("show", "Fragility", function(object) {
     cat("\nFragility object\n")
@@ -64,7 +65,7 @@ setMethod("show", "Fragility", function(object) {
 #' @param j A logical vector or a numeric vector of indices to subset the time windows
 #' @param ... Additional arguments (not used)
 #' @param drop Additional arguments (not used)
-#' 
+#' @return A new Fragility object with the subsetted data
 #' @rdname subset-Fragility-method
 setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
     
@@ -98,7 +99,10 @@ setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
 #' Get the number of rows or columns of a Fragility object
 #'
 #' @param x A Fragility object
-#'
+#' @return 
+#' - `nrow(x)`: The number of rows (electrodes) in the fragility matrix.
+#' - `ncol(x)`: The number of columns (time points) in the fragility matrix.
+#' - `dim(x)`: A vector of length 2 containing the number of rows and columns in the fragility matrix.
 #' @rdname dim-Fragility-method
 setMethod("nrow", "Fragility", function(x) {
     nrow(x@frag)

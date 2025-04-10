@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{A Fragility object}
 }
+\value{
+the object itself
+}
 \description{
 Print the Fragility object
 }

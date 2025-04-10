@@ -38,25 +38,27 @@
 #' )
 #'
 #' ## A more realistic example with parallel computing
-#' \dontrun{
-#' ## Register a SNOW backend with 4 workers
-#' library(parallel)
-#' library(doSNOW)
-#' cl <- makeCluster(4, type = "SOCK")
-#' registerDoSNOW(cl)
+#' \donttest{
+#' if (requireNamespace("doSNOW")) {
+#'     ## Register a SNOW backend with 4 workers
+#'     library(parallel)
+#'     library(doSNOW)
+#'     cl <- makeCluster(4, type = "SOCK")
+#'     registerDoSNOW(cl)
 #'
-#' data("pt01EcoG")
-#' epoch <- Epoch(pt01EcoG)
-#' window <- 250
-#' step <- 125
-#' title <- "PT01 seizure 1"
-#' calcAdjFrag(
-#'     epoch = epoch, window = window,
-#'     step = step, parallel = TRUE, progress = TRUE
-#' )
+#'     data("pt01EcoG")
+#'     epoch <- Epoch(pt01EcoG)
+#'     window <- 250
+#'     step <- 125
+#'     title <- "PT01 seizure 1"
+#'     calcAdjFrag(
+#'         epoch = epoch, window = window,
+#'         step = step, parallel = TRUE, progress = TRUE
+#'     )
 #'
-#' ## stop the parallel backend
-#' stopCluster(cl)
+#'     ## stop the parallel backend
+#'     stopCluster(cl)
+#' }
 #' }
 #'
 #' @details

@@ -17,6 +17,9 @@
 
 \item{drop}{Additional arguments (not used)}
 }
+\value{
+A new Fragility object with the subsetted data
+}
 \description{
 Subset a Fragility object
 }

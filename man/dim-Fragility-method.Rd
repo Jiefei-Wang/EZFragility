@@ -12,6 +12,13 @@
 \arguments{
 \item{x}{A Fragility object}
 }
+\value{
+\itemize{
+\item \code{nrow(x)}: The number of rows (electrodes) in the fragility matrix.
+\item \code{ncol(x)}: The number of columns (time points) in the fragility matrix.
+\item \code{dim(x)}: A vector of length 2 containing the number of rows and columns in the fragility matrix.
+}
+}
 \description{
 Get the number of rows or columns of a Fragility object
 }

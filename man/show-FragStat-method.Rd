@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{A FragStat object}
 }
+\value{
+the object itself
+}
 \description{
 Print the FragStat object
 }
