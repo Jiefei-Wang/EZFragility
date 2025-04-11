@@ -1,6 +1,6 @@
 Package: EZFragility
 Title: Compute Neural Fragility for Ictal iEEG Time Series
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: 
     c(person(
     given = "Jiefei", 
@@ -70,3 +70,4 @@ Suggests:
     doSNOW
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+URL: https://github.com/Jiefei-Wang/EZFragility
