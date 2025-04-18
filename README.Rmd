@@ -32,10 +32,16 @@ cat(
 The goal of this Rpackage is to allow neuroscientists to reproduce and test the neural fragility method described in [@LiFragility2017;@LiFragility2021]. This method implements an intracranial EEG (iEEG) marker of the epileptogenic zone localization. In this method, seizures are conceptualized as transitions from a stable networked system to an unstable one. To quantify this, node fragility is computed from linear network models, measuring each node's susceptibility to destabilization. There are significant details missing in [@LiFragility2017;@LiFragility2021] to reproduce the neural fragility method and adjust the parameters. This Rpackage aims to identify and fill up the implementation details. It will also allow users to test the method parameters on their data.
 
 ## Installation
-To install the package from GitHub
+To install the devel version from GitHub, use the following code:
 ```r
 devtools::install_github("Jiefei-Wang/EZFragility")
 ```
+
+To install the release version from CRAN, use:
+```r
+install.packages("EZFragility")
+```
+
 
 ## EZFragility package tutorial
 
