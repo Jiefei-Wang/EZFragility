@@ -21,26 +21,26 @@ Authors@R:
     role = "aut",
     comment = c(ORCID = "0000-0001-5126-2068")),
     person(
-    given = "Oliver", 
-    family = "Zhou",  
-    email = "zhou.oliverfr@gmail.com", 
-    role = "aut"),
-    person(
     given = "Patrick", 
     family = "Karas",
     email = "pjkaras@UTMB.EDU", 
     role = "aut"),
     person(
+    given = "Oliver", 
+    family = "Zhou",  
+    email = "zhou.oliverfr@gmail.com", 
+    role = "aut"),
+    person(
     given = "Liliana", 
     family = "Camarillo Rodriguez",  
     email = "camarilloliliana@gmail.com", 
-    role = "ctb",
+    role = "aut",
     comment = c(ORCID = "0000-0001-8288-6885")),
     person(
     given = "Sean", 
     family = "O'Leary",  
     email = "smoleary@utmb.edu", 
-    role = "ctb",
+    role = "aut",
     comment = c(ORCID = "0000-0003-3650-705X"))
     )
 Description: Provides tools to compute the neural fragility matrix from intracranial electrocorticographic (iEEG) recordings, enabling the analysis of brain dynamics during seizures. The package implements the method described by Li et al. (2017) <doi:10.23919/ACC.2017.7963378> and includes functions for data preprocessing ('Epoch'), fragility computation ('calcAdjFrag'), and visualization.
