@@ -63,7 +63,7 @@ visuIEEGData <- function(epoch) {
 
     plotData <- standardizeIEEG(data)
 
-    timePoints <- times(epoch)
+    timePoints <- coltimes(epoch)
     if (is.null(timePoints)) {
         xlabel <- "Time Index"
         timeTicks <- seq_len(timesNum)
@@ -112,22 +112,20 @@ visuIEEGData <- function(epoch) {
 #' 
 #' data("pt01EcoG")
 #' 
-#' ## sozIndex is the index of the electrodes we assume are in the SOZ
-#' sozIndex <- attr(pt01EcoG, "sozIndex")
+#' ## sozNames is the name of the electrodes we assume are in the SOZ
+#' sozNames <- metaData(pt01EcoG)$sozNames
 #' 
 #' ## precomputed fragility object
 #' data("pt01Frag")
 #' 
 #' ## plot the fragility heatmap
-#' plotFragHeatmap(frag = pt01Frag, sozIndex = sozIndex)
+#' plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
 #' 
 #' @rdname plotFragHeatmap
 #' @export
 plotFragHeatmap <- function(
     frag,
     sozIndex = NULL) {
-    ## TODO: make sozID an optional
-    ## TODO: add plot support to frag
     fragMat <- frag$frag
     elecNum <- nrow(fragMat)
     windowNum <- ncol(fragMat)
@@ -172,7 +170,7 @@ plotFragHeatmap <- function(
 #' @rdname plotFragHeatmap
 #' @examples
 #' ## plot the fragility quantiles
-#' plotFragQuantile(frag = pt01Frag, sozIndex = sozIndex)
+#' plotFragQuantile(frag = pt01Frag, sozIndex = sozNames)
 #' 
 #' @export
 plotFragQuantile <- function(frag, sozIndex = NULL) {
@@ -209,7 +207,7 @@ plotFragQuantile <- function(frag, sozIndex = NULL) {
 #' @rdname plotFragHeatmap
 #' @examples
 #' ## plot the fragility distribution
-#' plotFragDistribution(frag = pt01Frag, sozIndex = sozIndex)
+#' plotFragDistribution(frag = pt01Frag, sozIndex = sozNames)
 #' 
 #' @export
 plotFragDistribution <- function(frag, sozIndex = NULL) {

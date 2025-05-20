@@ -23,6 +23,7 @@ setMethod("$", "FragStat", function(x, name) {
 })
 
 #' @rdname cash-FragStat-method
+#' @export
 setMethod("$<-", "FragStat", function(x, name, value) {
     slot(x, name) <- value
     invisible(x)

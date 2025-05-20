@@ -4,6 +4,7 @@
 
 library(R.matlab)
 library(readxl)
+library(Epoch)
 data <- readMat('data-raw/pt01epochdata.mat')
 pt01EpochRaw <- data$a
 
@@ -12,18 +13,28 @@ goodChannels <- c(1:4,7:36,42:43,46:69,72:95)
 sozChannels<-c(33:34,62:69)
 channelNames <- read_excel('data-raw/Pt01ictalRun01EcoGChannels.xls')
 rownames(pt01EpochRaw) <- channelNames$name[goodChannels]
-sozIndex<-which(goodChannels%in%sozChannels==TRUE)
-sozNames<-channelNames$name[sozChannels]
+soz <- goodChannels%in%sozChannels
+sozNames <- channelNames$name[sozChannels]
 
 ## Add time stamps to the columns
 times <- seq(-10, 10, length.out=ncol(pt01EpochRaw))
-times_with_sign <- ifelse(times >= 0, paste0("+", times), as.character(times))
-colnames(pt01EpochRaw)<-times_with_sign
+
+epoch <- Epoch(
+    table = pt01EpochRaw,
+    times = times,
+    rowData = data.frame(soz = soz),
+    metaData = data.frame(
+        patient = "PT01",
+        sozNames = sozNames,
+        samplingRate = 1000,
+        source = "National Institute of Health"
+    )
+    )
 
 
-pt01EcoG<-pt01EpochRaw[,9001:12000]
-attr(pt01EcoG, "sozIndex") <- sozIndex
-attr(pt01EcoG, "sozNames") <- sozNames
+pt01EcoG <- crop(epoch, start = -1, end = 2)
+
+
 usethis::use_data(pt01EcoG, overwrite = TRUE)
 
 
@@ -40,12 +51,3 @@ usethis::use_data(pt01Frag, overwrite = TRUE)
 
 
 
-
-
-dl <- EpochDownloader()
-sub1 <- dl$Retrostudy_subpt01_1
-pt01EcoG <- crop(sub1, start = -1, end = 2)
-usethis::use_data(pt01EcoG, overwrite = TRUE)
-
-
-class(pt01EcoG)

@@ -89,7 +89,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
     elecNum <- nrow(epoch)
     timeNum <- ncol(epoch)
     elecNames <- rownames(epoch)
-    timePoints <- times(epoch)
+    timePoints <- coltimes(epoch)
     dataMat <- tblData(epoch)
 
     ## The input matrix must have at least window rows

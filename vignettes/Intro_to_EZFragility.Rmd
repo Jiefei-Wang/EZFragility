@@ -33,41 +33,40 @@ The hypothesis of the neural fragility is that small changes in connection stren
 
 ## Load small ictal ieeg data for patient PT01
 
-This example data corresponds to the first seizure of patient PT01 from the Fragility Data Set. `pt01EcoG` is a matrix with 3000 rows (time points) and 84 columns (electrodes). The acquisition frequency is 1000Hz and the time around seizure onset is [-1:2]s. The rows names are the electrodes names. The column names is the time relative to seizure onset in (s). For more information about the data, you can use the `?pt01EcoG` command.
+This example data corresponds to the first seizure of patient PT01 from the Fragility Data Set. `pt01EcoG` is an Epoch object with 3000 rows (time points) and 84 columns (electrodes). The acquisition frequency is 1000Hz and the time around seizure onset is [-1:2]s. The rows names are the electrodes names. The column names is the time relative to seizure onset in (s). For more information about the data, you can use the `?pt01EcoG` command.
 
-The patient underwent a surgical treatment and was seizure-free after the surgery. The electrodes located in the SOZ and the surgically removed area are marked in `sozIndex` attribute.
+The patient underwent a surgical treatment and was seizure-free after the surgery. There are two ways to find the SOZ electrodes in the data
 ```{r ictal data}
 data("pt01EcoG")
 
-## create an epoch object
-epoch <- Epoch(pt01EcoG)
-epoch
+# option 1: boolean value indicating if the electrode is in the SOZ
+rowData(pt01EcoG)$soz
+
+# option 2: SOZ names from the metadata
+sozNames <- metaData(pt01EcoG)$sozNames
 ```
 
 The function `visuIEEGData` can visualize the iEEG data. 
 ```{r}
-visuIEEGData(epoch  = epoch)
+visuIEEGData(epoch  = pt01EcoG)
 ```
 
 The Epoch object can be subset using the `[` operator.
 ```{r}
-# The electrode names corresponding to the site of the patient's surgery
-sozNames <- attr(pt01EcoG, "sozNames")
-
 ## Show the electrodes that are marked as SOZ and additional 4 electrodes
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-visuIEEGData(epoch  = epoch[display])
+visuIEEGData(epoch  = pt01EcoG[display])
 
 ## Equivalent to: 
-## visuIEEGData(epoch  = epoch[display, ])
+## visuIEEGData(epoch  = pt01EcoG[display, ])
 
 ## constrain to the first 100 time points
-visuIEEGData(epoch  = epoch[display, 1:100])
+visuIEEGData(epoch  = pt01EcoG[display, 1:100])
 ```
 
-You can use `truncateTime` to specify the time range
+You can use `crop` to specify the time range
 ```{r}
-epochClipped <- truncateTime(epoch, from = -1, to = 0)
+epochClipped <- crop(pt01EcoG, start = -1, end = 0)
 
 visuIEEGData(epoch  = epochClipped)
 ```
@@ -82,7 +81,7 @@ registerDoSNOW(cl)
 
 windowNum <- 250
 step <- 125
-pt01Frag <- calcAdjFrag(epoch = epoch, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
+pt01Frag <- calcAdjFrag(epoch = epochClipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
 
 # Fragility result
 pt01Frag
