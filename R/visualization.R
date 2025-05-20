@@ -47,8 +47,7 @@ makeHeatMap <- function(df, xTicksNum = 10){
 #' sozIndex <- attr(pt01EcoG, "sozIndex")
 #' display <- c(sozIndex, 77:80)
 #' 
-#' epoch <- Epoch(pt01EcoG)
-#' visuIEEGData(epoch = epoch[display, ])
+#' visuIEEGData(epoch = pt01EcoG[display, ])
 #' @export
 visuIEEGData <- function(epoch) {
     if (is(epoch, "matrix")){
@@ -57,20 +56,20 @@ visuIEEGData <- function(epoch) {
 
     gaps <- 2
 
-    elecNames <- epoch$electrodes
-    data <- epoch$data
+    elecNames <- rownames(epoch)
+    data <- tblData(epoch)
     elecNum <- nrow(data)
     timesNum <- ncol(data)
 
     plotData <- standardizeIEEG(data)
 
-    times <- epoch$times
-    if (is.null(times)) {
+    timePoints <- times(epoch)
+    if (is.null(timePoints)) {
         xlabel <- "Time Index"
         timeTicks <- seq_len(timesNum)
     } else {
         xlabel <- "Time (s)"
-        timeTicks <- times
+        timeTicks <- timePoints
     }
 
     plotData <- apply(plotData, 1, function(x) x - mean(x))

@@ -22,6 +22,5 @@ data("pt01EcoG")
 sozIndex <- attr(pt01EcoG, "sozIndex")
 display <- c(sozIndex, 77:80)
 
-epoch <- Epoch(pt01EcoG)
-visuIEEGData(epoch = epoch[display, ])
+visuIEEGData(epoch = pt01EcoG[display, ])
 }

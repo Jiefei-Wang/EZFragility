@@ -83,12 +83,11 @@ if (requireNamespace("doSNOW")) {
     registerDoSNOW(cl)
 
     data("pt01EcoG")
-    epoch <- Epoch(pt01EcoG)
     window <- 250
     step <- 125
     title <- "PT01 seizure 1"
     calcAdjFrag(
-        epoch = epoch, window = window,
+        epoch = pt01EcoG, window = window,
         step = step, parallel = TRUE, progress = TRUE
     )
 

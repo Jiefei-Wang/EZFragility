@@ -47,12 +47,11 @@
 #'     registerDoSNOW(cl)
 #'
 #'     data("pt01EcoG")
-#'     epoch <- Epoch(pt01EcoG)
 #'     window <- 250
 #'     step <- 125
 #'     title <- "PT01 seizure 1"
 #'     calcAdjFrag(
-#'         epoch = epoch, window = window,
+#'         epoch = pt01EcoG, window = window,
 #'         step = step, parallel = TRUE, progress = TRUE
 #'     )
 #'
@@ -89,9 +88,9 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
     }
     elecNum <- nrow(epoch)
     timeNum <- ncol(epoch)
-    elecNames <- epoch$electrodes
-    timePoints <- epoch$times
-    dataMat <- epoch$data
+    elecNames <- rownames(epoch)
+    timePoints <- times(epoch)
+    dataMat <- tblData(epoch)
 
     ## The input matrix must have at least window rows
     stopifnot(timeNum >= window)
@@ -187,12 +186,10 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
     ## start time point/indices for each partition
     startTimes <- (seq_len(nWindows) - 1L) * step + 1L
-    if (!is.null(epoch$times)) {
-        startTimes <- epoch$times[startTimes]
+    if (!is.null(timePoints)) {
+        startTimes <- timePoints[startTimes]
     }
 
-    ## TODO: why the row of frag is the electrode names? not the column of frag?
-    ## This does not match the input data
     Fragility(
         ieegts = dataMat,
         adj = A,
@@ -201,7 +198,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
         frag_ranked = fR,
         lambdas = lbd,
         startTimes = startTimes,
-        electrodes = epoch$electrodes
+        electrodes = elecNames
     )
 }
 

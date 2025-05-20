@@ -8,7 +8,7 @@
         R2 = "matrix",
         lambdas = "numeric",
         startTimes = "numeric",
-        electrodes = "character"
+        electrodes = "characterOrNULL"
     )
 )
 

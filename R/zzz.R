@@ -1,5 +1,6 @@
 #' @import methods
 #' @import stats
+#' @import Epoch
 #' @importFrom rlang .data
 #' @importFrom glue glue
 #' @importFrom foreach foreach %dopar%

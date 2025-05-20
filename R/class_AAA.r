@@ -2,6 +2,7 @@
 setClassUnion("matrixOrNULL", c("matrix", "NULL"))
 setClassUnion("arrayOrNULL", c("array", "NULL"))
 setClassUnion("numericOrNULL", c("numeric", "NULL"))
+setClassUnion("characterOrNULL", c("character", "NULL"))
 
 printSlotValue <- function(object, slotName, k = 3) {
     val <- methods::slot(object, slotName)

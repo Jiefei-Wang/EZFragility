@@ -39,3 +39,13 @@ pt01Frag <- calcAdjFrag(epoch = pt01EcoG, window = t_window, step = t_step, para
 usethis::use_data(pt01Frag, overwrite = TRUE)
 
 
+
+
+
+dl <- EpochDownloader()
+sub1 <- dl$Retrostudy_subpt01_1
+pt01EcoG <- crop(sub1, start = -1, end = 2)
+usethis::use_data(pt01EcoG, overwrite = TRUE)
+
+
+class(pt01EcoG)
