@@ -81,7 +81,7 @@ registerDoSNOW(cl)
 
 windowNum <- 250
 step <- 125
-pt01Frag <- calcAdjFrag(epoch = epochClipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
+pt01Frag <- calcAdjFrag(epoch = pt01EcoG, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
 
 # Fragility result
 pt01Frag
@@ -114,14 +114,14 @@ The function `plotFragHeatmap` produce a heatmap of the fragility and allows to 
 The parameter `sozIndex` accepts either electrode names or their indices in the fragility matrix. If `sozIndex` is provided, the function will display the `sozIndex` electrodes in blue in the top rows of the heatmap. If `sozIndex` is not provided, the function will simply generate a heatmap of the fragility matrix.
 ```{r}
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
+plotFragHeatmap(frag = pt01Frag[display], sozIndex = sozNames)
 ```
 
 `plotFragDistribution` and `plotFragQuantile` are similar to the `plotFragHeatmap` function. They plot the fragility distribution and quantiles, respectively.
 ```{r, out.width="100%"}
-plotFragDistribution(frag = pt01Frag, sozIndex = sozNames)
+plotFragDistribution(frag = pt01Frag[display], sozIndex = sozNames)
 ```
 
 ```{r, out.width="100%"}
-plotFragQuantile(frag = pt01Frag, sozIndex = sozNames)
+plotFragQuantile(frag = pt01Frag[display], sozIndex = sozNames)
 ```
