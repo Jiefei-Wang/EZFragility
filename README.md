@@ -7,7 +7,7 @@
 [![](https://img.shields.io/github/languages/code-size/Jiefei-Wang/EZFragility.svg)](https://github.com/Jiefei-Wang/EZFragility)
 [![](https://img.shields.io/github/last-commit/Jiefei-Wang/EZFragility.svg)](https://github.com/Jiefei-Wang/EZFragility/commits/main)
 [![R-CMD-check](https://github.com/Jiefei-Wang/EZFragility/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Jiefei-Wang/EZFragility/actions/workflows/R-CMD-check.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/your_username/your_repo/badge.svg?branch=main)](https://coveralls.io/github/your_username/your_repo?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/Jiefei-Wang/EZFragility/badge.svg?branch=main)](https://coveralls.io/github/Jiefei-Wang/EZFragility?branch=main)
 
 
 ## Introduction
