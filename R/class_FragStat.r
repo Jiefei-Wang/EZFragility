@@ -2,9 +2,9 @@ FragStat <- setClass(
     "FragStat",
     slots = list(
         qmatrix = "matrixOrNULL",
-        meanSOZ = "numericOrNULL",
+        meanGroup = "numericOrNULL",
         meanRef = "numericOrNULL",
-        sdSOZ = "numericOrNULL",
+        sdGroup = "numericOrNULL",
         sdRef = "numericOrNULL"
     )
 )

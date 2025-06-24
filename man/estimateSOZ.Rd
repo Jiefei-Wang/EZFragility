@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.r
 \name{estimateSOZ}
 \alias{estimateSOZ}
-\title{Find Serzure Onset Zone}
+\title{Find Seizure Onset Zone}
 \usage{
 estimateSOZ(x, method = c("mean", "max", "min"), proportion = 0.1, ...)
 }
