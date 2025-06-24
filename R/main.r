@@ -215,7 +215,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
     results
 }
 
-#' Find Serzure Onset Zone
+#' Find Seizure Onset Zone
 #' 
 #' The function estimates the seizure onset zone (SOZ). For each row, it calculates the maximum, minimum, or mean of row. The rows with the highest values are considered as the SOZ.
 #'

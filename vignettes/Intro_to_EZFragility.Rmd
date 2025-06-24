@@ -26,7 +26,7 @@ The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.796
 ## Key definition of the neural fragility marker
 
 Drug-resistant epilepsy (DRE) is a significant clinical challenge. Effective treatment requires the synthesis of large amounts of personalized clinical data with the goal of identifying the region within a patient’s brain from which seizures originate (the epileptogenic zone, or EZ). Current standard of care involves multidisciplinary group meetings and clinician consensus after reviewing patient data. This lack of a standardized methodology has led to variable surgical outcomes, measured by seizure freedom/reduction after surgery. Computational methods to identify the EZ have been developed to improve outcomes. 
-The neural fragility implemented is the R package is a promising biomarker of the epileptogenic zone. We provide this R package so that the method can be tested on extensive data for research.
+The neural fragility implemented in this R package is a promising biomarker of the epileptogenic zone. We provide this R package so that the method can be tested on extensive data for research.
 
 The hypothesis of the neural fragility is that small changes in connection strengths at seizure onset zone nodes (SOZ) cause an imbalance in inhibitory and excitatory connectivity between brain regions. Then if the SOZ is perturbed, over excitation can occur manifesting in a seizure. The neural fragility marker propose a metric to evaluate when connection strength changes cause imbalance and on which electrodes.To create the fragility marker, a personalized dynamic model of the brain network from observed iEEG signals is computed in a discrete number of time windows. Then the neural fragility measures the degree network nodes are imbalanced by systematically computing the minimum perturbation required for each electrode’s connections to produce instability for the entire network. 
 
@@ -111,17 +111,55 @@ The function `plotFragHeatmap` produce a heatmap of the fragility and allows to 
 - Electrodes within the surgery region: `sozNames`
 - Electrodes outside of the surgery region: "MLT1", "MLT2", "MLT3", "MLT4" 
 
-The parameter `sozIndex` accepts either electrode names or their indices in the fragility matrix. If `sozIndex` is provided, the function will display the `sozIndex` electrodes in blue in the top rows of the heatmap. If `sozIndex` is not provided, the function will simply generate a heatmap of the fragility matrix.
+The parameter `groupIndex` accepts either electrode names or their indices in the fragility matrix. If `groupIndex` is provided, the function will display the `groupIndex` electrodes in blue in the top rows of the heatmap. If `groupIndex` is not provided, the function will simply generate a heatmap of the fragility matrix. Here the group index are the SOZ names but for EZ localization study it can be the resected electrodes or the intersection between resected electrodes and the SOZ. Use groupName to label your study group.
 ```{r}
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragHeatmap(frag = pt01Frag[display], groupIndex = sozNames)
 ```
 
 `plotFragDistribution` and `plotFragQuantile` are similar to the `plotFragHeatmap` function. They plot the fragility distribution and quantiles, respectively.
 ```{r, out.width="100%"}
-plotFragDistribution(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragDistribution(frag = pt01Frag[display], groupIndex = sozNames)
 ```
 
 ```{r, out.width="100%"}
-plotFragQuantile(frag = pt01Frag[display], sozIndex = sozNames)
+plotFragQuantile(frag = pt01Frag[display], groupIndex = sozNames, groupName = "SOZ")
+```
+
+## Using the Epoch package for a multi-patient study
+
+Installation of the <a href="https://github.com/Jiefei-Wang/Epoch" style="color:blue; text-decoration:none;"> Epoch</a> and <a href="https://github.com/Jiefei-Wang/TableContainer" style="color:blue; text-decoration:none;"> TableContainer</a> packages are necessary to compile the EZFragility package. They allow to explore fragility results on preprocessed multipatient data from 
+the openneuro public data set <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> Openneuro Fragility Data Set</a>. <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE </a>. Main steps include notch filtering to remove power line interference, re-referencing, epoching based on seizure onset time to isolate relevant segments of [-30:30s]. The data names are displaying the patient identifier and the seizure number.
+```{r}
+dl<-EpochDownloader()
+names(dl)
+```
+Patient pt01 seizure 1 can be loaded and cropped in the [-10:10]s time window around seizure onset  with the following code
+```{r}
+ptdli<-dl$Retrostudy_subpt01_1
+ptdlicrop<-crop(ptdli, start=-10, end=10)
+
+## sozIndex is the index of the electrodes we assume are in the SOZ
+sozIndex<-which(ptdli@rowData$soz==TRUE)
+display <- c(sozIndex, 77:80)
+visuIEEGData(epoch = ptdlicrop[display, ])
+```
+The fragility heatmap can be computed as followed
+```{r}  
+cl <- parallel::makeCluster(6, type = "SOCK")
+doSNOW::registerDoSNOW(cl)
+
+window <- 250
+step <- 125
+fragres<-calcAdjFrag(
+  epoch = ptdlicrop, window = window,
+  step = step, parallel = TRUE, progress = TRUE
+)
+
+## stop the parallel backend
+parallel::stopCluster(cl)
+
+
+plotheatmap<-plotFragHeatmap(fragres, groupIndex=sozIndex)
+plotheatmap
 ```

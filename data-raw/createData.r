@@ -22,14 +22,14 @@ times <- seq(-10, 10, length.out=ncol(pt01EpochRaw))
 epoch <- Epoch(
     table = pt01EpochRaw,
     times = times,
-    rowData = data.frame(soz = soz),
+    rowData = data.frame(soz = soz, resect, dns),
     metaData = data.frame(
         patient = "PT01",
         sozNames = sozNames,
         samplingRate = 1000,
         source = "National Institute of Health"
     )
-    )
+)
 
 
 pt01EcoG <- crop(epoch, start = -1, end = 2)
