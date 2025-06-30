@@ -2,7 +2,7 @@
 % Please edit documentation in R/fragStat.r
 \name{fragStat}
 \alias{fragStat}
-\title{Compute quantiles, mean and standard deviation for two electrodes group}
+\title{Compute quantiles, mean and standard deviation for two electrodes groups}
 \usage{
 fragStat(frag, groupIndex, groupName = "SOZ")
 }
@@ -10,12 +10,14 @@ fragStat(frag, groupIndex, groupName = "SOZ")
 \item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}
 
 \item{groupIndex}{Integer.  Vector group electrodes (for good electrodes)}
+
+\item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
 }
 \value{
 list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 }
 \description{
-Compute quantiles, mean and standard deviation for two electrodes group
+Compute quantiles, mean and standard deviation for two electrodes groups
 }
 \examples{
 data("pt01Frag")

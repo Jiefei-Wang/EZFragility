@@ -16,6 +16,8 @@ plotFragDistribution(frag, groupIndex = NULL, groupName = "SOZ")
 \item{frag}{Fragility object from \code{calcAdjFrag}}
 
 \item{groupIndex}{Integer or string. A group of electrodes to mark}
+
+\item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
 }
 \value{
 A ggplot object
@@ -23,9 +25,9 @@ A ggplot object
 \description{
 \code{plotFragHeatmap}: plot fragility heatmaps with electrodes marked as soz colored
 
-\code{plotFragQuantile}: Plot Fragility time quantiles for two electrodes group marked as SOZ and reference
+\code{plotFragQuantile}: Plot Fragility time quantiles for two electrodes groups
 
-\code{plotFragQuantile}: Plot Fragility time distribution for two electrodes group marked as SOZ and reference
+\code{plotFragQuantile}: Plot Fragility time distribution for two electrodes groups
 }
 \examples{
 

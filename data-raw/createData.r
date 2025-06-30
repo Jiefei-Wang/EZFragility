@@ -22,7 +22,7 @@ times <- seq(-10, 10, length.out=ncol(pt01EpochRaw))
 epoch <- Epoch(
     table = pt01EpochRaw,
     times = times,
-    rowData = data.frame(soz = soz, resect, dns),
+    rowData = data.frame(soz = soz),
     metaData = data.frame(
         patient = "PT01",
         sozNames = sozNames,

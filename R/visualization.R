@@ -26,12 +26,12 @@ makeHeatMap <- function(df, xTicksNum = 10){
         breaks <- xLabels
     }
 
-    ggplot2::ggplot(df_long) +
-        ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data$value)) +
-        ggplot2::scale_x_discrete(labels = breaks, breaks = breaks) +
-        ggplot2::theme(plot.title = ggtext::element_markdown(hjust = 0.5)) +
-        viridis::scale_fill_viridis(option = "turbo") +
-        ggplot2::theme_minimal()
+    ggplot(df_long) +
+        geom_tile(aes(x = .data$x, y = .data$y, fill = .data$value)) +
+        scale_x_discrete(labels = breaks, breaks = breaks) +
+        theme(plot.title = element_markdown(hjust = 0.5)) +
+        scale_fill_viridis(option = "turbo") +
+        theme_minimal()
 }
 
 
@@ -44,7 +44,7 @@ makeHeatMap <- function(df, xTicksNum = 10){
 #' data("pt01EcoG")
 #' 
 #' ## Visualize a subject of electrodes
-#' sozIndex<-which(pt01EcoG@rowData$soz==TRUE)
+#' sozIndex <- which(rowData(pt01EcoG)$soz)
 #' display <- c(sozIndex, 77:80)
 #' 
 #' visuIEEGData(epoch = pt01EcoG[display, ])
@@ -86,15 +86,15 @@ visuIEEGData <- function(epoch) {
     }
 
 
-    p <- ggplot2::ggplot(data = plotData)
+    p <- ggplot(data = plotData)
     for (i in seq_along(elecNamesReversed)) {
         elec <- elecNamesReversed[i]
-        p <- p + ggplot2::geom_line(ggplot2::aes(x = .data$timeTicks, y = .data[[elec]]))
+        p <- p + geom_line(aes(x = .data$timeTicks, y = .data[[elec]]))
     }
 
     p +
-        ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
-        ggplot2::scale_y_continuous(labels = elecNamesReversed, breaks = breakplot)
+        labs(x = xlabel, y = "Electrode", size = 2) +
+        scale_y_continuous(labels = elecNamesReversed, breaks = breakplot)
 }
 
 
@@ -105,6 +105,7 @@ visuIEEGData <- function(epoch) {
 #'
 #' @param frag Fragility object from \code{calcAdjFrag}
 #' @param groupIndex Integer or string. A group of electrodes to mark 
+#' @param groupName Character. Name of the group of electrodes, default is "SOZ"
 #' 
 #' @return A ggplot object
 #'
@@ -158,14 +159,14 @@ plotFragHeatmap <- function(
 
 
     makeHeatMap(df) +
-        ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
-        ggplot2::theme(
-            axis.text.y = ggtext::element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
+        labs(x = xlabel, y = "Electrode", size = 2) +
+        theme(
+            axis.text.y = element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
         )
 }
 
 
-#' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes group marked as SOZ and reference
+#' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes groups
 #' 
 #' @rdname plotFragHeatmap
 #' @examples
@@ -174,13 +175,17 @@ plotFragHeatmap <- function(
 #' 
 #' @export
 plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
-    groupIndex <- checkIndex(groupIndex, frag$electrodes)
     if (is.null(groupIndex)) {
         groupIndex <- estimateSOZ(frag)
     }
+    groupIndex <- checkIndex(groupIndex, frag$electrodes)
     windowNum <- ncol(frag)
 
-    stat <- fragStat(frag, groupIndex, groupName)
+    stat <- fragStat(
+        frag, 
+        groupIndex = groupIndex, 
+        groupName = groupName
+    )
     qmatrix <- as.data.frame(stat$qmatrix)
 
     startTimes <- frag$startTimes
@@ -195,14 +200,14 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
     colnames(qmatrix) <- timeTicks
 
     makeHeatMap(qmatrix)+
-        ggplot2::labs(x = xlabel, y = "Quantiles", size = 8) +
-        ggplot2::theme(
-            axis.text.y = ggplot2::element_text(size = 8), # Adjust depending on electrodes
+        labs(x = xlabel, y = "Quantiles", size = 8) +
+        theme(
+            axis.text.y = element_text(size = 8), # Adjust depending on electrodes
         )
 }
 
 
-#' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes group marked as SOZ and reference
+#' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes groups
 #' 
 #' @rdname plotFragHeatmap
 #' @examples
@@ -212,8 +217,7 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
 #' @export
 plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ") {
     if (is.null(groupIndex)) {
-        sozIndex <- estimateSOZ(frag)
-        groupIndex<-sozIndex
+        groupIndex <- estimateSOZ(frag)
     }
     
     groupIndex <- checkIndex(groupIndex, frag$electrodes)
@@ -224,11 +228,11 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ") {
     groupMat <- fragMat[groupIndex, , drop = FALSE]
     RefMat <- fragMat[-groupIndex, , drop = FALSE]
     
-    meangroup <- apply(groupMat, 2, mean, na.rm = TRUE)
-    semgroup <- apply(groupMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
+    groupMean <- apply(groupMat, 2, mean, na.rm = TRUE)
+    groupSEM <- apply(groupMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 
-    meanRef <- apply(RefMat, 2, mean, na.rm = TRUE)
-    semRef <- apply(RefMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
+    refMean <- apply(RefMat, 2, mean, na.rm = TRUE)
+    refSEM <- apply(RefMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 
     startTimes <- frag$startTimes
     if (is.null(startTimes)) {
@@ -239,36 +243,36 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ") {
         timeTicks <- startTimes
     }
 
-    uppergroup <- meangroup + semgroup
-    lowergroup <- meangroup - semgroup
-    upperRef <- meanRef + semRef
-    lowerRef <- meanRef - semRef
+    groupUpperBound <- groupMean + groupSEM
+    groupLowerBound <- groupMean - groupSEM
+    refUpperBound <- refMean + refSEM
+    refLowerBound <- refMean - refSEM
 
     plotData <- data.frame(
         timeTicks = timeTicks,
-        meangroup = meangroup,
-        uppergroup = uppergroup,
-        lowergroup = lowergroup,
-        meanRef = meanRef,
-        upperRef = upperRef,
-        lowerRef = lowerRef
+        groupMean = groupMean,
+        groupUpperBound = groupUpperBound,
+        groupLowerBound = groupLowerBound,
+        refMean = refMean,
+        refUpperBound = refUpperBound,
+        refLowerBound = refLowerBound
     )
     
-    color1="Group +/- sem"
-    color2="Groupc +/- sem"
-
- 
+    color1 <- "Group +/- sem"
+    color2 <- "Groupc +/- sem"
     colors <- c("Group +/- sem" = "red", "Groupc +/- sem" = "black")
-    ggplot2::ggplot(plotData, ggplot2::aes(x = .data$timeTicks)) +
-        ggplot2::xlab(xlabel) +
-        ggplot2::ylab("Fragility") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$meangroup, color = "Group +/- sem")) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$uppergroup), color = "red", linetype = "dotted") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$lowergroup), color = "red", linetype = "dotted") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$meanRef, color = "Groupc +/- sem")) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$upperRef), color = "black", linetype = "dotted") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$lowerRef), color = "black", linetype = "dotted") +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$lowergroup, ymax = .data$uppergroup), fill = "red", alpha = 0.5) +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$lowerRef, ymax = .data$upperRef), fill = "black", alpha = 0.5) +
-        ggplot2::scale_color_manual(name = "Electrode groups", values = c(colors))
+    ggplot(plotData, aes(x = .data$timeTicks)) +
+        xlab(xlabel) +
+        ylab("Fragility") +
+        geom_line(
+            aes(y = .data$groupMean, color = "Group +/- sem")
+        ) +
+        geom_line(aes(y = .data$groupUpperBound), color = "red", linetype = "dotted") +
+        geom_line(aes(y = .data$groupLowerBound), color = "red", linetype = "dotted") +
+        geom_line(aes(y = .data$refMean, color = "Groupc +/- sem")) +
+        geom_line(aes(y = .data$refUpperBound), color = "black", linetype = "dotted") +
+        geom_line(aes(y = .data$refLowerBound), color = "black", linetype = "dotted") +
+        geom_ribbon(aes(ymin = .data$groupLowerBound, ymax = .data$groupUpperBound), fill = "red", alpha = 0.5) +
+        geom_ribbon(aes(ymin = .data$refLowerBound, ymax = .data$refUpperBound), fill = "black", alpha = 0.5) +
+        scale_color_manual(name = "Electrode groups", values = c(colors))
 }
