@@ -239,13 +239,17 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
 
 #' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes groups
 #' @param bandType Character. The type of band to use, either "SEM" or "SD". Default is "SEM".
+#' @param rollingWindow Integer. Window size for rolling average smoothing. Default is 1 (no smoothing).
 #' @rdname plotFragHeatmap
 #' @examples
 #' ## plot the fragility distribution
 #' plotFragDistribution(frag = pt01Frag, groupIndex = sozNames)
 #' 
+#' ## plot with smoothing
+#' plotFragDistribution(frag = pt01Frag, groupIndex = sozNames, rollingWindow = 2)
+#' 
 #' @export
-plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandType = c("SEM", "SD")) {
+plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandType = c("SEM", "SD"), rollingWindow = 1) {
     bandType <- match.arg(bandType)
     if (is.null(groupIndex)) {
         groupIndex <- estimateSOZ(frag)
@@ -267,6 +271,15 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandT
         groupWidth <- stat$groupSD
         refWidth <- stat$refSD
     }
+    
+    ## Apply rolling average smoothing if requested
+    if (rollingWindow > 1) {
+        groupMean <- rolling_mean(groupMean, rollingWindow)
+        refMean <- rolling_mean(refMean, rollingWindow)
+        groupWidth <- rolling_mean(groupWidth, rollingWindow)
+        refWidth <- rolling_mean(refWidth, rollingWindow)
+    }
+    
     groupUpperBound <- groupMean + groupWidth
     groupLowerBound <- groupMean - groupWidth
     refUpperBound <- refMean + refWidth

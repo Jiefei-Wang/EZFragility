@@ -14,7 +14,8 @@ plotFragDistribution(
   frag,
   groupIndex = NULL,
   groupName = "SOZ",
-  bandType = c("SEM", "SD")
+  bandType = c("SEM", "SD"),
+  rollingWindow = 1
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ plotFragDistribution(
 \item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
 
 \item{bandType}{Character. The type of band to use, either "SEM" or "SD". Default is "SEM".}
+
+\item{rollingWindow}{Integer. Window size for rolling average smoothing. Default is 1 (no smoothing).}
 }
 \value{
 A ggplot object
@@ -56,5 +59,8 @@ plotFragQuantile(frag = pt01Frag, groupIndex = sozNames)
 
 ## plot the fragility distribution
 plotFragDistribution(frag = pt01Frag, groupIndex = sozNames)
+
+## plot with smoothing
+plotFragDistribution(frag = pt01Frag, groupIndex = sozNames, rollingWindow = 2)
 
 }
