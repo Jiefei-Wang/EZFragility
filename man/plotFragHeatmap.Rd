@@ -6,7 +6,7 @@
 \alias{plotFragDistribution}
 \title{Visualization functions (raw signal, fragility matrix)}
 \usage{
-plotFragHeatmap(frag, groupIndex = NULL)
+plotFragHeatmap(frag, groupIndex = NULL, maxLabels = 50)
 
 plotFragQuantile(frag, groupIndex = NULL, groupName = "SOZ")
 
@@ -21,6 +21,8 @@ plotFragDistribution(
 \item{frag}{Fragility object from \code{calcAdjFrag}}
 
 \item{groupIndex}{Integer or string. A group of electrodes to mark}
+
+\item{maxLabels}{Integer. Maximum number of labels to show on y-axis. Default is 50. The actual number of labels may be less than this value if there are too many electrodes.}
 
 \item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
 

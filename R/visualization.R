@@ -1,5 +1,5 @@
 # A plot function that takes a data frame and returns a heatmap plot
-makeHeatMap <- function(df, xTicksNum = 10){
+makeHeatMap <- function(df, xTicksNum = 10, maxLabels = Inf){
     xLabels <- colnames(df)
     yLabels <- rownames(df)
 
@@ -26,9 +26,18 @@ makeHeatMap <- function(df, xTicksNum = 10){
         breaks <- xLabels
     }
 
+    ## limit the number of labels on y-axis
+    yLabelsForDisplay <- rev(yLabels)  # Match the reversed factor levels
+    if (length(yLabelsForDisplay) > maxLabels) {
+        by_num <- ceiling(length(yLabelsForDisplay)/maxLabels)
+        label_idx <- seq(length(yLabelsForDisplay), 1, by=-by_num)
+        yLabelsForDisplay[-label_idx] <- ""
+    }
+
     ggplot(df_long) +
         geom_tile(aes(x = .data$x, y = .data$y, fill = .data$value)) +
         scale_x_discrete(labels = breaks, breaks = breaks) +
+        scale_y_discrete(labels = yLabelsForDisplay, breaks = rev(yLabels)) +
         theme(plot.title = element_markdown(hjust = 0.5)) +
         scale_fill_viridis(option = "turbo") +
         theme_minimal()
@@ -39,6 +48,7 @@ makeHeatMap <- function(df, xTicksNum = 10){
 #'
 #' @inheritParams calcAdjFrag
 #' @inheritParams fragStat
+#' @param maxLabels Integer. Maximum number of labels to show on y-axis. Default is 50. The actual number of labels may be less than this value if there are too many electrodes.
 #' @return A ggplot object
 #'
 #' @examples
@@ -50,7 +60,7 @@ makeHeatMap <- function(df, xTicksNum = 10){
 #' 
 #' visuIEEGData(epoch = pt01EcoG[display, ])
 #' @export
-visuIEEGData <- function(epoch, groupIndex = NULL) {
+visuIEEGData <- function(epoch, groupIndex = NULL, maxLabels = 50) {
     if (is(epoch, "matrix")){
         epoch <- Epoch(epoch)
     }
@@ -103,6 +113,13 @@ visuIEEGData <- function(epoch, groupIndex = NULL) {
         p <- p + geom_line(aes(x = .data$timeTicks, y = .data[[elec]]))
     }
 
+    ## limit the number of labels on y-axis
+    if (length(elecNamesReversed) > maxLabels) {
+        by_num <- ceiling(length(elecNamesReversed)/maxLabels)
+        label_idx <- seq(length(elecNamesReversed), 1, by=-by_num)
+        elecNamesReversed[-label_idx] <- ""
+    }
+
     p +
         labs(x = xlabel, y = "Electrode", size = 2) +
         scale_y_continuous(labels = elecNamesReversed, breaks = breakplot) +
@@ -119,6 +136,7 @@ visuIEEGData <- function(epoch, groupIndex = NULL) {
 #'
 #' @param frag Fragility object from \code{calcAdjFrag}
 #' @inheritParams fragStat
+#' @inheritParams visuIEEGData
 #' 
 #' @return A ggplot object
 #'
@@ -139,7 +157,8 @@ visuIEEGData <- function(epoch, groupIndex = NULL) {
 #' @export
 plotFragHeatmap <- function(
     frag,
-    groupIndex = NULL) {
+    groupIndex = NULL,
+    maxLabels = 50) {
     fragMat <- frag$frag
     elecNum <- nrow(fragMat)
     windowNum <- ncol(fragMat)
@@ -169,7 +188,7 @@ plotFragHeatmap <- function(
     allIndex <- c(group1, group2)
     df <- as.data.frame(fragMat[allIndex, ])
 
-    makeHeatMap(df) +
+    makeHeatMap(df, maxLabels = maxLabels) +
         labs(x = xlabel, y = "Electrode", size = 2) +
         theme(
             axis.text.y = element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
@@ -275,8 +294,7 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandT
     
     groupColor <- glue("Group +/- {bandType}")
     refColor <- glue("Ref +/- {bandType}")
-    colors <- c("Group +/- sem" = "red", "Groupc +/- sem" = "black")
-    names(colors) <- c(groupColor, refColor)
+    colors <- setNames(c("red", "black"), c(groupColor, refColor))
 
     ggplot(plotData, aes(x = .data$timeTicks)) +
         xlab(xlabel) +

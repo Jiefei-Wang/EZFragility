@@ -4,12 +4,14 @@
 \alias{visuIEEGData}
 \title{Visualization of ictal iEEG}
 \usage{
-visuIEEGData(epoch, groupIndex = NULL)
+visuIEEGData(epoch, groupIndex = NULL, maxLabels = 50)
 }
 \arguments{
 \item{epoch}{Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points}
 
 \item{groupIndex}{Integer or string. A group of electrodes to mark}
+
+\item{maxLabels}{Integer. Maximum number of labels to show on y-axis. Default is 50. The actual number of labels may be less than this value if there are too many electrodes.}
 }
 \value{
 A ggplot object

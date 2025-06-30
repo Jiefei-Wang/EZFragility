@@ -1,7 +1,7 @@
 # Utility functions
 
 calcStat <- function(mat){
-    if (nrow(mat)==0| ncol(mat)==0) {
+    if (nrow(mat) == 0 || ncol(mat) == 0) {
         return(list(mean = numeric(0), sd = numeric(0), sem = numeric(0)))
     }
 
