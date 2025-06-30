@@ -5,7 +5,9 @@ FragStat <- setClass(
         groupMean = "numericOrNULL",
         refMean = "numericOrNULL",
         groupSD = "numericOrNULL",
-        refSD = "numericOrNULL"
+        refSD = "numericOrNULL",
+        groupSEM = "numericOrNULL",
+        refSEM = "numericOrNULL"
     )
 )
 

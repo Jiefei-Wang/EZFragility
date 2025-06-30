@@ -6,18 +6,30 @@
 \alias{plotFragDistribution}
 \title{Visualization functions (raw signal, fragility matrix)}
 \usage{
-plotFragHeatmap(frag, groupIndex = NULL)
+plotFragHeatmap(frag, groupIndex = NULL, maxLabels = 50)
 
 plotFragQuantile(frag, groupIndex = NULL, groupName = "SOZ")
 
-plotFragDistribution(frag, groupIndex = NULL, groupName = "SOZ")
+plotFragDistribution(
+  frag,
+  groupIndex = NULL,
+  groupName = "SOZ",
+  bandType = c("SEM", "SD"),
+  rollingWindow = 1
+)
 }
 \arguments{
 \item{frag}{Fragility object from \code{calcAdjFrag}}
 
 \item{groupIndex}{Integer or string. A group of electrodes to mark}
 
+\item{maxLabels}{Integer. Maximum number of labels to show on y-axis. Default is 50. The actual number of labels may be less than this value if there are too many electrodes.}
+
 \item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
+
+\item{bandType}{Character. The type of band to use, either "SEM" or "SD". Default is "SEM".}
+
+\item{rollingWindow}{Integer. Window size for rolling average smoothing. Default is 1 (no smoothing).}
 }
 \value{
 A ggplot object
@@ -47,5 +59,8 @@ plotFragQuantile(frag = pt01Frag, groupIndex = sozNames)
 
 ## plot the fragility distribution
 plotFragDistribution(frag = pt01Frag, groupIndex = sozNames)
+
+## plot with smoothing
+plotFragDistribution(frag = pt01Frag, groupIndex = sozNames, rollingWindow = 2)
 
 }
