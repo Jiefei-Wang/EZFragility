@@ -19,7 +19,7 @@ Visualization of ictal iEEG
 data("pt01EcoG")
 
 ## Visualize a subject of electrodes
-sozIndex <- attr(pt01EcoG, "sozIndex")
+sozIndex <- which(rowData(pt01EcoG)$soz)
 display <- c(sozIndex, 77:80)
 
 visuIEEGData(epoch = pt01EcoG[display, ])

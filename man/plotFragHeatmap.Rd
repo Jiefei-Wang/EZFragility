@@ -6,16 +6,18 @@
 \alias{plotFragDistribution}
 \title{Visualization functions (raw signal, fragility matrix)}
 \usage{
-plotFragHeatmap(frag, sozIndex = NULL)
+plotFragHeatmap(frag, groupIndex = NULL)
 
-plotFragQuantile(frag, sozIndex = NULL)
+plotFragQuantile(frag, groupIndex = NULL, groupName = "SOZ")
 
-plotFragDistribution(frag, sozIndex = NULL)
+plotFragDistribution(frag, groupIndex = NULL, groupName = "SOZ")
 }
 \arguments{
 \item{frag}{Fragility object from \code{calcAdjFrag}}
 
-\item{sozIndex}{Integer or string. A group of electrodes to mark as in the Seizure Onset Zone (SOZ)}
+\item{groupIndex}{Integer or string. A group of electrodes to mark}
+
+\item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
 }
 \value{
 A ggplot object
@@ -23,9 +25,9 @@ A ggplot object
 \description{
 \code{plotFragHeatmap}: plot fragility heatmaps with electrodes marked as soz colored
 
-\code{plotFragQuantile}: Plot Fragility time quantiles for two electrodes group marked as SOZ and reference
+\code{plotFragQuantile}: Plot Fragility time quantiles for two electrodes groups
 
-\code{plotFragQuantile}: Plot Fragility time distribution for two electrodes group marked as SOZ and reference
+\code{plotFragQuantile}: Plot Fragility time distribution for two electrodes groups
 }
 \examples{
 
@@ -38,12 +40,12 @@ sozNames <- metaData(pt01EcoG)$sozNames
 data("pt01Frag")
 
 ## plot the fragility heatmap
-plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
+plotFragHeatmap(frag = pt01Frag, groupIndex = sozNames)
 
 ## plot the fragility quantiles
-plotFragQuantile(frag = pt01Frag, sozIndex = sozNames)
+plotFragQuantile(frag = pt01Frag, groupIndex = sozNames)
 
 ## plot the fragility distribution
-plotFragDistribution(frag = pt01Frag, sozIndex = sozNames)
+plotFragDistribution(frag = pt01Frag, groupIndex = sozNames)
 
 }

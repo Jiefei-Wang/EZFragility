@@ -29,7 +29,7 @@ epoch <- Epoch(
         samplingRate = 1000,
         source = "National Institute of Health"
     )
-    )
+)
 
 
 pt01EcoG <- crop(epoch, start = -1, end = 2)

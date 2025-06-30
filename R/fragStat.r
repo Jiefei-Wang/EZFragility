@@ -37,39 +37,41 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
     (maxf - fragNorm) / maxf
 }
 
-#' Compute quantiles, mean and standard deviation for two electrodes group marked as soz non marked as soz
+#' Compute quantiles, mean and standard deviation for two electrodes groups
 #'
 #' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}
-
-#' @param sozIndex Integer.  Vector soz electrodes (for good electrodes)
-#'
+#' @param groupIndex Integer.  Vector group electrodes (for good electrodes)
+#' @param groupName Character. Name of the group of electrodes, default is "SOZ"
 #'
 #' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 #'
 #' @examples
 #' data("pt01Frag")
-#' data("pt01EcoG")
-#' sozIndex <- attr(pt01EcoG, "sozIndex")
-#' pt01fragstat <- fragStat(frag = pt01Frag, sozIndex = sozIndex)
+#' data("pt01EcoG")    
+#' ## sozNames is the name of the electrodes we assume are in the SOZ
+#' sozNames <- metaData(pt01EcoG)$sozNames
+#' pt01fragstat <- fragStat(frag = pt01Frag, groupIndex = sozNames)
 #' @export 
-fragStat <- function(frag, sozIndex) {
+fragStat <- function(frag, groupIndex, groupName="SOZ") {
 ## TODO: support grouped and ungrouped fragility statistics (Not now, but for the future)
     if (is(frag, "Fragility")) frag <- frag$frag
     if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
     steps <- ncol(frag)
-    sozCID <- which(!(seq_len(nrow(frag)) %in% sozIndex))
-    hmapSOZ <- frag[sozIndex, , drop = FALSE]
-    hmapREF <- frag[sozCID, , drop = FALSE]
-    meanSOZ <- colMeans(hmapSOZ)
-    meanRef <- colMeans(hmapREF)
-    sdSOZ <- apply(hmapSOZ, 2L, sd)
-    sdRef <- apply(hmapREF, 2L, sd)
+    groupIndex <- checkIndex(groupIndex, rownames(frag))
+    groupCID <- which(!(seq_len(nrow(frag)) %in% groupIndex))
+    groupMat <- frag[groupIndex, , drop = FALSE]
+    refMat <- frag[groupCID, , drop = FALSE]
+    groupMean <- colMeans(groupMat)
+    refMean <- colMeans(refMat)
+    groupSD <- apply(groupMat, 2L, sd)
+    refSD <- apply(refMat, 2L, sd)
     Q <- seq(.1, 1, by = .1)
     qmatrix <- rbind(
-        apply(hmapSOZ, 2, quantile, Q),
-        apply(hmapREF, 2, quantile, Q)
+        apply(groupMat, 2, quantile, Q),
+        apply(refMat, 2, quantile, Q)
     )
-    rowPrefix <- rep(c("SOZ", "REF"), each = 10)
+    
+    rowPrefix <- rep(c(groupName, "REF"), each = 10)
     dimN <- dimnames(qmatrix)
     dimnames(qmatrix) <- list(
         Quantiles = paste0(rowPrefix, dimN[[1L]]),
@@ -77,10 +79,10 @@ fragStat <- function(frag, sozIndex) {
     )
     FragStat(
         qmatrix   = qmatrix,
-        meanSOZ  = meanSOZ,
-        meanRef = meanRef,
-        sdSOZ    = sdSOZ,
-        sdRef   = sdRef
+        groupMean  = groupMean,
+        refMean = refMean,
+        groupSD    = groupSD,
+        refSD   = refSD
     )
 }
 

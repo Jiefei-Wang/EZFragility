@@ -26,12 +26,12 @@ makeHeatMap <- function(df, xTicksNum = 10){
         breaks <- xLabels
     }
 
-    ggplot2::ggplot(df_long) +
-        ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data$value)) +
-        ggplot2::scale_x_discrete(labels = breaks, breaks = breaks) +
-        ggplot2::theme(plot.title = ggtext::element_markdown(hjust = 0.5)) +
-        viridis::scale_fill_viridis(option = "turbo") +
-        ggplot2::theme_minimal()
+    ggplot(df_long) +
+        geom_tile(aes(x = .data$x, y = .data$y, fill = .data$value)) +
+        scale_x_discrete(labels = breaks, breaks = breaks) +
+        theme(plot.title = element_markdown(hjust = 0.5)) +
+        scale_fill_viridis(option = "turbo") +
+        theme_minimal()
 }
 
 
@@ -44,7 +44,7 @@ makeHeatMap <- function(df, xTicksNum = 10){
 #' data("pt01EcoG")
 #' 
 #' ## Visualize a subject of electrodes
-#' sozIndex <- attr(pt01EcoG, "sozIndex")
+#' sozIndex <- which(rowData(pt01EcoG)$soz)
 #' display <- c(sozIndex, 77:80)
 #' 
 #' visuIEEGData(epoch = pt01EcoG[display, ])
@@ -86,15 +86,15 @@ visuIEEGData <- function(epoch) {
     }
 
 
-    p <- ggplot2::ggplot(data = plotData)
+    p <- ggplot(data = plotData)
     for (i in seq_along(elecNamesReversed)) {
         elec <- elecNamesReversed[i]
-        p <- p + ggplot2::geom_line(ggplot2::aes(x = .data$timeTicks, y = .data[[elec]]))
+        p <- p + geom_line(aes(x = .data$timeTicks, y = .data[[elec]]))
     }
 
     p +
-        ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
-        ggplot2::scale_y_continuous(labels = elecNamesReversed, breaks = breakplot)
+        labs(x = xlabel, y = "Electrode", size = 2) +
+        scale_y_continuous(labels = elecNamesReversed, breaks = breakplot)
 }
 
 
@@ -104,7 +104,8 @@ visuIEEGData <- function(epoch) {
 #' @description `plotFragHeatmap`: plot fragility heatmaps with electrodes marked as soz colored
 #'
 #' @param frag Fragility object from \code{calcAdjFrag}
-#' @param sozIndex Integer or string. A group of electrodes to mark as in the Seizure Onset Zone (SOZ)
+#' @param groupIndex Integer or string. A group of electrodes to mark 
+#' @param groupName Character. Name of the group of electrodes, default is "SOZ"
 #' 
 #' @return A ggplot object
 #'
@@ -119,22 +120,22 @@ visuIEEGData <- function(epoch) {
 #' data("pt01Frag")
 #' 
 #' ## plot the fragility heatmap
-#' plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
+#' plotFragHeatmap(frag = pt01Frag, groupIndex = sozNames)
 #' 
 #' @rdname plotFragHeatmap
 #' @export
 plotFragHeatmap <- function(
     frag,
-    sozIndex = NULL) {
+    groupIndex = NULL) {
     fragMat <- frag$frag
     elecNum <- nrow(fragMat)
     windowNum <- ncol(fragMat)
 
     elecNames <- frag$electrodes
-    sozIndex <- checkIndex(sozIndex, elecNames)
+    groupIndex <- checkIndex(groupIndex, elecNames)
 
-    group1 <- sozIndex
-    group2 <- setdiff(seq_len(elecNum), sozIndex)
+    group1 <- groupIndex
+    group2 <- setdiff(seq_len(elecNum), groupIndex)
 
     elecColor <- rep("blue", elecNum)
     elecColor[seq_along(group2)] <- "black"
@@ -158,29 +159,33 @@ plotFragHeatmap <- function(
 
 
     makeHeatMap(df) +
-        ggplot2::labs(x = xlabel, y = "Electrode", size = 2) +
-        ggplot2::theme(
-            axis.text.y = ggtext::element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
+        labs(x = xlabel, y = "Electrode", size = 2) +
+        theme(
+            axis.text.y = element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
         )
 }
 
 
-#' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes group marked as SOZ and reference
+#' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes groups
 #' 
 #' @rdname plotFragHeatmap
 #' @examples
 #' ## plot the fragility quantiles
-#' plotFragQuantile(frag = pt01Frag, sozIndex = sozNames)
+#' plotFragQuantile(frag = pt01Frag, groupIndex = sozNames)
 #' 
 #' @export
-plotFragQuantile <- function(frag, sozIndex = NULL) {
-    sozIndex <- checkIndex(sozIndex, frag$electrodes)
-    if (is.null(sozIndex)) {
-        sozIndex <- estimateSOZ(frag)
+plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
+    if (is.null(groupIndex)) {
+        groupIndex <- estimateSOZ(frag)
     }
+    groupIndex <- checkIndex(groupIndex, frag$electrodes)
     windowNum <- ncol(frag)
 
-    stat <- fragStat(frag, sozIndex)
+    stat <- fragStat(
+        frag, 
+        groupIndex = groupIndex, 
+        groupName = groupName
+    )
     qmatrix <- as.data.frame(stat$qmatrix)
 
     startTimes <- frag$startTimes
@@ -195,39 +200,39 @@ plotFragQuantile <- function(frag, sozIndex = NULL) {
     colnames(qmatrix) <- timeTicks
 
     makeHeatMap(qmatrix)+
-        ggplot2::labs(x = xlabel, y = "Quantiles", size = 2) +
-        ggplot2::theme(
-            axis.text.y = ggplot2::element_text(size = 4), # Adjust depending on electrodes
+        labs(x = xlabel, y = "Quantiles", size = 8) +
+        theme(
+            axis.text.y = element_text(size = 8), # Adjust depending on electrodes
         )
 }
 
 
-#' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes group marked as SOZ and reference
+#' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes groups
 #' 
 #' @rdname plotFragHeatmap
 #' @examples
 #' ## plot the fragility distribution
-#' plotFragDistribution(frag = pt01Frag, sozIndex = sozNames)
+#' plotFragDistribution(frag = pt01Frag, groupIndex = sozNames)
 #' 
 #' @export
-plotFragDistribution <- function(frag, sozIndex = NULL) {
-    if (is.null(sozIndex)) {
-        sozIndex <- estimateSOZ(frag)
+plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ") {
+    if (is.null(groupIndex)) {
+        groupIndex <- estimateSOZ(frag)
     }
     
-    sozIndex <- checkIndex(sozIndex, frag$electrodes)
+    groupIndex <- checkIndex(groupIndex, frag$electrodes)
 
     fragMat <- frag$frag
     windowNum <- ncol(fragMat)
 
-    SOZMat <- fragMat[sozIndex, , drop = FALSE]
-    RefMat <- fragMat[-sozIndex, , drop = FALSE]
+    groupMat <- fragMat[groupIndex, , drop = FALSE]
+    RefMat <- fragMat[-groupIndex, , drop = FALSE]
     
-    meanSOZ <- apply(SOZMat, 2, mean, na.rm = TRUE)
-    semSOZ <- apply(SOZMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
+    groupMean <- apply(groupMat, 2, mean, na.rm = TRUE)
+    groupSEM <- apply(groupMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 
-    meanRef <- apply(RefMat, 2, mean, na.rm = TRUE)
-    semRef <- apply(RefMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
+    refMean <- apply(RefMat, 2, mean, na.rm = TRUE)
+    refSEM <- apply(RefMat, 2, function(x) sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 
     startTimes <- frag$startTimes
     if (is.null(startTimes)) {
@@ -238,32 +243,36 @@ plotFragDistribution <- function(frag, sozIndex = NULL) {
         timeTicks <- startTimes
     }
 
-    upperSOZ <- meanSOZ + semSOZ
-    lowerSOZ <- meanSOZ - semSOZ
-    upperRef <- meanRef + semRef
-    lowerRef <- meanRef - semRef
+    groupUpperBound <- groupMean + groupSEM
+    groupLowerBound <- groupMean - groupSEM
+    refUpperBound <- refMean + refSEM
+    refLowerBound <- refMean - refSEM
 
     plotData <- data.frame(
         timeTicks = timeTicks,
-        meanSOZ = meanSOZ,
-        upperSOZ = upperSOZ,
-        lowerSOZ = lowerSOZ,
-        meanRef = meanRef,
-        upperRef = upperRef,
-        lowerRef = lowerRef
+        groupMean = groupMean,
+        groupUpperBound = groupUpperBound,
+        groupLowerBound = groupLowerBound,
+        refMean = refMean,
+        refUpperBound = refUpperBound,
+        refLowerBound = refLowerBound
     )
-
-    colors <- c("SOZ +/- sem" = "red", "SOZc +/- sem" = "black")
-    ggplot2::ggplot(plotData, ggplot2::aes(x = .data$timeTicks)) +
-        ggplot2::xlab(xlabel) +
-        ggplot2::ylab("Fragility") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$meanSOZ, color = "SOZ +/- sem")) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$upperSOZ), color = "red", linetype = "dotted") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$lowerSOZ), color = "red", linetype = "dotted") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$meanRef, color = "SOZc +/- sem")) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$upperRef), color = "black", linetype = "dotted") +
-        ggplot2::geom_line(ggplot2::aes(y = .data$lowerRef), color = "black", linetype = "dotted") +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$lowerSOZ, ymax = .data$upperSOZ), fill = "red", alpha = 0.5) +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = .data$lowerRef, ymax = .data$upperRef), fill = "black", alpha = 0.5) +
-        ggplot2::scale_color_manual(name = "Electrode groups", values = c(colors))
+    
+    color1 <- "Group +/- sem"
+    color2 <- "Groupc +/- sem"
+    colors <- c("Group +/- sem" = "red", "Groupc +/- sem" = "black")
+    ggplot(plotData, aes(x = .data$timeTicks)) +
+        xlab(xlabel) +
+        ylab("Fragility") +
+        geom_line(
+            aes(y = .data$groupMean, color = "Group +/- sem")
+        ) +
+        geom_line(aes(y = .data$groupUpperBound), color = "red", linetype = "dotted") +
+        geom_line(aes(y = .data$groupLowerBound), color = "red", linetype = "dotted") +
+        geom_line(aes(y = .data$refMean, color = "Groupc +/- sem")) +
+        geom_line(aes(y = .data$refUpperBound), color = "black", linetype = "dotted") +
+        geom_line(aes(y = .data$refLowerBound), color = "black", linetype = "dotted") +
+        geom_ribbon(aes(ymin = .data$groupLowerBound, ymax = .data$groupUpperBound), fill = "red", alpha = 0.5) +
+        geom_ribbon(aes(ymin = .data$refLowerBound, ymax = .data$refUpperBound), fill = "black", alpha = 0.5) +
+        scale_color_manual(name = "Electrode groups", values = c(colors))
 }
