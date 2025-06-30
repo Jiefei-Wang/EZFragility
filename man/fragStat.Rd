@@ -4,12 +4,12 @@
 \alias{fragStat}
 \title{Compute quantiles, mean and standard deviation for two electrodes groups}
 \usage{
-fragStat(frag, groupIndex, groupName = "SOZ")
+fragStat(frag, groupIndex = NULL, groupName = "SOZ")
 }
 \arguments{
 \item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}
 
-\item{groupIndex}{Integer.  Vector group electrodes (for good electrodes)}
+\item{groupIndex}{Integer or string. A group of electrodes to mark}
 
 \item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
 }

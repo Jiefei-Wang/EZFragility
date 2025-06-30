@@ -4,10 +4,12 @@
 \alias{visuIEEGData}
 \title{Visualization of ictal iEEG}
 \usage{
-visuIEEGData(epoch)
+visuIEEGData(epoch, groupIndex = NULL)
 }
 \arguments{
 \item{epoch}{Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points}
+
+\item{groupIndex}{Integer or string. A group of electrodes to mark}
 }
 \value{
 A ggplot object

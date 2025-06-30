@@ -10,7 +10,12 @@ plotFragHeatmap(frag, groupIndex = NULL)
 
 plotFragQuantile(frag, groupIndex = NULL, groupName = "SOZ")
 
-plotFragDistribution(frag, groupIndex = NULL, groupName = "SOZ")
+plotFragDistribution(
+  frag,
+  groupIndex = NULL,
+  groupName = "SOZ",
+  bandType = c("SEM", "SD")
+)
 }
 \arguments{
 \item{frag}{Fragility object from \code{calcAdjFrag}}
@@ -18,6 +23,8 @@ plotFragDistribution(frag, groupIndex = NULL, groupName = "SOZ")
 \item{groupIndex}{Integer or string. A group of electrodes to mark}
 
 \item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
+
+\item{bandType}{Character. The type of band to use, either "SEM" or "SD". Default is "SEM".}
 }
 \value{
 A ggplot object

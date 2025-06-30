@@ -48,10 +48,13 @@ slotSpecs <- \(x, k = 3, dm = dim(x), vec = is.null(dm), len = length(x)) {
         return(c(cl = "NULL", d = "[NULL]:", v = " NULL"))
     }
     if (is.double(x)) val <- sprintf("%7.4f", val)
+    v <- jn(val, if (len > k) "...", j = ", ")
+    if (length(v) == 0)
+        v <- ""
     c(
         cl = class(x)[1L],
         d = jn("[", if (vec) len else dm, "]", j = ","),
-        v = jn(val, if (len > k) "...", j = ", ")
+        v = v
     )
 }
 
