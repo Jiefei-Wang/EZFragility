@@ -228,7 +228,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 #'
 #' @return A vector of electrode names, or indices if the electrode names are NULL
 #' @export
-estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, ...) {
+estimateSOZ <- function(x, method = c("mean", "median", "max", "min"), proportion = 0.1, ...) {
     method <- match.arg(method)
 
     stopifnot(is(x, "Fragility"))
@@ -244,6 +244,10 @@ estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, .
         stat <- apply(fragMat, 1, min)
     } else if (method == "mean") {
         stat <- apply(fragMat, 1, mean)
+    }else if (method == "median") {
+        stat <- apply(fragMat, 1, median)
+    } else {
+        stop("Unknown method: ", method)
     }
 
     sozIndex <- order(stat, decreasing = TRUE)[seq_len(nSOZ)]
