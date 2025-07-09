@@ -37,7 +37,7 @@ names(dl)
 ## Patient 01
 ## -----------------------
 
-## Step 2.  Visualize voltage plot
+## Step 2.  Download Epoch object for patient 01 seizure 1
 The preprocessed voltage data from patient pt01 seizure 1 can be loaded in the window [-30:30]s as an Epoch package object and cropped in the [-10:10]s time window around seizure onset with the following code.
 ```{r}
 pt01sz1 <- dl$Retrostudy_subpt01_1
@@ -45,6 +45,8 @@ pt01sz1Clipped <- crop(pt01sz1, start=-10, end=10)
 pt01sz1Clipped 
 ```
 Use tblData, rowData, colData, metaData to get the data as directed in <a href="https://github.com/Jiefei-Wang/Epoch" style="color:blue; text-decoration:none;"> Epoch package</a>.
+
+## Step 3.  Visualize voltage plot
 sozIndex is the index of the electrodes which are labeled as in the SOZ in the original paper. The following code reproduce the voltage plot for a display subset of electrodes. The SOZ electrode names are highlighted in red as in the original Figure 4.
 ```{r}
 sozIndex <- which(rowData(pt01sz1Clipped)$soz==TRUE)
@@ -67,7 +69,7 @@ vplotpt01sz1<- vplotpt01sz1 + ggplot2::theme(
 vplotpt01sz1
 ```
 
-## Step 3.  Compute and plot the fragility heatmap
+## Step 4.  Compute and plot the fragility heatmap
 
 The following code computes the fragility matrix on all electrodes and store the results in the Fragility class object pt01sz1Frag
 ```{r}
@@ -119,7 +121,7 @@ fplotpt01sz1<-fplotpt01sz1 + ggplot2::theme(
 fplotpt01sz1
 ```
 
-## Step 4.  Compute mean and standard deviation statistics for SOZ and non SOZ electrode group
+## Step 5.  Compute mean and standard deviation statistics for SOZ and non SOZ electrode group
 
 
 The following code allows to reproduce the mean and standard visualization statistics of two electrode groups (soz labeled electrodes and non soz labeled electrodes)
@@ -135,14 +137,16 @@ fdistribpt01sz1
 ## Patient 26
 ## -----------------------
 
-## Step 2.  Visualize voltage plot 
+## Step 2.  Download Epoch object for patient 01 seizure 1
 The preprocessed voltage data from patient pt26 seizure 1 can be loaded in the window [-30:30]s as an Epoch package object and cropped in the [-10:10]s time window around seizure onset with the following code.
 ```{r}
 pt26sz1 <- dl$Retrostudy_subjh103_1
 pt26sz1Clipped <- crop(pt26sz1, start=-10, end=10)
 pt26sz1Clipped 
 ```
-The same above visualization processed is repeated here for patient 26 in the original Figure 4.
+
+## Step 3.  Visualize voltage plot 
+The same visualization process is repeated here for patient 26 as in the original Figure 4.
 ```{r}
 sozIndex <- which(rowData(pt26sz1)$soz==TRUE)
 sozIndex<-sozIndex[-c(17,18,19,20)]
@@ -167,7 +171,7 @@ vplotpt26sz1<- vplotpt26sz1 + ggplot2::theme(
 vplotpt26sz1
 ```
 
-## Step 3.  Compute and plot the fragility heatmap
+## Step 4.  Compute and plot the fragility heatmap
 The following code computes the fragility matrix on all electrodes and store the results in the Fragility class object pt26sz1Frag
 ```{r}
 library(doSNOW)
@@ -204,7 +208,7 @@ fplotpt26sz1<-fplotpt26sz1 + ggplot2::theme(
 fplotpt26sz1
 ```
 
-## Step 4.  Compute mean and standard deviation statistics for SOZ and non SOZ electrode group to visualy assess seizure outcome prediction
+## Step 5.  Compute mean and standard deviation statistics for SOZ and non SOZ electrode group 
 
 The following code allows to reproduce the mean and standard visualization statistics of two electrode groups (soz labeled electrodes and non soz labeled electrodes)
 as in extended figure 4 from the original paper. This plot shows that the fragility biomarker statistics are not significantly higher in the soz labeled group correlated with the ground truth failure outcome for this patient. 
