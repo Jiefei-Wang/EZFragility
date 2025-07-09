@@ -4,7 +4,7 @@ author: "Anne-Cecile Lesage, PhD, Oliver Zhou, BA, Jiefei Wang, PhD"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Fragility reproducibility results for patient 01 and 26 seizure 1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
