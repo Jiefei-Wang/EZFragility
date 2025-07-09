@@ -195,9 +195,9 @@ plotFragHeatmap <- function(
     df <- as.data.frame(fragMat[allIndex, ])
 
     makeHeatMap(df, maxLabels = maxLabels) +
-        labs(x = xlabel, y = "Electrode", size = 2) +
+        labs(x = xlabel, y = "Electrode", size = 4) +
         theme(
-            axis.text.y = element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
+            axis.text.y = element_markdown(size = 10, colour = elecColor), # Adjust depending on electrodes
         )
 }
 
