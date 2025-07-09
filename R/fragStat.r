@@ -76,9 +76,15 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' sozNames <- metaData(pt01EcoG)$sozNames
 #' pt01fragstat <- fragStat(frag = pt01Frag, groupIndex = sozNames)
 #' @export 
-fragStat <- function(frag, groupIndex = NULL, groupName="SOZ") {
+fragStat <- function(frag, groupIndex = NULL, groupName="SOZ", ranked="FALSE") {
 ## TODO: support grouped and ungrouped fragility statistics (Not now, but for the future)
-    if (is(frag, "Fragility")) frag <- frag$frag
+    if (is(frag, "Fragility")){ 
+      if(ranked==FALSE){   
+        frag <- frag$frag
+      }else{
+        frag <- frag$frag_ranked
+      }
+    }
     if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
     steps <- ncol(frag)
     groupIndex <- checkIndex(groupIndex, rownames(frag))

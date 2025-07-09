@@ -1,0 +1,121 @@
+---
+title: "Fragility reproducibility results for patient 01 seizure 1"
+author: "Anne-Cecile Lesage, PHD"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(EZFragility)
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.align = "center",
+    fig.width = 6,
+    fig.height = 4
+)
+```
+
+This vignette shows how to reproduce results from the companion software paper of the <a href="https://cran.r-project.org/web/packages/fragility/index.html" style="color:blue; text-decoration:none;"> EZFragility CRAN R package</a> for patient 01 seizure 1. This allow to check how well the EZFragility package reproduces results from the <a href="https://www.nature.com/articles/s41593-021-00901-w" style="color:blue; text-decoration:none;"> original neural fragility paper </a>(see Figure 4 and extended seizure 4)
+
+
+## Voltage plot
+
+To explore fragility results on preprocessed multipatient data from 
+the openneuro public data set <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> Openneuro Fragility Data Set</a>. <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE </a>. Main steps include notch filtering to remove power line interference, re-referencing, epoching based on seizure onset time to isolate relevant segments of [-30:30s]. The data names are displaying the patient identifier and the seizure number.
+```{r}
+dl<-EpochDownloader()
+names(dl)
+```
+The preprocessed voltage data from patient pt01 seizure 1 can be loaded in the window [-30:30]s as an Epoch package object and cropped in the [-10:10]s time window around seizure onset with the following code.
+```{r}
+pt01sz1 <- dl$Retrostudy_subpt01_1
+pt01sz1Clipped <- crop(pt01sz1, start=-10, end=10)
+pt01sz1Clipped 
+```
+Use tblData, rowData, colData, metaData to get the data as directed in <a href="https://github.com/Jiefei-Wang/Epoch" style="color:blue; text-decoration:none;"> Epoch package</a>.
+sozIndex is the index of the electrodes which are labeled as in the SOZ in the original paper. The following code reproduce the voltage plot for a display subset of electrodes. The SOZ electrode names are highlighted in red as in the original Figure 4.
+```{r}
+sozIndex <- which(rowData(pt01sz1Clipped)$soz==TRUE)
+display <- c(sozIndex, 77:80)
+sz_onset<-0
+vplotpt01sz1<-visuIEEGData(epoch = pt01sz1Clipped[display, ])
+
+elecColor <- rep("black", length(display))
+elecColor[1:length(sozIndex)] <- 'red'
+
+elecColor <- rev(elecColor) # match the electrode order in the plot
+
+vplotpt01sz1<- vplotpt01sz1 + ggplot2::geom_vline(xintercept = sz_onset, color = "black", linetype = "dashed", linewidth = 1)
+
+vplotpt01sz1<- vplotpt01sz1 + ggplot2::theme(
+  
+  axis.text.y = ggtext::element_markdown(colour = elecColor)
+  
+)
+vplotpt01sz1
+```
+
+## compute and plot the fragility heatmap
+The following code computes the fragility matrix on all electrodes and store the results in the Fragility class object pt01sz1Frag
+```{r}
+library(doSNOW)
+# compute fragility
+
+cl <- makeCluster(4, type = "SOCK")
+registerDoSNOW(cl)
+
+windowNum <- 250
+step <- 125
+pt01sz1Frag <- calcAdjFrag(epoch = pt01sz1Clipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
+
+# Stop the parallel backend
+stopCluster(cl)
+```
+
+The following code plots the fragility heatmap with the same display options as the previous voltage plot. Looking at both plots allows to check correlation between soz patterns
+on electrode voltage and high fragility. PT01 was a surgical success, with the high-fragility electrodes identified by the algorithm matching those identified by clinical epileptologists.
+```{r}
+elecNames  <- pt01sz1Frag$electrodes
+startTimes <- pt01sz1Frag$startTimes
+
+indexsz<-which(abs(startTimes)<=0.01)
+
+
+
+#display <- c(pt01sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
+fplotpt01sz1<-plotFragHeatmap(frag = pt01sz1Frag[display], groupIndex = c(1:10),ranked=FALSE)
+fplotpt01sz1<-fplotpt01sz1 + ggplot2::geom_vline(xintercept = indexsz, color = "black", linetype = "dashed", linewidth = 1)
+fplotpt01sz1<-fplotpt01sz1 + ggplot2::theme(
+  
+  axis.text.y = ggtext::element_markdown(colour = elecColor)
+  
+)
+fplotpt01sz1
+```
+
+Setting the "ranked" variable to TRUE in the plotFragHeatmap allows more contrast and render the heatmap closer to original figure 4.
+
+```{r}
+fplotpt01sz1<-plotFragHeatmap(frag = pt01sz1Frag[display], groupIndex = c(1:10),ranked=TRUE)
+fplotpt01sz1<-fplotpt01sz1 + ggplot2::geom_vline(xintercept = indexsz, color = "black", linetype = "dashed", linewidth = 1)
+fplotpt01sz1<-fplotpt01sz1 + ggplot2::theme(
+  
+  axis.text.y = ggtext::element_markdown(colour = elecColor)
+  
+)
+fplotpt01sz1
+```
+
+The following code allows to reproduce the mean and standard visualization statistics of two electrode groups (soz labeled electrodes and non soz labeled electrodes)
+as in extended figure 4 from the original paper. This plot shows that the fragility biomarker statistics are significantly higher in the soz labeled group correlated with the ground truth success outcome for this patient. 
+
+```{r}
+fdistribpt01sz1<-plotFragDistribution(frag = pt01sz1Frag, groupIndex = sozIndex, bandType="SD", rollingWindow = 1,ranked=FALSE) ## p 1481 Extended Fig.4
+fdistribpt01sz1<-fdistribpt01sz1 + ggplot2::geom_vline(xintercept = sz_onset, color = "black", linetype = "dashed", linewidth = 1)
+fdistribpt01sz1
+```

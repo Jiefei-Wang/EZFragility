@@ -158,8 +158,14 @@ visuIEEGData <- function(epoch, groupIndex = NULL, maxLabels = 50) {
 plotFragHeatmap <- function(
     frag,
     groupIndex = NULL,
-    maxLabels = 50) {
-    fragMat <- frag$frag
+    maxLabels = 50,
+    ranked=FALSE) {
+  
+    if(ranked==FALSE){   
+      fragMat <- frag$frag
+    }else{
+      fragMat <- frag$frag_ranked
+    }
     elecNum <- nrow(fragMat)
     windowNum <- ncol(fragMat)
 
@@ -249,7 +255,8 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
 #' plotFragDistribution(frag = pt01Frag, groupIndex = sozNames, rollingWindow = 2)
 #' 
 #' @export
-plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandType = c("SEM", "SD"), rollingWindow = 1) {
+plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandType = c("SEM", "SD"), 
+                                 rollingWindow = 1, ranked=FALSE) {
     bandType <- match.arg(bandType)
     if (is.null(groupIndex)) {
         groupIndex <- estimateSOZ(frag)
@@ -259,7 +266,7 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandT
     windowNum <- ncol(frag$frag)
     stat <- fragStat(
         frag, 
-        groupIndex = groupIndex
+        groupIndex = groupIndex, ranked=ranked
     )
 
     groupMean <- stat$groupMean
@@ -305,8 +312,8 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandT
         refLowerBound = refLowerBound
     )
     
-    groupColor <- glue("Group +/- {bandType}")
-    refColor <- glue("Ref +/- {bandType}")
+    groupColor <- glue("{groupName} +/- {bandType}")
+    refColor <- glue("{groupName}C +/- {bandType}")
     colors <- setNames(c("red", "black"), c(groupColor, refColor))
 
     ggplot(plotData, aes(x = .data$timeTicks)) +
