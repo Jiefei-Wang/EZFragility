@@ -65,3 +65,12 @@ tryToNum <- function(x) {
         return(NULL)
     }
 }
+
+# Only check a single logical condition
+.ifelse <- function(test, yes, no) {
+    if (test) {
+        return(yes)
+    } else {
+        return(no)
+    }
+} 

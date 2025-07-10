@@ -4,14 +4,16 @@
 \alias{fragStat}
 \title{Compute quantiles, mean and standard deviation for two electrodes groups}
 \usage{
-fragStat(frag, groupIndex = NULL, groupName = "SOZ")
+fragStat(frag, groupIndex = NULL, groupName = "SOZ", ranked = FALSE)
 }
 \arguments{
-\item{frag}{Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}}
+\item{frag}{A Fragility object from \code{calcAdjFrag}}
 
 \item{groupIndex}{Integer or string. A group of electrodes to mark}
 
 \item{groupName}{Character. Name of the group of electrodes, default is "SOZ"}
+
+\item{ranked}{Logical. If TRUE, use the ranked fragility matrix from Fragility object}
 }
 \value{
 list of 5 items with quantile matrix, mean and sdv from both electrodes groups

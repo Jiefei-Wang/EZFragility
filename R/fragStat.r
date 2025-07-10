@@ -63,9 +63,10 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 
 #' Compute quantiles, mean and standard deviation for two electrodes groups
 #'
-#' @param frag Matrix or Fragility object. Either a matrix with row as Electrode names and Column as fragility index, or a Fragility object from \code{calcAdjFrag}
+#' @param frag A Fragility object from \code{calcAdjFrag}
 #' @param groupIndex Integer or string. A group of electrodes to mark 
 #' @param groupName Character. Name of the group of electrodes, default is "SOZ"
+#' @param ranked Logical. If TRUE, use the ranked fragility matrix from Fragility object
 #'
 #' @return list of 5 items with quantile matrix, mean and sdv from both electrodes groups
 #'
@@ -76,16 +77,18 @@ fragilityRow <- function(A, nSearch = 100, normalize = TRUE) {
 #' sozNames <- metaData(pt01EcoG)$sozNames
 #' pt01fragstat <- fragStat(frag = pt01Frag, groupIndex = sozNames)
 #' @export 
-fragStat <- function(frag, groupIndex = NULL, groupName="SOZ") {
-## TODO: support grouped and ungrouped fragility statistics (Not now, but for the future)
-    if (is(frag, "Fragility")) frag <- frag$frag
-    if (!inherits(frag, "matrix")) stop("Frag must be matrix or Fragility object")
-    steps <- ncol(frag)
-    groupIndex <- checkIndex(groupIndex, rownames(frag))
-    refIndex <- setdiff(seq_len(nrow(frag)), groupIndex)
+fragStat <- function(frag, groupIndex = NULL, groupName="SOZ", ranked=FALSE) {
+    stopifnot(is(frag, "Fragility"))
+    groupIndex <- checkIndex(groupIndex, frag$electrodes)
+    
+    fragMat <- .ifelse(ranked, frag$frag_ranked, frag$frag)
+    stopifnot(is.matrix(fragMat))
 
-    groupMat <- frag[groupIndex, , drop = FALSE]
-    refMat <- frag[refIndex, , drop = FALSE]
+    steps <- ncol(fragMat)
+    refIndex <- setdiff(seq_len(nrow(fragMat)), groupIndex)
+
+    groupMat <- fragMat[groupIndex, , drop = FALSE]
+    refMat <- fragMat[refIndex, , drop = FALSE]
     groupStat <- calcStat(groupMat)
     refStat <- calcStat(refMat)
 

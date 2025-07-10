@@ -135,6 +135,8 @@ visuIEEGData <- function(epoch, groupIndex = NULL, maxLabels = 50) {
 #' @description `plotFragHeatmap`: plot fragility heatmaps with electrodes marked as soz colored
 #'
 #' @param frag Fragility object from \code{calcAdjFrag}
+#' @param x.lab.size Numeric. Size of x-axis labels. Default is 4.
+#' @param y.lab.size Numeric. Size of y-axis labels. Default is 10
 #' @inheritParams fragStat
 #' @inheritParams visuIEEGData
 #' 
@@ -158,8 +160,13 @@ visuIEEGData <- function(epoch, groupIndex = NULL, maxLabels = 50) {
 plotFragHeatmap <- function(
     frag,
     groupIndex = NULL,
-    maxLabels = 50) {
-    fragMat <- frag$frag
+    maxLabels = 50,
+    ranked=FALSE,
+    x.lab.size = 4,
+    y.lab.size = 10) {
+    stopifnot(is(frag, "Fragility"))
+    fragMat <- .ifelse(ranked, frag$frag_ranked, frag$frag)
+
     elecNum <- nrow(fragMat)
     windowNum <- ncol(fragMat)
 
@@ -189,9 +196,9 @@ plotFragHeatmap <- function(
     df <- as.data.frame(fragMat[allIndex, ])
 
     makeHeatMap(df, maxLabels = maxLabels) +
-        labs(x = xlabel, y = "Electrode", size = 2) +
+        labs(x = xlabel, y = "Electrode", size = x.lab.size) +
         theme(
-            axis.text.y = element_markdown(size = 6, colour = elecColor), # Adjust depending on electrodes
+            axis.text.y = element_markdown(size = y.lab.size, colour = elecColor), # Adjust depending on electrodes
         )
 }
 
@@ -249,17 +256,21 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
 #' plotFragDistribution(frag = pt01Frag, groupIndex = sozNames, rollingWindow = 2)
 #' 
 #' @export
-plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandType = c("SEM", "SD"), rollingWindow = 1) {
+plotFragDistribution <- function(
+    frag, groupIndex = NULL, 
+    groupName="SOZ", bandType = c("SEM", "SD"), 
+    rollingWindow = 1, ranked=FALSE) {
     bandType <- match.arg(bandType)
     if (is.null(groupIndex)) {
         groupIndex <- estimateSOZ(frag)
     }
+    groupIndex <- checkIndex(groupIndex, frag$electrodes)
     
-
     windowNum <- ncol(frag$frag)
     stat <- fragStat(
         frag, 
-        groupIndex = groupIndex
+        groupIndex = groupIndex, 
+        ranked=ranked
     )
 
     groupMean <- stat$groupMean
@@ -305,8 +316,8 @@ plotFragDistribution <- function(frag, groupIndex = NULL, groupName="SOZ", bandT
         refLowerBound = refLowerBound
     )
     
-    groupColor <- glue("Group +/- {bandType}")
-    refColor <- glue("Ref +/- {bandType}")
+    groupColor <- glue("{groupName} +/- {bandType}")
+    refColor <- glue("{groupName}C +/- {bandType}")
     colors <- setNames(c("red", "black"), c(groupColor, refColor))
 
     ggplot(plotData, aes(x = .data$timeTicks)) +

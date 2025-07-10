@@ -123,21 +123,4 @@ plotFragDistribution(frag = pt01Frag[display], groupIndex = sozNames)
 plotFragQuantile(frag = pt01Frag[display], groupIndex = sozNames, groupName = "SOZ")
 ```
 
-## Using the Epoch package for a multi-patient study
-
-To explore fragility results on preprocessed multipatient data from 
-the openneuro public data set <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> Openneuro Fragility Data Set</a>. <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE </a>. Main steps include notch filtering to remove power line interference, re-referencing, epoching based on seizure onset time to isolate relevant segments of [-30:30s]. The data names are displaying the patient identifier and the seizure number.
-```{r}
-dl<-EpochDownloader()
-names(dl)
-```
-Patient pt01 seizure 1 can be loaded and cropped in the [-10:10]s time window around seizure onset  with the following code
-```{r}
-pt01 <- dl$Retrostudy_subpt01_1
-pt01Clipped <- crop(pt01, start=-10, end=10)
-
-## sozIndex is the index of the electrodes we assume are in the SOZ
-sozIndex <- which(rowData(pt01)$soz==TRUE)
-display <- c(sozIndex, 77:80)
-visuIEEGData(epoch = pt01Clipped[display, ])
 ```
