@@ -44,90 +44,6 @@ makeHeatMap <- function(df, xTicksNum = 10, maxLabels = Inf){
 }
 
 
-#' Visualization of ictal iEEG
-#'
-#' @inheritParams calcAdjFrag
-#' @inheritParams fragStat
-#' @param maxLabels Integer. Maximum number of labels to show on y-axis. Default is 50. The actual number of labels may be less than this value if there are too many electrodes.
-#' @return A ggplot object
-#'
-#' @examples
-#' data("pt01EcoG")
-#' 
-#' ## Visualize a subject of electrodes
-#' sozIndex <- which(rowData(pt01EcoG)$soz)
-#' display <- c(sozIndex, 77:80)
-#' 
-#' visuIEEGData(epoch = pt01EcoG[display, ])
-#' @export
-visuIEEGData <- function(epoch, groupIndex = NULL, maxLabels = 50) {
-    if (is(epoch, "matrix")){
-        epoch <- Epoch(epoch)
-    }
-
-    gaps <- 2
-
-    elecNames <- rownames(epoch)
-    data <- tblData(epoch)
-    elecNum <- nrow(data)
-    timesNum <- ncol(data)
-
-    # group electrodes
-    groupIndex <- checkIndex(groupIndex, elecNames)
-    group1 <- groupIndex
-    group2 <- setdiff(seq_len(elecNum), groupIndex)
-    
-    # reorder the electrodes
-    plotData <- data[c(group1, group2), , drop = FALSE]
-    elecNames <- c(elecNames[group1], elecNames[group2])
-    plotData <- standardizeIEEG(plotData)
-
-    timePoints <- coltimes(epoch)
-    if (is.null(timePoints)) {
-        xlabel <- "Time Index"
-        timeTicks <- seq_len(timesNum)
-    } else {
-        xlabel <- "Time (s)"
-        timeTicks <- timePoints
-    }
-
-    plotData <- apply(plotData, 1, function(x) x - mean(x))
-    plotData <- as.data.frame(plotData)
-    plotData$timeTicks <- timeTicks
-    breakplot <- (seq_len(elecNum) - 1) * gaps
-    
-    elecNamesReversed <- rev(elecNames)
-
-    ## add gaps between electrodes
-    for (i in seq_along(elecNamesReversed)) {
-        elec <- elecNamesReversed[i]
-        plotData[[elec]] <- plotData[[elec]] + (i-1) * gaps
-    }
-
-    elecColor <- rep("blue", elecNum)
-    elecColor[seq_along(group2)] <- "black"
-
-    p <- ggplot(data = plotData)
-    for (i in seq_along(elecNamesReversed)) {
-        elec <- elecNamesReversed[i]
-        p <- p + geom_line(aes(x = .data$timeTicks, y = .data[[elec]]))
-    }
-
-    ## limit the number of labels on y-axis
-    if (length(elecNamesReversed) > maxLabels) {
-        by_num <- ceiling(length(elecNamesReversed)/maxLabels)
-        label_idx <- seq(length(elecNamesReversed), 1, by=-by_num)
-        elecNamesReversed[-label_idx] <- ""
-    }
-
-    p +
-        labs(x = xlabel, y = "Electrode", size = 2) +
-        scale_y_continuous(labels = elecNamesReversed, breaks = breakplot) +
-        theme(
-            axis.text.y = element_markdown(colour = elecColor)
-        )
-}
-
 
 
 #' Visualization functions (raw signal, fragility matrix)
@@ -138,7 +54,7 @@ visuIEEGData <- function(epoch, groupIndex = NULL, maxLabels = 50) {
 #' @param x.lab.size Numeric. Size of x-axis labels. Default is 4.
 #' @param y.lab.size Numeric. Size of y-axis labels. Default is 10
 #' @inheritParams fragStat
-#' @inheritParams visuIEEGData
+#' @param maxLabels Integer. Maximum number of labels to show on y-axis. Default is 50. The actual number of labels may be less than this value if there are too many electrodes.
 #' 
 #' @return A ggplot object
 #'

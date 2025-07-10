@@ -12,6 +12,7 @@
 #' geom_ribbon scale_color_manual theme element_text  theme_minimal 
 #' @importFrom ggtext element_markdown
 #' @importFrom viridis scale_fill_viridis
+#' @exportMethod plot
 NULL
 
 pkgData <- new.env()

@@ -1,5 +1,5 @@
 ---
-title: "Fragility reproducibility results for patient 01 and 26 seizure 1"
+title: "manuscript_reproducible"
 author: "Anne-Cecile Lesage, PhD, Oliver Zhou, BA, Jiefei Wang, PhD"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -56,7 +56,7 @@ pt26sz1Clipped
 The following function reproduce the voltage plot for a display subset of electrodes in the original Figure 4. The SOZ electrode names are highlighted in red as in the original paper.
 ```{r}
 visualSOZ <- function(epoch, sozNames) {
-    p <- visuIEEGData(epoch = epoch)
+    p <- plot(epoch)
 
     elecColor <- rep("black", nrow(epoch))
     elecColor[rownames(epoch) %in% sozNames] <- 'red'
@@ -97,7 +97,7 @@ The following code computes the fragility matrix on all electrodes and store the
 library(doSNOW)
 # compute fragility
 
-cl <- makeCluster(4, type = "SOCK")
+cl <- makeCluster(parallel::detectCores(), type = "SOCK")
 registerDoSNOW(cl)
 
 windowNum <- 250
