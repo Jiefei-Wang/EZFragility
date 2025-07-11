@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows how to reproduce results from the companion software paper of the <a href="https://cran.r-project.org/web/packages/fragility/index.html" style="color:blue; text-decoration:none;"> EZFragility CRAN R package</a> for the first seizure of patients 01 and 26. This allow to check how well the EZFragility package reproduces results from the <a href="https://www.nature.com/articles/s41593-021-00901-w" style="color:blue; text-decoration:none;"> original neural fragility paper </a>(see Figure 4 and extended seizure 4)
+This vignette shows how to reproduce results from the companion software paper of the <a href="https://cran.r-project.org/web/packages/fragility/index.html" style="color:blue; text-decoration:none;"> EZFragility CRAN R package</a> for the first seizure of patients 01 and 26. This allows to check how well the EZFragility package reproduces results from the <a href="https://www.nature.com/articles/s41593-021-00901-w" style="color:blue; text-decoration:none;"> original neural fragility paper </a>(see Figure 4 and extended seizure 4)
 
 ## Load the package and data
 ```{r}
@@ -33,6 +33,9 @@ library(ggtext)
 
 To allow fast and easy exploration of fragility results,  we preprocessed with <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE2 </a> the multipatient data from 
 the openneuro public data set <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> Openneuro Fragility Data Set</a>. Main steps include notch filtering to remove power line interference, re-referencing, epoching based on seizure onset time to isolate relevant segments of [-30:30s]. 
+
+To allow fast and easy exploration of fragility results,  we preprocessed the multipatient data from 
+the <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> OpenNeuro Fragility Data Set</a> with <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE 2.0 </a>. Main steps included Notch filtering to remove power line interference, re-referencing, and epoching based on seizure onset time to isolate relevant segments of [-30:30s]. 
 
 ## Download Data
 To access the preprocessed data, you can use the `EpochDownloader` class from the `Epoch` package. The following code downloads the data and lists the available datasets.
@@ -92,7 +95,7 @@ visualSOZ(pt26sz1Reordered, pt26sozName)
 
 ## Compute the Fragility Matrix
 
-The following code computes the fragility matrix on all electrodes and store the results in the Fragility class object pt01sz1Frag
+The following code computes the fragility matrix using all electrodes and store the results in the Fragility class object pt01sz1Frag
 ```{r}
 library(doSNOW)
 # compute fragility
@@ -152,7 +155,7 @@ fragHeatmap(pt26sz1FragReordered, pt26sozName, ranked=TRUE)
 
 ## Compute mean and standard deviation statistics for SOZ and non SOZ electrode group
 The following function allows to reproduce the mean and standard visualization statistics of two electrode groups (soz labeled electrodes and non soz labeled electrodes)
-as in extended figure 4 from the original paper. This plot shows that the fragility biomarker statistics are significantly higher in the soz labeled group correlated with the ground truth success outcome for this patient. 
+as in extended figure 4 from the original paper. This plot shows that the fragility biomarker statistics are respectively significantly/not significantly higher in the soz labeled group correlated with the ground truth success/failure outcome for patient 01 and patient 26. 
 
 ```{r}
 fragDist <- function(frag, sozNames) {
