@@ -263,3 +263,29 @@ standardizeIEEG <- function(data) {
     scaling <- 10^floor(log10(max(data)))
     plotData <- data / scaling
 }
+
+
+#' Band-pass filter voltage between 0.5 and Nyquist frequency with fourth-order Butterworth filter
+#'
+#' @param epoch 
+#'
+#' @return band-pass filtered voltage
+#' @export
+#'
+#' @examples
+#'epochfilt<-FourthOrderButterworthFilter(epoch)
+FourthOrderButterworthFilter<-function(epoch){
+  
+  epochfilt<-epoch
+  epochrowdata<-rowData(epochfilt)
+  nyquist<-epochrowdata$sampling_frequency[1]/2
+  fpass<-c(0.5,nyquist*0.99)
+  wpass<-fpass/nyquist
+  bf<-gsignal::butter(4,wpass,"pass")
+  epochTimeSeries<-tblData(epochfilt)
+  epochTimeSerieswpass<-gsignal::filtfilt(bf$b,bf$a,epochTimeSeries)
+  tblData(epochfilt)<-epochTimeSerieswpass
+  
+  epochfilt
+  
+}

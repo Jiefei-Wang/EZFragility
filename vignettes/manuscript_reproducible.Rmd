@@ -31,9 +31,6 @@ library(ggtext)
 
 ## Data preprocess (Not included in the package)
 
-To allow fast and easy exploration of fragility results,  we preprocessed with <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE2 </a> the multipatient data from 
-the openneuro public data set <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> Openneuro Fragility Data Set</a>. Main steps include notch filtering to remove power line interference, re-referencing, epoching based on seizure onset time to isolate relevant segments of [-30:30s]. 
-
 To allow fast and easy exploration of fragility results,  we preprocessed the multipatient data from 
 the <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> OpenNeuro Fragility Data Set</a> with <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE 2.0 </a>. Main steps included Notch filtering to remove power line interference, re-referencing, and epoching based on seizure onset time to isolate relevant segments of [-30:30s]. 
 
@@ -71,17 +68,25 @@ visualSOZ <- function(epoch, sozNames) {
 }
 ```
 
+## Bandpass filter voltage between 0.5 and Nyquist frequency with fourth-order Butterworth filter
+```{r}
+
+pt01sz1Filt<-FourthOrderButterworthFilter(pt01sz1Clipped)
+pt26sz1Filt<-FourthOrderButterworthFilter(pt26sz1Clipped)
+
+```
+
 To visualize patient 01 seizure 1:
 ```{r}
-pt01sozName <- rownames(pt01sz1Clipped)[rowData(pt01sz1Clipped)$soz]
+pt01sozName <- rownames(pt01sz1Filt)[rowData(pt01sz1Filt)$soz]
 pt01Display <- c(pt01sozName, "MLT1", "MLT2", "MLT3", "MLT4")
-pt01sz1Reordered <- pt01sz1Clipped[pt01Display, ]
+pt01sz1Reordered <- pt01sz1Filt[pt01Display, ]
 visualSOZ(pt01sz1Reordered, pt01sozName)
 ```
 
 To visualize patient 26 seizure 1, we explicitly exclude the  electrodes `RTG29`, `RTG30`, `RTG31`, and `RTG32` from the SOZ electrodes, as they are not part of the SOZ in the original paper. The electrode names are reordered to match the original figure:
 ```{r}
-pt26sozName <- rownames(pt26sz1Clipped)[rowData(pt26sz1Clipped)$soz]
+pt26sozName <- rownames(pt26sz1Filt)[rowData(pt26sz1Filt)$soz]
 excludedElectrodes <- c("RTG29", "RTG30", "RTG31", "RTG32")
 pt26sozName <- pt26sozName[!pt26sozName %in% excludedElectrodes]
 pt26Display <- c(
@@ -89,7 +94,7 @@ pt26Display <- c(
     pt26sozName[1:16], 
     excludedElectrodes,
     pt26sozName[17:18])
-pt26sz1Reordered <- pt26sz1Clipped[pt26Display, ]
+pt26sz1Reordered <- pt26sz1Filt[pt26Display, ]
 visualSOZ(pt26sz1Reordered, pt26sozName)
 ```
 
@@ -105,9 +110,9 @@ registerDoSNOW(cl)
 
 windowNum <- 250
 step <- 125
-pt01sz1Frag <- calcAdjFrag(epoch = pt01sz1Clipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
+pt01sz1Frag <- calcAdjFrag(epoch = pt01sz1Filt, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
 
-pt26sz1Frag <- calcAdjFrag(epoch = pt26sz1Clipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
+pt26sz1Frag <- calcAdjFrag(epoch = pt26sz1Filt, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
 
 # Stop the parallel backend
 stopCluster(cl)
