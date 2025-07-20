@@ -24,8 +24,10 @@ This vignette shows how to reproduce results from the companion software paper o
 ## Load the package and data
 ```{r}
 library(EZFragility)
+library(Epoch)
 library(ggplot2)
 library(ggtext)
+library(gsignal)
 ```
 
 
@@ -40,20 +42,65 @@ the <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" st
 ## Download Data
 To access the preprocessed data, you can use the `EpochDownloader` class from the `Epoch` package. The following code downloads the data and lists the available datasets.
 ```{r}
-dl<-EpochDownloader()
+dl<-EpochDownloader(progress = FALSE)
 names(dl)
 ```
 
 The preprocessed voltage data from patient pt01 seizure 1 and pt26 seizure 1 can be loaded by
 ```{r}
 pt01sz1 <- dl$Retrostudy_subpt01_1
-pt01sz1Clipped <- crop(pt01sz1, start=-10, end=10)
-pt01sz1Clipped 
+pt01sz1
 
 pt26sz1 <- dl$Retrostudy_subjh103_1
-pt26sz1Clipped <- crop(pt26sz1, start=-10, end=10)
-pt26sz1Clipped 
+pt26sz1
 ```
+
+## Remove Artifacts
+The following function applies a band-pass filter voltage between 0.5 and Nyquist frequency with fourth-order Butterworth filter to the `Epoch` objects to remove artifacts.
+```{r}
+butterworthFilter <- function(epoch) {
+    order <- 4
+
+    sampling_freq <- rowData(epoch)$sampling_frequency[1]
+    nyquist_freq <- sampling_freq / 2
+
+    lowpass <- 0.5
+    highpass <- nyquist_freq * 0.99
+    normalized_freqs <- c(lowpass, highpass) / nyquist_freq
+    filter_type <- "pass"
+    butter_filter <- gsignal::butter(
+        n = order, 
+        w = normalized_freqs, 
+        type = filter_type)
+
+    # Apply filter to epoch data
+    mat <- tblData(epoch)
+    
+    # Apply zero-phase filtering (filtfilt) to each row
+    filtered_data <- gsignal::filtfilt(
+        filt = butter_filter,
+        x = t(mat))
+
+    filtered_data <- t(filtered_data)
+    tblData(epoch) <- filtered_data
+    
+    epoch
+}
+```
+
+We apply the filter to the epochs and clip the data to the relevant time window of [-10:10s] around seizure onset:
+```{r}
+pt01sz1Clipped <- pt01sz1 |>
+    crop(start=-10, end=10) |>
+    butterworthFilter()
+pt01sz1Clipped
+
+pt26sz1Clipped <- pt26sz1 |>
+    crop(start=-10, end=10) |>
+    butterworthFilter()
+pt26sz1Clipped
+```
+
 
 ## Visualize Voltage Plot
 The following function reproduce the voltage plot for a display subset of electrodes in the original Figure 4. The SOZ electrode names are highlighted in red as in the original paper.
