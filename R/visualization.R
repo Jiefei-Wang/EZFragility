@@ -242,11 +242,11 @@ plotFragDistribution <- function(
         geom_line(
             aes(y = .data$groupMean, color = groupColor)
         ) +
-        geom_line(aes(y = .data$groupUpperBound), color = "red", linetype = "dotted") +
-        geom_line(aes(y = .data$groupLowerBound), color = "red", linetype = "dotted") +
+        geom_line(aes(y = .data$groupUpperBound), color = "red", linetype = "blank") +
+        geom_line(aes(y = .data$groupLowerBound), color = "red", linetype = "blank") +
         geom_line(aes(y = .data$refMean, color = refColor)) +
-        geom_line(aes(y = .data$refUpperBound), color = "black", linetype = "dotted") +
-        geom_line(aes(y = .data$refLowerBound), color = "black", linetype = "dotted") +
+        geom_line(aes(y = .data$refUpperBound), color = "black", linetype = "blank") +
+        geom_line(aes(y = .data$refLowerBound), color = "black", linetype = "blank") +
         geom_ribbon(aes(ymin = .data$groupLowerBound, ymax = .data$groupUpperBound), fill = "red", alpha = 0.5) +
         geom_ribbon(aes(ymin = .data$refLowerBound, ymax = .data$refUpperBound), fill = "black", alpha = 0.5) +
         scale_color_manual(name = "Electrode groups", values = c(colors))
