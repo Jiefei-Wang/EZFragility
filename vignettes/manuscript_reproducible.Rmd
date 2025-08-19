@@ -48,10 +48,10 @@ names(dl)
 
 The preprocessed voltage data from patient pt01 seizure 1 and pt26 seizure 1 can be loaded by
 ```{r}
-pt01sz1 <- dl$Retrostudy_subpt01_1
+pt01sz1 <- dl$FragilityData_subpt01_1
 pt01sz1
 
-pt26sz1 <- dl$Retrostudy_subjh103_1
+pt26sz1 <- dl$FragilityData_subjh103_1
 pt26sz1
 ```
 
@@ -61,7 +61,7 @@ The following function applies a band-pass filter voltage between 0.5 and Nyquis
 butterworthFilter <- function(epoch) {
     order <- 4
 
-    sampling_freq <- rowData(epoch)$sampling_frequency[1]
+    sampling_freq <- metaData(epoch)$samplingRate
     nyquist_freq <- sampling_freq / 2
 
     lowpass <- 0.5
