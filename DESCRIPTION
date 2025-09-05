@@ -41,7 +41,12 @@ Authors@R:
     family = "O'Leary",  
     email = "smoleary@utmb.edu", 
     role = "aut",
-    comment = c(ORCID = "0000-0003-3650-705X"))
+    comment = c(ORCID = "0000-0003-3650-705X")),
+    person(
+    given = "Yuanyi", 
+    family = "Zhang",  
+    email = "yuazhan@utmb.edu", 
+    role = "aut")
     )
 Description: Provides tools to compute the neural fragility matrix from intracranial electrocorticographic (iEEG) recordings, enabling the analysis of brain dynamics during seizures. The package implements the method described by Li et al. (2017) <doi:10.23919/ACC.2017.7963378> and includes functions for data preprocessing ('Epoch'), fragility computation ('calcAdjFrag'), and visualization.
 License: GPL (>= 3)

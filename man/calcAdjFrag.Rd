@@ -64,7 +64,7 @@ Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}
 ## A dummy example with 5 electrodes and 20 time points
 data <- matrix(rnorm(100), nrow = 5)
 ## create an Epoch object
-epoch <- Epoch(data)
+epoch <- Epoch(data, startTime = 0, samplingRate = ncol(data))
 windowNum <- 10
 step <- 5
 lambda <- 0.1

@@ -31,7 +31,7 @@ test_that("Data consistency across versions", {
     window <- 10
     step <- 5
     lambda <- 0.1
-    frag <- calcAdjFrag(epoch = data, window = window, step = step, lambda = lambda)
+    frag <- calcAdjFrag(epoch = data, window = window, step = step, lambda = lambda, parallel=FALSE)
     expect_equal(frag, testFrag)
 })
 

@@ -1,3 +1,7 @@
+
+# lock RNG kind for reproducibility across R versions
+RNGkind(kind = "Mersenne-Twister", normal.kind = "Inversion", sample.kind = "Rounding")
+
 set.seed(1)
 data <- matrix(rnorm(800), ncol = 40)
 window <- 10

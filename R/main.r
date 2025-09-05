@@ -28,7 +28,7 @@
 #' ## A dummy example with 5 electrodes and 20 time points
 #' data <- matrix(rnorm(100), nrow = 5)
 #' ## create an Epoch object
-#' epoch <- Epoch(data)
+#' epoch <- Epoch(data, startTime = 0, samplingRate = ncol(data))
 #' windowNum <- 10
 #' step <- 5
 #' lambda <- 0.1
@@ -84,7 +84,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
 
     if (!is(epoch, "Epoch")) {
-        epoch <- Epoch(epoch)
+        epoch <- Epoch(epoch, startTime = 0, samplingRate = ncol(epoch))
     }
     elecNum <- nrow(epoch)
     timeNum <- ncol(epoch)
