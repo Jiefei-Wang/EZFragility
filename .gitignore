@@ -65,4 +65,6 @@ vignettes/*.r
 /Meta/
 
 README.html
-vignettes/Intro_to_EZFragility_files
+
+Thumbs.db
+.covr.rds
