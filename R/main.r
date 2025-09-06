@@ -244,7 +244,7 @@ estimateSOZ <- function(x, method = c("mean", "median", "max", "min"), proportio
         stat <- apply(fragMat, 1, min)
     } else if (method == "mean") {
         stat <- apply(fragMat, 1, mean)
-    }else if (method == "median") {
+    } else if (method == "median") {
         stat <- apply(fragMat, 1, median)
     } else {
         stop("Unknown method: ", method)

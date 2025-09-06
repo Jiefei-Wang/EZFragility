@@ -33,9 +33,6 @@ library(gsignal)
 
 ## Data preprocess (Not included in the package)
 
-To allow fast and easy exploration of fragility results,  we preprocessed with <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE2 </a> the multipatient data from 
-the openneuro public data set <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> Openneuro Fragility Data Set</a>. Main steps include notch filtering to remove power line interference, re-referencing, epoching based on seizure onset time to isolate relevant segments of [-30:30s]. 
-
 To allow fast and easy exploration of fragility results,  we preprocessed the multipatient data from 
 the <a href="https://openneuro.org/datasets/ds003029/versions/1.0.0/metadata" style="color:blue; text-decoration:none;"> OpenNeuro Fragility Data Set</a> with <a href="https://rave.wiki/" style="color:blue; text-decoration:none;"> RAVE 2.0 </a>. Main steps included Notch filtering to remove power line interference, re-referencing, and epoching based on seizure onset time to isolate relevant segments of [-30:30s]. 
 
@@ -179,7 +176,7 @@ fragHeatmap <- function(frag, sozNames, ranked=FALSE) {
 }
 ```
 
-on electrode voltage and high fragility. PT01 was a surgical success, with the high-fragility electrodes identified by the algorithm matching those identified by clinical epileptologists.
+PT01 was a surgical success, with the high-fragility electrodes identified by the algorithm matching those identified by clinical epileptologists.
 ```{r}
 pt01sz1FragReordered <- pt01sz1Frag[pt01Display]
 fragHeatmap(pt01sz1FragReordered, pt01sozName, ranked=FALSE)
