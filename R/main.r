@@ -10,7 +10,7 @@
 #' (\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
 #' We have found solutions to fill up missing details in the paper method description
 #'
-#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points
+#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points. For a matrix input, the sampling rate is assumed to be 1 Hz and the start time is 0.
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value for regularization to use in the ridge regression.
@@ -28,7 +28,7 @@
 #' ## A dummy example with 5 electrodes and 20 time points
 #' data <- matrix(rnorm(100), nrow = 5)
 #' ## create an Epoch object
-#' epoch <- Epoch(data)
+#' epoch <- Epoch(data, startTime = 0, samplingRate = 1)
 #' windowNum <- 10
 #' step <- 5
 #' lambda <- 0.1
@@ -47,12 +47,11 @@
 #'     registerDoSNOW(cl)
 #'
 #'     data("pt01EcoG")
-#'     epoch <- Epoch(pt01EcoG)
 #'     window <- 250
 #'     step <- 125
 #'     title <- "PT01 seizure 1"
 #'     calcAdjFrag(
-#'         epoch = epoch, window = window,
+#'         epoch = pt01EcoG, window = window,
 #'         step = step, parallel = TRUE, progress = TRUE
 #'     )
 #'
@@ -85,13 +84,13 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
 
     if (!is(epoch, "Epoch")) {
-        epoch <- Epoch(epoch)
+        epoch <- Epoch(epoch, startTime = 0, samplingRate = 1)
     }
     elecNum <- nrow(epoch)
     timeNum <- ncol(epoch)
-    elecNames <- epoch$electrodes
-    timePoints <- epoch$times
-    dataMat <- epoch$data
+    elecNames <- rownames(epoch)
+    timePoints <- coltimes(epoch)
+    dataMat <- tblData(epoch)
 
     ## The input matrix must have at least window rows
     stopifnot(timeNum >= window)
@@ -187,12 +186,10 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
     ## start time point/indices for each partition
     startTimes <- (seq_len(nWindows) - 1L) * step + 1L
-    if (!is.null(epoch$times)) {
-        startTimes <- epoch$times[startTimes]
+    if (!is.null(timePoints)) {
+        startTimes <- timePoints[startTimes]
     }
 
-    ## TODO: why the row of frag is the electrode names? not the column of frag?
-    ## This does not match the input data
     Fragility(
         ieegts = dataMat,
         adj = A,
@@ -201,7 +198,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
         frag_ranked = fR,
         lambdas = lbd,
         startTimes = startTimes,
-        electrodes = epoch$electrodes
+        electrodes = elecNames
     )
 }
 
@@ -218,7 +215,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
     results
 }
 
-#' Find Serzure Onset Zone
+#' Find Seizure Onset Zone
 #' 
 #' The function estimates the seizure onset zone (SOZ). For each row, it calculates the maximum, minimum, or mean of row. The rows with the highest values are considered as the SOZ.
 #'
@@ -231,7 +228,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 #'
 #' @return A vector of electrode names, or indices if the electrode names are NULL
 #' @export
-estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, ...) {
+estimateSOZ <- function(x, method = c("mean", "median", "max", "min"), proportion = 0.1, ...) {
     method <- match.arg(method)
 
     stopifnot(is(x, "Fragility"))
@@ -247,6 +244,10 @@ estimateSOZ <- function(x, method = c("mean", "max", "min"), proportion = 0.1, .
         stat <- apply(fragMat, 1, min)
     } else if (method == "mean") {
         stat <- apply(fragMat, 1, mean)
+    } else if (method == "median") {
+        stat <- apply(fragMat, 1, median)
+    } else {
+        stop("Unknown method: ", method)
     }
 
     sozIndex <- order(stat, decreasing = TRUE)[seq_len(nSOZ)]

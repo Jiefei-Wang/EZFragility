@@ -23,7 +23,7 @@ calcAdjFrag(
 )
 }
 \arguments{
-\item{epoch}{Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points}
+\item{epoch}{Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points. For a matrix input, the sampling rate is assumed to be 1 Hz and the start time is 0.}
 
 \item{window}{Integer. The number of time points to use in each window}
 
@@ -64,7 +64,7 @@ Each column is normalized \eqn{\frac{max(\Gamma_{i})-\Gamma_{ik}}{max(\Gamma_i)}
 ## A dummy example with 5 electrodes and 20 time points
 data <- matrix(rnorm(100), nrow = 5)
 ## create an Epoch object
-epoch <- Epoch(data)
+epoch <- Epoch(data, startTime = 0, samplingRate = 1)
 windowNum <- 10
 step <- 5
 lambda <- 0.1
@@ -83,12 +83,11 @@ if (requireNamespace("doSNOW")) {
     registerDoSNOW(cl)
 
     data("pt01EcoG")
-    epoch <- Epoch(pt01EcoG)
     window <- 250
     step <- 125
     title <- "PT01 seizure 1"
     calcAdjFrag(
-        epoch = epoch, window = window,
+        epoch = pt01EcoG, window = window,
         step = step, parallel = TRUE, progress = TRUE
     )
 

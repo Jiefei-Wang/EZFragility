@@ -2,6 +2,20 @@ isWholeNumber <- function(x) {
     return(x %% 1 == 0)
 }
 
+# Helper function for rolling average
+rolling_mean <- function(x, window) {
+    if (length(x) < window) return(x)
+    result <- rep(NA, length(x))
+    for (i in window:length(x)) {
+        result[i] <- mean(x[(i-window+1):i], na.rm = TRUE)
+    }
+    # Fill the beginning with the first valid value
+    first_valid <- which(!is.na(result))[1]
+    if (!is.na(first_valid)) {
+        result[1:(first_valid-1)] <- result[first_valid]
+    }
+    result
+}
 
 # Shifts to the right all strings of a list with a number of blanks
 shift <- \(strL, nBlanks = 0) {
@@ -51,3 +65,12 @@ tryToNum <- function(x) {
         return(NULL)
     }
 }
+
+# Only check a single logical condition
+.ifelse <- function(test, yes, no) {
+    if (test) {
+        return(yes)
+    } else {
+        return(no)
+    }
+} 

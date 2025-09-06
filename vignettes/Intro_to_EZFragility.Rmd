@@ -26,50 +26,46 @@ The method is based on the paper by Li et al. (2017) <doi: 10.23919/ACC.2017.796
 ## Key definition of the neural fragility marker
 
 Drug-resistant epilepsy (DRE) is a significant clinical challenge. Effective treatment requires the synthesis of large amounts of personalized clinical data with the goal of identifying the region within a patient’s brain from which seizures originate (the epileptogenic zone, or EZ). Current standard of care involves multidisciplinary group meetings and clinician consensus after reviewing patient data. This lack of a standardized methodology has led to variable surgical outcomes, measured by seizure freedom/reduction after surgery. Computational methods to identify the EZ have been developed to improve outcomes. 
-The neural fragility implemented is the R package is a promising biomarker of the epileptogenic zone. We provide this R package so that the method can be tested on extensive data for research.
+The neural fragility implemented in this R package is a promising biomarker of the epileptogenic zone. We provide this R package so that the method can be tested on extensive data for research.
 
 The hypothesis of the neural fragility is that small changes in connection strengths at seizure onset zone nodes (SOZ) cause an imbalance in inhibitory and excitatory connectivity between brain regions. Then if the SOZ is perturbed, over excitation can occur manifesting in a seizure. The neural fragility marker propose a metric to evaluate when connection strength changes cause imbalance and on which electrodes.To create the fragility marker, a personalized dynamic model of the brain network from observed iEEG signals is computed in a discrete number of time windows. Then the neural fragility measures the degree network nodes are imbalanced by systematically computing the minimum perturbation required for each electrode’s connections to produce instability for the entire network. 
 
 
 ## Load small ictal ieeg data for patient PT01
 
-This example data corresponds to the first seizure of patient PT01 from the Fragility Data Set. `pt01EcoG` is a matrix with 3000 rows (time points) and 84 columns (electrodes). The acquisition frequency is 1000Hz and the time around seizure onset is [-1:2]s. The rows names are the electrodes names. The column names is the time relative to seizure onset in (s). For more information about the data, you can use the `?pt01EcoG` command.
+This example data corresponds to the first seizure of patient PT01 from the Fragility Data Set. `pt01EcoG` is an Epoch object with 3000 rows (time points) and 84 columns (electrodes). The acquisition frequency is 1000Hz and the time around seizure onset is [-1:2]s. The rows names are the electrodes names. The column names is the time relative to seizure onset in (s). For more information about the data, you can use the `?pt01EcoG` command.
 
-The patient underwent a surgical treatment and was seizure-free after the surgery. The electrodes located in the SOZ and the surgically removed area are marked in `sozIndex` attribute.
+The patient underwent a surgical treatment and was seizure-free after the surgery. There are two ways to find the SOZ electrodes in the data
 ```{r ictal data}
 data("pt01EcoG")
 
-## create an epoch object
-epoch <- Epoch(pt01EcoG)
-epoch
+# option 1: boolean value indicating if the electrode is in the SOZ
+rowData(pt01EcoG)$soz
+
+# option 2: SOZ names from the metadata
+sozNames <- metaData(pt01EcoG)$sozNames
+sozNames
 ```
 
-The function `visuIEEGData` can visualize the iEEG data. 
+The function `plot` can visualize the iEEG data. 
 ```{r}
-visuIEEGData(epoch  = epoch)
+plot(pt01EcoG)
 ```
 
-The Epoch object can be subset using the `[` operator.
+The Epoch object can be subset using the `[` operator. Here we show the electrodes that are marked as SOZ and additional 4 electrodes
 ```{r}
-# The electrode names corresponding to the site of the patient's surgery
-sozNames <- attr(pt01EcoG, "sozNames")
-
-## Show the electrodes that are marked as SOZ and additional 4 electrodes
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-visuIEEGData(epoch  = epoch[display])
-
-## Equivalent to: 
-## visuIEEGData(epoch  = epoch[display, ])
-
-## constrain to the first 100 time points
-visuIEEGData(epoch  = epoch[display, 1:100])
+plot(pt01EcoG[display])
 ```
-
-You can use `truncateTime` to specify the time range
+Equivalently, we can use `plot(pt01EcoG[display, ])` to visualize the data for the specified electrodes. You can also specify the range of time points to display. For example, to display the first 100 time points, you can use:
 ```{r}
-epochClipped <- truncateTime(epoch, from = -1, to = 0)
+plot(pt01EcoG[display, 1:100])
+```
+You can use `crop` to subset the Epoch object to a specific time range in seconds relative to seizure onset. For example, to crop the data to the time range [-1:0]s, you can use:
+```{r}
+epochClipped <- crop(pt01EcoG, start = -1, end = 0)
 
-visuIEEGData(epoch  = epochClipped)
+plot(epochClipped)
 ```
 
 ## Compute Fragility Matrix
@@ -82,7 +78,7 @@ registerDoSNOW(cl)
 
 windowNum <- 250
 step <- 125
-pt01Frag <- calcAdjFrag(epoch = epoch, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
+pt01Frag <- calcAdjFrag(epoch = pt01EcoG, window = windowNum, step = step, parallel = TRUE, nSearch=100L,progress = TRUE)
 
 # Fragility result
 pt01Frag
@@ -112,17 +108,19 @@ The function `plotFragHeatmap` produce a heatmap of the fragility and allows to 
 - Electrodes within the surgery region: `sozNames`
 - Electrodes outside of the surgery region: "MLT1", "MLT2", "MLT3", "MLT4" 
 
-The parameter `sozIndex` accepts either electrode names or their indices in the fragility matrix. If `sozIndex` is provided, the function will display the `sozIndex` electrodes in blue in the top rows of the heatmap. If `sozIndex` is not provided, the function will simply generate a heatmap of the fragility matrix.
+The parameter `groupIndex` accepts either electrode names or their indices in the fragility matrix. If `groupIndex` is provided, the function will display the `groupIndex` electrodes in blue in the top rows of the heatmap. If `groupIndex` is not provided, the function will simply generate a heatmap of the fragility matrix. Here the group index are the SOZ names but for EZ localization study it can be the resected electrodes or the intersection between resected electrodes and the SOZ. Use groupName to label your study group.
 ```{r}
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = pt01Frag, sozIndex = sozNames)
+plotFragHeatmap(frag = pt01Frag[display], groupIndex = sozNames)
 ```
 
 `plotFragDistribution` and `plotFragQuantile` are similar to the `plotFragHeatmap` function. They plot the fragility distribution and quantiles, respectively.
 ```{r, out.width="100%"}
-plotFragDistribution(frag = pt01Frag, sozIndex = sozNames)
+plotFragDistribution(frag = pt01Frag[display], groupIndex = sozNames)
 ```
 
 ```{r, out.width="100%"}
-plotFragQuantile(frag = pt01Frag, sozIndex = sozNames)
+plotFragQuantile(frag = pt01Frag[display], groupIndex = sozNames, groupName = "SOZ")
+```
+
 ```

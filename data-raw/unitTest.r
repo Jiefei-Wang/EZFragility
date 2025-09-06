@@ -1,3 +1,4 @@
+library(EZFragility)
 set.seed(1)
 data <- matrix(rnorm(800), ncol = 40)
 window <- 10

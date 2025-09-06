@@ -1,6 +1,6 @@
 Package: EZFragility
 Title: Compute Neural Fragility for Ictal iEEG Time Series
-Version: 1.0.4
+Version: 2.0.0
 Authors@R: 
     c(person(
     given = "Jiefei", 
@@ -8,6 +8,11 @@ Authors@R:
     email = "szwjf08@gmail.com", 
     role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-2709-5332")),
+    person(
+    given = "Patrick", 
+    family = "Karas",
+    email = "pjkaras@UTMB.EDU", 
+    role = "aut"),
     person(
     given = "Anne-Cecile", 
     family = "Lesage",
@@ -20,11 +25,6 @@ Authors@R:
     email = "ymalag@gmail.com", 
     role = "aut",
     comment = c(ORCID = "0000-0001-5126-2068")),
-    person(
-    given = "Patrick", 
-    family = "Karas",
-    email = "pjkaras@UTMB.EDU", 
-    role = "aut"),
     person(
     given = "Oliver", 
     family = "Zhou",  
@@ -41,7 +41,12 @@ Authors@R:
     family = "O'Leary",  
     email = "smoleary@utmb.edu", 
     role = "aut",
-    comment = c(ORCID = "0000-0003-3650-705X"))
+    comment = c(ORCID = "0000-0003-3650-705X")),
+    person(
+    given = "Yuanyi", 
+    family = "Zhang",  
+    email = "yuazhan@utmb.edu", 
+    role = "aut")
     )
 Description: Provides tools to compute the neural fragility matrix from intracranial electrocorticographic (iEEG) recordings, enabling the analysis of brain dynamics during seizures. The package implements the method described by Li et al. (2017) <doi:10.23919/ACC.2017.7963378> and includes functions for data preprocessing ('Epoch'), fragility computation ('calcAdjFrag'), and visualization.
 License: GPL (>= 3)
@@ -49,7 +54,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 4.1.0)
+    R (>= 4.1.0),
+    Epoch
 LazyData: true
 Imports: 
     stats,
@@ -67,7 +73,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    doSNOW
+    doSNOW,
+    gsignal
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://github.com/Jiefei-Wang/EZFragility

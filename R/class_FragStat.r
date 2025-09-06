@@ -2,10 +2,12 @@ FragStat <- setClass(
     "FragStat",
     slots = list(
         qmatrix = "matrixOrNULL",
-        meanSOZ = "numericOrNULL",
-        meanRef = "numericOrNULL",
-        sdSOZ = "numericOrNULL",
-        sdRef = "numericOrNULL"
+        groupMean = "numericOrNULL",
+        refMean = "numericOrNULL",
+        groupSD = "numericOrNULL",
+        refSD = "numericOrNULL",
+        groupSEM = "numericOrNULL",
+        refSEM = "numericOrNULL"
     )
 )
 
@@ -23,6 +25,7 @@ setMethod("$", "FragStat", function(x, name) {
 })
 
 #' @rdname cash-FragStat-method
+#' @export
 setMethod("$<-", "FragStat", function(x, name, value) {
     slot(x, name) <- value
     invisible(x)

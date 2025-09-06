@@ -8,7 +8,7 @@
         R2 = "matrix",
         lambdas = "numeric",
         startTimes = "numeric",
-        electrodes = "character"
+        electrodes = "characterOrNULL"
     )
 )
 
@@ -30,11 +30,13 @@ Fragility <- function(ieegts, adj, frag, frag_ranked, R2, lambdas, startTimes, e
 }
 
 #' @rdname cash-FragStat-method
+#' @export
 setMethod("$", "Fragility", function(x, name) {
     slot(x, name)
 })
 
 #' @rdname cash-FragStat-method
+#' @export
 setMethod("$<-", "Fragility", function(x, name, value) {
     slot(x, name) <- value
     invisible(x)
@@ -67,6 +69,8 @@ setMethod("show", "Fragility", function(object) {
 #' @param drop Additional arguments (not used)
 #' @return A new Fragility object with the subsetted data
 #' @rdname subset-Fragility-method
+#' @aliases [,Fragility-method
+#' @export
 setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
     
     if (!missing(i)){
@@ -104,11 +108,13 @@ setMethod("[", "Fragility", function(x, i, j, ..., drop = FALSE) {
 #' - `ncol(x)`: The number of columns (time points) in the fragility matrix.
 #' - `dim(x)`: A vector of length 2 containing the number of rows and columns in the fragility matrix.
 #' @rdname dim-Fragility-method
+#' @export
 setMethod("nrow", "Fragility", function(x) {
     nrow(x@frag)
 })
 
 #' @rdname dim-Fragility-method
+#' @export
 setMethod("ncol", "Fragility", function(x) {
     ncol(x@frag)
 })
