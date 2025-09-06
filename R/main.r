@@ -10,7 +10,7 @@
 #' (\href{https://pubmed.ncbi.nlm.nih.gov/34354282/}{pubmed}).
 #' We have found solutions to fill up missing details in the paper method description
 #'
-#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points
+#' @param epoch Matrix or Epoch object. iEEG data matrix or Epoch object. If matrix, the row names are the electrode names and the column names are the time points. For a matrix input, the sampling rate is assumed to be 1 Hz and the start time is 0.
 #' @param window Integer. The number of time points to use in each window
 #' @param step Integer. The number of time points to move the window each time
 #' @param lambda Numeric. The lambda value for regularization to use in the ridge regression.
@@ -28,7 +28,7 @@
 #' ## A dummy example with 5 electrodes and 20 time points
 #' data <- matrix(rnorm(100), nrow = 5)
 #' ## create an Epoch object
-#' epoch <- Epoch(data)
+#' epoch <- Epoch(data, startTime = 0, samplingRate = 1)
 #' windowNum <- 10
 #' step <- 5
 #' lambda <- 0.1
@@ -84,7 +84,7 @@ calcAdjFrag <- function(epoch, window, step, lambda = NULL, nSearch = 100L, prog
 
 
     if (!is(epoch, "Epoch")) {
-        epoch <- Epoch(epoch)
+        epoch <- Epoch(epoch, startTime = 0, samplingRate = 1)
     }
     elecNum <- nrow(epoch)
     timeNum <- ncol(epoch)
