@@ -4,11 +4,11 @@
 # EZFragility: Epileptogenic Zone Localization Based on neural Fragility EEG marker
 
 [![](https://www.r-pkg.org/badges/version/EZFragility?color=orange)](https://cran.r-project.org/package=EZFragility)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/EZFragility?color=blue)](https://cran.r-project.org/package=EZFragility)
 [![](https://img.shields.io/github/languages/code-size/Jiefei-Wang/EZFragility.svg)](https://github.com/Jiefei-Wang/EZFragility)
 [![](https://img.shields.io/github/last-commit/Jiefei-Wang/EZFragility.svg)](https://github.com/Jiefei-Wang/EZFragility/commits/main)
 [![R-CMD-check](https://github.com/Jiefei-Wang/EZFragility/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Jiefei-Wang/EZFragility/actions/workflows/R-CMD-check.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/Jiefei-Wang/EZFragility/badge.svg?branch=main)](https://coveralls.io/github/Jiefei-Wang/EZFragility?branch=main)
-
+[![Codecov test coverage](https://codecov.io/gh/Jiefei-Wang/EZFragility/graph/badge.svg)](https://app.codecov.io/gh/Jiefei-Wang/EZFragility)
 
 ## Introduction
 
