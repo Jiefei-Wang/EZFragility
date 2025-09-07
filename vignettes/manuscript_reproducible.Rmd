@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows how to reproduce results from the companion software paper of the <a href="https://cran.r-project.org/web/packages/fragility/index.html" style="color:blue; text-decoration:none;"> EZFragility CRAN R package</a> for the first seizure of patients 01 and 26. This allows to check how well the EZFragility package reproduces results from the <a href="https://www.nature.com/articles/s41593-021-00901-w" style="color:blue; text-decoration:none;"> original neural fragility paper </a>(see Figure 4 and extended seizure 4)
+This vignette shows how to reproduce results from the companion software paper of the <a href="https://cran.r-project.org/web/packages/EZFragility/" style="color:blue; text-decoration:none;"> EZFragility CRAN R package</a> for the first seizure of patients 01 and 26. This allows to check how well the EZFragility package reproduces results from the <a href="https://www.nature.com/articles/s41593-021-00901-w" style="color:blue; text-decoration:none;"> original neural fragility paper </a>(see Figure 4 and extended seizure 4)
 
 ## Load the package and data
 ```{r}
