@@ -85,17 +85,17 @@ butterworthFilter <- function(epoch) {
 }
 ```
 
-We apply the filter to the epochs and clip the data to the relevant time window of [-10:10s] around seizure onset:
+We apply the filter to the epochs and crop the data to the relevant time window of [-10:10s] around seizure onset:
 ```{r}
-pt01sz1Clipped <- pt01sz1 |>
+pt01sz1Cropped <- pt01sz1 |>
     crop(start=-10, end=10) |>
     butterworthFilter()
-pt01sz1Clipped
+pt01sz1Cropped
 
-pt26sz1Clipped <- pt26sz1 |>
+pt26sz1Cropped <- pt26sz1 |>
     crop(start=-10, end=10) |>
     butterworthFilter()
-pt26sz1Clipped
+pt26sz1Cropped
 ```
 
 
@@ -117,15 +117,15 @@ visualSOZ <- function(epoch, sozNames) {
 
 To visualize patient 01 seizure 1:
 ```{r}
-pt01sozName <- rownames(pt01sz1Clipped)[rowData(pt01sz1Clipped)$soz]
+pt01sozName <- rownames(pt01sz1Cropped)[rowData(pt01sz1Cropped)$soz]
 pt01Display <- c(pt01sozName, "MLT1", "MLT2", "MLT3", "MLT4")
-pt01sz1Reordered <- pt01sz1Clipped[pt01Display, ]
+pt01sz1Reordered <- pt01sz1Cropped[pt01Display, ]
 visualSOZ(pt01sz1Reordered, pt01sozName)
 ```
 
 To visualize patient 26 seizure 1, we explicitly exclude the  electrodes `RTG29`, `RTG30`, `RTG31`, and `RTG32` from the SOZ electrodes, as they are not part of the SOZ in the original paper. The electrode names are reordered to match the original figure:
 ```{r}
-pt26sozName <- rownames(pt26sz1Clipped)[rowData(pt26sz1Clipped)$soz]
+pt26sozName <- rownames(pt26sz1Cropped)[rowData(pt26sz1Cropped)$soz]
 excludedElectrodes <- c("RTG29", "RTG30", "RTG31", "RTG32")
 pt26sozName <- pt26sozName[!pt26sozName %in% excludedElectrodes]
 pt26Display <- c(
@@ -133,7 +133,7 @@ pt26Display <- c(
     pt26sozName[1:16], 
     excludedElectrodes,
     pt26sozName[17:18])
-pt26sz1Reordered <- pt26sz1Clipped[pt26Display, ]
+pt26sz1Reordered <- pt26sz1Cropped[pt26Display, ]
 visualSOZ(pt26sz1Reordered, pt26sozName)
 ```
 
@@ -149,9 +149,9 @@ registerDoSNOW(cl)
 
 windowNum <- 250
 step <- 125
-pt01sz1Frag <- calcAdjFrag(epoch = pt01sz1Clipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
+pt01sz1Frag <- calcAdjFrag(epoch = pt01sz1Cropped, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
 
-pt26sz1Frag <- calcAdjFrag(epoch = pt26sz1Clipped, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
+pt26sz1Frag <- calcAdjFrag(epoch = pt26sz1Cropped, window = windowNum, step = step, parallel = TRUE, nSearch=100L, progress = FALSE)
 
 # Stop the parallel backend
 stopCluster(cl)
