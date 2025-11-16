@@ -168,7 +168,7 @@ fragHeatmap <- function(frag, sozNames, ranked=FALSE) {
     elecColor[frag$electrodes%in% sozNames] <- 'red'
     elecColor <- rev(elecColor)
 
-    plotFragHeatmap(frag = frag, ranked=ranked) + 
+    plot(frag, ranked=ranked) + 
     geom_vline(xintercept = indexsz, color = "black", linetype = "dashed", linewidth = 1) + 
     theme(
         axis.text.y = element_markdown(colour = elecColor)
@@ -181,7 +181,7 @@ PT01 was a surgical success, with the high-fragility electrodes identified by th
 pt01sz1FragReordered <- pt01sz1Frag[pt01Display]
 fragHeatmap(pt01sz1FragReordered, pt01sozName, ranked=FALSE)
 ```
-Setting the "ranked" variable to TRUE in the plotFragHeatmap allows more contrast and render the heatmap closer to original figure 4.
+Setting the "ranked" variable to TRUE in the plot allows more contrast and render the heatmap closer to original figure 4.
 ```{r}
 fragHeatmap(pt01sz1FragReordered, pt01sozName, ranked=TRUE)
 ```

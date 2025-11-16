@@ -103,7 +103,7 @@ stats
 ```
 
 ## Plot functions for Fragility Matrix
-The function `plotFragHeatmap` produce a heatmap of the fragility and allows to visually check the correlation between the SOZ and sustained high fragility value. Time window around seizure onset [-1:2]s, which includes the following electrodes: 
+The function `plot` produce a heatmap of the fragility and allows to visually check the correlation between the SOZ and sustained high fragility value. Time window around seizure onset [-1:2]s, which includes the following electrodes: 
 
 - Electrodes within the surgery region: `sozNames`
 - Electrodes outside of the surgery region: "MLT1", "MLT2", "MLT3", "MLT4" 
@@ -111,16 +111,15 @@ The function `plotFragHeatmap` produce a heatmap of the fragility and allows to 
 The parameter `groupIndex` accepts either electrode names or their indices in the fragility matrix. If `groupIndex` is provided, the function will display the `groupIndex` electrodes in blue in the top rows of the heatmap. If `groupIndex` is not provided, the function will simply generate a heatmap of the fragility matrix. Here the group index are the SOZ names but for EZ localization study it can be the resected electrodes or the intersection between resected electrodes and the SOZ. Use groupName to label your study group.
 ```{r}
 display <- c(sozNames, "MLT1", "MLT2", "MLT3", "MLT4")
-plotFragHeatmap(frag = pt01Frag[display], groupIndex = sozNames)
+plot(pt01Frag[display], groupIndex = sozNames)
 ```
 
-`plotFragDistribution` and `plotFragQuantile` are similar to the `plotFragHeatmap` function. They plot the fragility distribution and quantiles, respectively.
+`plotFragDistribution` and `plotFragQuantile` are similar to the `plot` function. They plot the fragility distribution and quantiles, respectively.
 ```{r, out.width="100%"}
-plotFragDistribution(frag = pt01Frag[display], groupIndex = sozNames)
+plotFragDistribution(pt01Frag[display], groupIndex = sozNames)
 ```
 
 ```{r, out.width="100%"}
-plotFragQuantile(frag = pt01Frag[display], groupIndex = sozNames, groupName = "SOZ")
+plotFragQuantile(pt01Frag[display], groupIndex = sozNames, groupName = "SOZ")
 ```
 
-```

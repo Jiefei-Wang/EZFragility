@@ -1,6 +1,6 @@
 Package: EZFragility
 Title: Compute Neural Fragility for Ictal iEEG Time Series
-Version: 2.0.1
+Version: 2.1.0
 Authors@R: 
     c(person(
     given = "Jiefei", 
@@ -52,7 +52,7 @@ Description: Provides tools to compute the neural fragility matrix from intracra
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.1.0),
     Epoch

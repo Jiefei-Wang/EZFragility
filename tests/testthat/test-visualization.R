@@ -5,11 +5,11 @@ displayIndexOutOfRange <- 77:85
 str <- rownames(pt01EcoG)[displayIndex]
 strError <- c(str, "Whatever")
 
-test_that("plotFragHeatmap", {
-  plotFragHeatmap(pt01Frag, displayIndex)           |> expect_no_error()
-  plotFragHeatmap(pt01Frag, displayIndexOutOfRange) |> expect_warning()
-  plotFragHeatmap(pt01Frag, str)                    |> expect_no_error()
-  plotFragHeatmap(pt01Frag, strError)               |> expect_warning()
+test_that("plot", {
+  plot(pt01Frag, groupIndex = displayIndex)           |> expect_no_error()
+  plot(pt01Frag, groupIndex = displayIndexOutOfRange) |> expect_warning()
+  plot(pt01Frag, groupIndex = str)                    |> expect_no_error()
+  plot(pt01Frag, groupIndex = strError)               |> expect_warning()
 })
 
 test_that("plotFragDistribution", {

@@ -48,8 +48,10 @@ makeHeatMap <- function(df, xTicksNum = 10, maxLabels = Inf){
 
 #' Visualization functions (raw signal, fragility matrix)
 #'
-#' @description `plotFragHeatmap`: plot fragility heatmaps with electrodes marked as soz colored
+#' @description `plot`: plot fragility heatmaps with electrodes marked as soz colored
 #'
+#' @param x Fragility object from \code{calcAdjFrag}
+#' @param y Not used (for S4 method compatibility)
 #' @param frag Fragility object from \code{calcAdjFrag}
 #' @param x.lab.size Numeric. Size of x-axis labels. Default is 4.
 #' @param y.lab.size Numeric. Size of y-axis labels. Default is 10
@@ -69,24 +71,23 @@ makeHeatMap <- function(df, xTicksNum = 10, maxLabels = Inf){
 #' data("pt01Frag")
 #' 
 #' ## plot the fragility heatmap
-#' plotFragHeatmap(frag = pt01Frag, groupIndex = sozNames)
+#' plot(pt01Frag, groupIndex = sozNames)
 #' 
-#' @rdname plotFragHeatmap
+#' @rdname plotFrag
 #' @export
-plotFragHeatmap <- function(
-    frag,
+setMethod("plot", signature(x = "Fragility", y = "missing"), 
+    function(x, y, 
     groupIndex = NULL,
     maxLabels = 50,
     ranked=FALSE,
-    x.lab.size = 4,
+    x.lab.size = 10,
     y.lab.size = 10) {
-    stopifnot(is(frag, "Fragility"))
-    fragMat <- .ifelse(ranked, frag$frag_ranked, frag$frag)
+    fragMat <- .ifelse(ranked, x$frag_ranked, x$frag)
 
     elecNum <- nrow(fragMat)
     windowNum <- ncol(fragMat)
 
-    elecNames <- frag$electrodes
+    elecNames <- x$electrodes
     groupIndex <- checkIndex(groupIndex, elecNames)
 
     group1 <- groupIndex
@@ -95,7 +96,7 @@ plotFragHeatmap <- function(
     elecColor <- rep("blue", elecNum)
     elecColor[seq_along(group2)] <- "black"
 
-    startTime <- frag$startTimes
+    startTime <- x$startTimes
     if (is.null(startTime)) {
         xlabel <- "Time Index"
         stimes <- seq_len(windowNum)
@@ -104,7 +105,7 @@ plotFragHeatmap <- function(
         stimes <- startTime
     }
 
-    rownames(fragMat) <- frag$electrodes
+    rownames(fragMat) <- x$electrodes
     colnames(fragMat) <- stimes
 
     ## prepare the data.frame for visualization
@@ -112,16 +113,17 @@ plotFragHeatmap <- function(
     df <- as.data.frame(fragMat[allIndex, ])
 
     makeHeatMap(df, maxLabels = maxLabels) +
-        labs(x = xlabel, y = "Electrode", size = x.lab.size) +
+        labs(x = xlabel, y = "Electrode") +
         theme(
+            axis.text.x = element_text(size = x.lab.size), 
             axis.text.y = element_markdown(size = y.lab.size, colour = elecColor), # Adjust depending on electrodes
         )
 }
-
+)
 
 #' @description `plotFragQuantile`: Plot Fragility time quantiles for two electrodes groups
 #' 
-#' @rdname plotFragHeatmap
+#' @rdname plotFrag
 #' @examples
 #' ## plot the fragility quantiles
 #' plotFragQuantile(frag = pt01Frag, groupIndex = sozNames)
@@ -163,7 +165,7 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
 #' @description `plotFragQuantile`: Plot Fragility time distribution for two electrodes groups
 #' @param bandType Character. The type of band to use, either "SEM" or "SD". Default is "SEM".
 #' @param rollingWindow Integer. Window size for rolling average smoothing. Default is 1 (no smoothing).
-#' @rdname plotFragHeatmap
+#' @rdname plotFrag
 #' @examples
 #' ## plot the fragility distribution
 #' plotFragDistribution(frag = pt01Frag, groupIndex = sozNames)
