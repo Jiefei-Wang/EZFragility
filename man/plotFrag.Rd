@@ -16,7 +16,13 @@
   y.lab.size = 10
 )
 
-plotFragQuantile(frag, groupIndex = NULL, groupName = "SOZ")
+plotFragQuantile(
+  frag,
+  groupIndex = NULL,
+  groupName = "SOZ",
+  x.lab.size = 10,
+  y.lab.size = 10
+)
 
 plotFragDistribution(
   frag,
@@ -24,7 +30,9 @@ plotFragDistribution(
   groupName = "SOZ",
   bandType = c("SEM", "SD"),
   rollingWindow = 1,
-  ranked = FALSE
+  ranked = FALSE,
+  x.lab.size = 10,
+  y.lab.size = 10
 )
 }
 \arguments{

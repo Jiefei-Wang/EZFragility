@@ -79,7 +79,7 @@ setMethod("plot", signature(x = "Fragility", y = "missing"),
     function(x, y, 
     groupIndex = NULL,
     maxLabels = 50,
-    ranked=FALSE,
+    ranked = FALSE,
     x.lab.size = 10,
     y.lab.size = 10) {
     fragMat <- .ifelse(ranked, x$frag_ranked, x$frag)
@@ -129,7 +129,9 @@ setMethod("plot", signature(x = "Fragility", y = "missing"),
 #' plotFragQuantile(frag = pt01Frag, groupIndex = sozNames)
 #' 
 #' @export
-plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
+plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ",
+    x.lab.size = 10,
+    y.lab.size = 10) {
     if (is.null(groupIndex)) {
         groupIndex <- estimateSOZ(frag)
     }
@@ -155,9 +157,10 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
     colnames(qmatrix) <- timeTicks
 
     makeHeatMap(qmatrix)+
-        labs(x = xlabel, y = "Quantiles", size = 8) +
+        labs(x = xlabel, y = "Quantiles") +
         theme(
-            axis.text.y = element_text(size = 8), # Adjust depending on electrodes
+            axis.text.y = element_text(size = y.lab.size), 
+            axis.text.x = element_text(size = x.lab.size)
         )
 }
 
@@ -177,7 +180,9 @@ plotFragQuantile <- function(frag, groupIndex = NULL, groupName = "SOZ") {
 plotFragDistribution <- function(
     frag, groupIndex = NULL, 
     groupName="SOZ", bandType = c("SEM", "SD"), 
-    rollingWindow = 1, ranked=FALSE) {
+    rollingWindow = 1, ranked=FALSE,
+    x.lab.size = 10,
+    y.lab.size = 10) {
     bandType <- match.arg(bandType)
     if (is.null(groupIndex)) {
         groupIndex <- estimateSOZ(frag)
@@ -235,7 +240,7 @@ plotFragDistribution <- function(
     )
     
     groupColor <- glue("{groupName} +/- {bandType}")
-    refColor <- glue("{groupName}C +/- {bandType}")
+    refColor <- glue("REF +/- {bandType}")
     colors <- setNames(c("red", "black"), c(groupColor, refColor))
 
     ggplot(plotData, aes(x = .data$timeTicks)) +
@@ -251,5 +256,10 @@ plotFragDistribution <- function(
         geom_line(aes(y = .data$refLowerBound), color = "black", linetype = "blank") +
         geom_ribbon(aes(ymin = .data$groupLowerBound, ymax = .data$groupUpperBound), fill = "red", alpha = 0.5) +
         geom_ribbon(aes(ymin = .data$refLowerBound, ymax = .data$refUpperBound), fill = "black", alpha = 0.5) +
-        scale_color_manual(name = "Electrode groups", values = c(colors))
+        scale_color_manual(name = "Electrode groups", values = c(colors))+
+        theme(
+            axis.text.y = element_text(size = y.lab.size), 
+            axis.text.x = element_text(size = x.lab.size)
+        )
+
 }
