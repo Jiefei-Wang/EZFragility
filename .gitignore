@@ -60,10 +60,11 @@ EZFragility.Rproj
 vignettes/*.html
 vignettes/*.R
 vignettes/*.r
+vignettes/*.png
+vignettes/Intro_to_EZFragility_files
 
 /doc/
 /Meta/
 
 README.html
-vignettes/Intro_to_EZFragility_files
 testScripts
